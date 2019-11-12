@@ -1,0 +1,25 @@
+---
+title: "Introduzione"
+output: html_document
+---
+Introduzione
+Definizioni
+La statistica è la scienza che si occupa della raccolta, della analisi, della interpretazione, della presentazione e della organizzazione di dati numerici (The Oxford Dictionary of Statistical Terms, 2006).
+La chemiometria è la una disciplina chimica, che sfrutta l’applicazione di metodi matematici o statistici nello studio dei dati chimici. L'International Chemometrics Society (ICS) offre la seguente definizione:
+La chemiometria è la scienza che mette in relazione le misurazioni fatte su un sistema o un processo chimico con lo stato del sistema o del processo stesso, con l'applicazione di metodi matematici o statistici
+La statistica si compone di due aree di studio: quella della statistica descrittiva e quella della statistica inferenziale.
+La STATISTICA DESCRITTIVA riassume informazioni generali sui dati osservati.
+Si occupa della descrizione del fenomeno oggetto dello studio attraverso la classificazione, rappresentazione, sintesi dei dati e descrizione attraverso strumenti matematici.
+L’uso della statistica descrittiva è considerato «limitato» in quanto descrive e analizza un dato gruppo senza però consentire di trarre alcuna conclusione circa un gruppo più grande.
+L’analisi dei dati con gli strumenti della statistica descrittiva peraltro è ESSENZIALE per incominciare a studiare qualsiasi tipo di risultato sperimentale.
+Quali sono gli strumenti della statistica descrittiva?
+Descrittori di posizione e di dispersione dei dati: più specificamente questi sono rispettivamente media, mediana, moda, varianza, deviazione standard, e intervallo di variazione, rappresentato dalla distanza tra minimo e massimo tra i dati in esame.
+La STATISTICA INFERENZIALE invece ha come ambito di studio come estendere ad una popolazione risultati e conclusioni ottenuti dall’analisi di un campione. Lo scopo di questa branca della statistica è quello di dedurre le caratteristiche e le proprietà di una popolazione basandosi sull’osservazione di una parte di essa selezionata opportunamente, detta campione oppure verificare ipotesi, fare previsioni e prendere decisioni stimando l’incertezza (o il rischio) associato alla decisione prima che essa sia presa.
+La statistica inferenziale si basa sulla teoria della probabilità.
+Gli strumenti della statistica inferenziale di interesse in questo corso sono i test di ipotesi parametrici (t di Student , F di Fisher, Q di Dixon, test di Grubbs, test di Shapiro-Wilk, test di Cochran etc.) e i test non parametrici (χ 2, binomiale, esatto di Fisher, di Wilcoxon, di Mann-Whitney etc.).
+
+Dall’introduzione del pc, nessuno (o quasi) fa più calcoli statistici “a mano”.
+Esistono software professionali che consentono di fare calcoli anche molto complessi in millisecondi.
+Fissiamo tanto per incominciare un principio che seguiremo nella analisi dei dati:
+NON ESISTE UNA GUIDA A CUI ATTENERSI NELL’ANALISI DEI DATI. OGNI CASO E’ NUOVO.
+Tutto è fatto in base alla cultura, alla curiosità e alla fantasia di chi studia i dati. Per tale ragione, sono utili e validi tutti i possibili strumenti di analisi, trasformazione e visualizzazione dei dati che ne facilitino o ne approfondiscano la comprensione.

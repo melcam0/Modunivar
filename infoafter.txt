@@ -1,0 +1,10 @@
+Progetto:
+Giorgio Marrubini e Camillo Melzi
+
+R scripts:
+Camillo Melzi
+
+
+Master e' in versione beta. Vi chiediamo di segnalarci eventuali bug od errori
+al seguente indirizzo email:
+camillomelzi@gmail.com.

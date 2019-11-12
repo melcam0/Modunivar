@@ -1,0 +1,6 @@
+Installazione del programma Master ed R-Portable (necessario per il funzionamento di Master).
+Vengono installate tutte le librerie necessarie.
+Il programma viene installato in C:/Master (opzione fortemente consigliata!).
+
+Per disinstallare il programma cliccare su "Disinstalla Master" nel menu Master o eseguire unis000.exe direttamente dalla cartelletta C:/Master (cancellare manualmente eventuali file residui e la cartelleta Master)
+

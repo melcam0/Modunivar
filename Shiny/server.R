@@ -48,6 +48,14 @@ server <- function (input , output, session ){
 
 # carica dati -------------------------------------------------------------
 
+  output$lista_esempi<-renderUI({
+    fnames<-list.files(path = 'Dati')
+    fext<-tools::file_ext(fnames)
+    fnames<-fnames[fext %in% c("xlsx")]
+    fnames<-tools::file_path_sans_ext(fnames)
+    selectInput('lista_esempi',"",choices = c('',fnames),selected = 1)
+  })
+
   observeEvent(input$lista_esempi,{
     if(input$lista_esempi!=""){
       tryCatch({
@@ -149,12 +157,8 @@ server <- function (input , output, session ){
   })
   
   observeEvent(input$file_incolla,{
-    tryCatch({
-      require(readr)
-      validate(need(grepl(pattern = "\t",x = input$file_incolla),""))
-      df <- read_delim(file=input$file_incolla,
-                         delim = "\t",
-                         col_names = TRUE)
+      df<-tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE),
+                   error = function(e) "Selezionare un dataset!")
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
@@ -162,21 +166,22 @@ server <- function (input , output, session ){
       dati$righe_rest<-row.names(df)
       dati$var<-colnames(df)
       dati$var_nr<-colnames(df)
-      dati$var_qt<-colnames(df)},
-      error = function(e) {
-        stop(safeError(e))
-      }
-    )
-  })
+      dati$var_qt<-colnames(df)
+    })
   
   output$contents_incolla <- renderTable({
+    validate(need(input$file_incolla>0,""))
     req(input$file_incolla)
-    if(input$disp_incolla == "head") {
-      return(head(dati$DS))
+    req(dati$DS)
+    if(!dati$DS=="Selezionare un dataset!"){
+      if(input$disp_incolla == "head") {
+        return(head(dati$DS))
+      }
+      else {
+        return(dati$DS)
+      }
     }
-    else {
-      return(dati$DS)
-    }
+ 
   })
   
 

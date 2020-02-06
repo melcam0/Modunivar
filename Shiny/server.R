@@ -2,6 +2,18 @@ rm(list = ls())
 
 server <- function (input , output, session ){
   
+  observeEvent(input$openModal, {
+    showModal(
+      modalDialog(title = "Autori:",size = 's',easyClose = TRUE,footer = NULL,
+                  
+                  tags$img(src = base64enc::dataURI(file = "GC.jpg", mime = "image/jpg")),
+                  
+                  
+                  HTML((paste(" "," ","Giorgio Marrubini","email: giorgio.marrubini@unipv.it"," ",
+                              'Camillo Melzi','email: camillomelzi@gmail.com',sep="<br/>"))))
+    )
+  })
+  
   observeEvent(input$quit,{
     stopApp()
   })
@@ -1905,8 +1917,8 @@ server <- function (input , output, session ){
               Non abbiamo gdl per eseguire test"))
     } else {
       HTML("<h4>Ipotesi 12:</h4>
-      <h4>H<SUB>0,12</SUB>: &mu;<SUB>i,j</SUB> = &mu;<SUB>i',j'</SUB> per ogni (i,j) &ne; (i',j') <br>
-              H<SUB>1,12</SUB>: &mu;<SUB>i,j</SUB> &ne;&mu;<SUB>i',j'</SUB> per almeno ((i,j),(i',j')</h4>")
+      <h4>H<SUB>0,12</SUB>: (&alpha;&beta;)<SUB>i,j</SUB> = 0 per ogni (i,j) <br>
+              H<SUB>1,12</SUB>:(&alpha;&beta;)<SUB>i,j</SUB> &ne;0 per almeno un (i,j)</h4>")
     }
   })
 
@@ -5026,16 +5038,17 @@ output$regrmulti_verifhp_corr<-renderPlot({
   output$Intro_G<-renderUI({includeHTML("Introduzione/Introduzione.html")})
 
 # Dispense ----------------------------------------------------------------
-  output$dispensa_descr<-renderUI({includeHTML("Dispense/01_Statistica_descrittiva.html")})
-  output$dispensa_infer<-renderUI({includeHTML("Dispense/02_Statistica_inferenziale.html")})
-  output$dispensa_regr<-renderUI({includeHTML("Dispense/03_Regressione.html")})
+  #output$dispensa_descr<-renderUI({
+  #  withMathJax(includeHTML("Dispense/Statistica_inferenziale.html"))
+  #    })
+  #output$dispensa_infer<-renderUI({includeHTML("Dispense/02_Statistica_inferenziale.html")})
+  #output$dispensa_inferfileInput('Dispense/02_Statistica_inferenziale.pdf', 'upload file ( . pdf format only)', accept = c('.pdf'))
+  #output$dispensa_infer<-renderUI({includeMarkdown("Dispense/02_Statistica_inferenziale.Rmd")})
+  #output$dispensa_regr<-renderUI({
+  #  withMathJax(includeHTML("Dispense/03_Regressione.html"))
+  #  })
 
-# Esercitazioni ----------------------------------------------------------------
-  output$esercitazioni_descr<-renderUI({includeHTML("Esercitazioni/1_Statistica_descrittiva.html")})
-  output$esercitazioni_errori<-renderUI({includeHTML("Esercitazioni/2_Errori_distrNormale.html")})
-  output$esercitazioni_infer<-renderUI({includeHTML("Esercitazioni/2_Statistica_inferenziale.html")})
-  output$esercitazioni_anova<-renderUI({includeHTML("Esercitazioni/3_Anova.html")})
-  output$esercitazioni_regr<-renderUI({includeHTML("Esercitazioni/1_Regressione.html")})
+
  
 }
 

@@ -3697,10 +3697,10 @@ output$regrmulti_verifhp_corr<-renderPlot({
   output$graf_lc_pop<-renderPlot({
     require(ggplot2)
     gr=as.factor(c(-1,1))
-    y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)
+    y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)*100
     df<-cbind.data.frame(gr,y)
-   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue")+
-     theme_classic()+xlab("x")+ylab("densità")
+   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",width=0.005)+
+     theme_classic()+xlab("x")+ylab("probabilità (%)")
   })
   
   output$lc_pop_media<-renderText({
@@ -3722,12 +3722,17 @@ output$regrmulti_verifhp_corr<-renderPlot({
       df[i]<-mean(rbinom(n = input$graf_lc_numta_camp,size = 1,prob = input$graf_lc_prob))
     }
     df<-as.data.frame(df)
+    
+    df<-2*df-1
     names(df)<-"x"
 
     ggplot()+theme_classic()+
       geom_histogram(df, mapping=aes(x = x,y = ..density..),fill="blue",col="white",
-                     binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df)))+
-        xlab(expression(bar(x)))+ylab("densità")
+                     
+                    # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
+                    binwidth =0.01
+                     )+
+        xlab(expression(bar(x)))+ylab("probalità (%)")+xlim(-1.1,1.1)
   })
   
  

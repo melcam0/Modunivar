@@ -405,8 +405,8 @@ server <- function (input , output, session ){
   output$graf_disp<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$graf_disp_var)
-    df<-cbind.data.frame(dati$DS[,input$graf_disp_var],c(1:length(dati$DS[,input$graf_disp_var])))
+    req(input$graf_disp_var%in%colnames(dati$DS))
+    df<-cbind.data.frame(dati$DS[,input$graf_disp_var,drop=FALSE],c(1:length(dati$DS[,input$graf_disp_var])))
     colnames(df)<-c("y","indice")
     if(!is.null(graf$var_gr)){
       if (length(graf$var_gr)==1){
@@ -537,7 +537,7 @@ server <- function (input , output, session ){
   })
 
   output$graf_hist_bin<-renderUI({
-    req(input$graf_hist_var)
+    req(input$graf_hist_var%in%colnames(dati$DS))
     sliderInput(inputId = "graf_hist_bin",label = "larghezza barra",ticks = FALSE,
                 min = round((1/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
                 max = round((7/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
@@ -547,10 +547,10 @@ server <- function (input , output, session ){
   
   output$graf_hist<-renderPlot({
     require(ggplot2)
-    validate(need(nrow(dati$DS)!=0,""))
+    validate(need(nrow(dati$DS)!=0 & input$graf_hist_var%in%colnames(dati$DS),""))
     req(input$graf_hist_var)
     req(input$graf_hist_bin)
-    df<-as.data.frame(dati$DS[,input$graf_hist_var])
+    df<-as.data.frame(dati$DS[,input$graf_hist_var,drop=FALSE])
     if(!is.null(graf$var_gr)){
       if (length(graf$var_gr)==1){
         lab<-as.factor(dati$DS[,input$graf_hist_var_gr])
@@ -634,8 +634,8 @@ server <- function (input , output, session ){
   output$graf_box<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$graf_box_var)
-    df<-as.data.frame(dati$DS[,input$graf_box_var])
+    req(input$graf_box_var%in%colnames(dati$DS))
+    df<-as.data.frame(dati$DS[,input$graf_box_var,drop=FALSE])
     if(!is.null(graf$var_gr)){
       if (length(graf$var_gr)==1){
         lab<-as.factor(dati$DS[,input$graf_box_var_gr])
@@ -729,14 +729,14 @@ server <- function (input , output, session ){
   
   output$ttest1_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     numericInput("ttest1_H0",label = "Media ipotizzata",
                  value=round(mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3),width = "40%")
   })
   
   output$ttest1_var_nota<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     req(input$ttest1_var==1)
     numericInput("ttest1_var_nota",label = "Dev. standard nota",
                  value=round(sd(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3),width = "40%")
@@ -749,7 +749,7 @@ server <- function (input , output, session ){
   output$ttest1_graf_distr<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     vrb<-as.data.frame(dati$DS[,input$ttest1_variab])
     
     x<-seq(-6, 6,by = 0.1)
@@ -812,26 +812,26 @@ server <- function (input , output, session ){
   
   output$ttest1_media_camp_titolo<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     "Stima puntuale"
   })
   
   output$ttest1_media_camp<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     paste("media campionaria =",round(mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3))
   })
   
   output$ttest1_sd_camp<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     validate(need(input$ttest1_var=="2",""))
     paste("dev. standard campionaria =",round(sd(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3))
   })
   
   output$ttest1_stat<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     if(input$ttest1_var=="1"){
       paste("statistica =",round((mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
               (input$ttest1_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest1_variab])))),4)) 
@@ -843,7 +843,7 @@ server <- function (input , output, session ){
   
   output$ttest1_pval<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     if(input$ttest1_var=="1"){
       q<-(mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
         (input$ttest1_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest1_variab])))) 
@@ -861,13 +861,13 @@ server <- function (input , output, session ){
   
   output$ttest1_ic_titolo<-renderText({
     validate(need(input$ttest1_alfa>0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     "Stima per intervallo"
   })
   
   output$ttest1_ic_inf<-renderText({
     validate(need(input$ttest1_alfa>0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     media<-mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])
     m<-nrow(as.data.frame(dati$DS[,input$ttest1_variab]))
     if(input$ttest1_var==1){
@@ -882,7 +882,7 @@ server <- function (input , output, session ){
   
   output$ttest1_ic_sup<-renderText({
     validate(need(input$ttest1_alfa>0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     media<-mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])
     m<-nrow(as.data.frame(dati$DS[,input$ttest1_variab]))
     if(input$ttest1_var==1){
@@ -898,7 +898,7 @@ server <- function (input , output, session ){
   output$ttest1_qqplot<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     ggplot(dati$DS,aes(sample=dati$DS[,input$ttest1_variab]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
       labs(x="quantili teorici",  y = "quantili campione")+
@@ -908,7 +908,7 @@ server <- function (input , output, session ){
   
   output$ttest1_shapiro<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest1_variab)
+    req(input$ttest1_variab%in%colnames(dati$DS))
     Dati<-dati$DS[,input$ttest1_variab]
     shapiro.test(Dati) 
   })
@@ -929,23 +929,22 @@ server <- function (input , output, session ){
   })
   
   output$ttest2a_variab2<-renderUI({
-    req(input$ttest2a_variab1)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
     selectizeInput(inputId = "ttest2a_variab2"," ",
                    choices = dati$var_qt[!dati$var_qt%in%input$ttest2a_variab1])})
   
   output$ttest2a_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     numericInput("ttest2a_H0",label = "Media differenze ipotizzata",
                  value=0,width = "40%")
   })
   
   output$ttest2a_var_nota<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
-    req(input$ttest2a_var==1)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     numericInput("ttest2a_var_nota",label = "Dev. standard differenze nota",
                  value=round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3),width = "40%")
   })
@@ -957,8 +956,8 @@ server <- function (input , output, session ){
   output$ttest2a_graf_distr<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     vrb<-as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])
     
     x<-seq(-6, 6,by = 0.1)
@@ -1021,30 +1020,30 @@ server <- function (input , output, session ){
   
   output$ttest2a_media_camp_titolo<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     "Stima puntuale"
   })
   
   output$ttest2a_media_camp<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     paste("media campionaria =",round(mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
   })
   
   output$ttest2a_sd_camp<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2a_var=="2",""))
     paste("dev. standard campionaria =",round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
   })
   
   output$ttest2a_stat<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     if(input$ttest2_var=="1"){
       paste("statistica =",round((mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2_H0)/
                                    (input$ttest2a_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest2a_variab1])))),4)) 
@@ -1060,8 +1059,8 @@ server <- function (input , output, session ){
   
   output$ttest2a_pval<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     if(input$ttest2a_var=="1"){
       q<-(mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2a_H0)/
         (input$ttest2a_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest2a_variab1])))) 
@@ -1079,15 +1078,15 @@ server <- function (input , output, session ){
   
   output$ttest2a_ic_titolo<-renderText({
     validate(need(input$ttest2a_alfa>0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     "Stima per intervallo"
   })
   
   output$ttest2a_ic_inf<-renderText({
     validate(need(input$ttest2a_alfa>0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     media<-mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])
     m<-nrow(as.data.frame(dati$DS[,input$ttest2a_variab1]))
     if(input$ttest2a_var==1){
@@ -1102,8 +1101,8 @@ server <- function (input , output, session ){
   
   output$ttest2a_ic_sup<-renderText({
     validate(need(input$ttest2a_alfa>0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     media<-mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])
     m<-nrow(as.data.frame(dati$DS[,input$ttest2a_variab1]))
     if(input$ttest2a_var==1){
@@ -1119,8 +1118,8 @@ server <- function (input , output, session ){
   output$ttest2a_qqplot<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     Diff<-dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2]
     ggplot(dati$DS,aes(sample=Diff))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
@@ -1131,8 +1130,8 @@ server <- function (input , output, session ){
   
   output$ttest2a_shapiro<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2a_variab1)
-    req(input$ttest2a_variab2)
+    req(input$ttest2a_variab1%in%colnames(dati$DS))
+    req(input$ttest2a_variab2%in%colnames(dati$DS))
     Differenze<-dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2]
     shapiro.test(Differenze) 
   })
@@ -1160,16 +1159,16 @@ server <- function (input , output, session ){
   
   output$ttest2_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     numericInput("ttest2_H0",label = "Differenza medie ipotizzata",
                  value=0,width = "40%")
   })
   
   output$ttest2_var_nota1<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     req(input$ttest2_var==1)
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     numericInput("ttest2_var_nota1",label = "Dev. standard nota gr. 1",
@@ -1178,8 +1177,8 @@ server <- function (input , output, session ){
 
   output$ttest2_var_nota2<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     req(input$ttest2_var==1)
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     numericInput("ttest2_var_nota2",label = "Dev. standard nota gr. 2",
@@ -1200,8 +1199,8 @@ server <- function (input , output, session ){
   output$ttest2_errore<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     validate(need(length(unique(dati$DS[,input$ttest2_variab2]))!=2,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     "La variabile gruppo deve avere 2 livelli "
   })
   
@@ -1209,8 +1208,8 @@ server <- function (input , output, session ){
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
     validate(need(length(unique(dati$DS[,input$ttest2_variab2]))==2,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
@@ -1284,31 +1283,31 @@ server <- function (input , output, session ){
   
   output$ttest2_media_camp_titolo<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     "Stime puntuali"
   })
   
   output$ttest2_media_camp1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     paste("media campionaria gr 1 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
   })
   
   output$ttest2_media_camp2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     paste("media campionaria gr 2 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
   })
   
   output$ttest2_sd_camp1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     paste("dev. standard campionaria gr 1=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
@@ -1316,8 +1315,8 @@ server <- function (input , output, session ){
   
   output$ttest2_sd_camp2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     paste("dev. standard campionaria gr 2=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
@@ -1325,8 +1324,8 @@ server <- function (input , output, session ){
   
   output$ttest2_ds_c<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
@@ -1339,8 +1338,8 @@ server <- function (input , output, session ){
   
   output$ttest2_stat<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1])
@@ -1356,8 +1355,8 @@ server <- function (input , output, session ){
   
   output$ttest2_pval<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1])
@@ -1384,15 +1383,15 @@ server <- function (input , output, session ){
   
   output$ttest2_ic_titolo<-renderText({
     validate(need(input$ttest2_alfa>0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     "Stima per intervallo"
   })
   
   output$ttest2_ic_inf<-renderText({
     validate(need(input$ttest2_alfa>0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1])
@@ -1421,8 +1420,8 @@ server <- function (input , output, session ){
   
   output$ttest2_ic_sup<-renderText({
     validate(need(input$ttest2_alfa>0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1])
@@ -1452,8 +1451,8 @@ server <- function (input , output, session ){
   output$ttest2_qqplot1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],]
     ggplot(dati,aes(sample=dati[,input$ttest2_variab1]))+
@@ -1464,8 +1463,8 @@ server <- function (input , output, session ){
   
  output$ttest2_shapiro1<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],]
     Campione.1<-dati[,input$ttest2_variab1]
@@ -1475,8 +1474,8 @@ server <- function (input , output, session ){
   output$ttest2_qqplot2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],]
     ggplot(dati,aes(sample=dati[,input$ttest2_variab1]))+
@@ -1488,28 +1487,14 @@ server <- function (input , output, session ){
   
   output$ttest2_shapiro2<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ttest2_variab1)
-    req(input$ttest2_variab2)
+    req(input$ttest2_variab1%in%colnames(dati$DS))
+    req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],]
     Campione.2<-dati[,input$ttest2_variab1]
     shapiro.test(Campione.2) 
   })
-  
- 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   # ftest -----------------------------------------------------------------
   
   output$ftest_variab1<-renderUI({
@@ -1528,8 +1513,8 @@ server <- function (input , output, session ){
   output$ftest_errore<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     validate(need(length(unique(dati$DS[,input$ftest_variab2]))!=2,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     "La variabile gruppo deve avere 2 livelli "
   })
   
@@ -1537,8 +1522,8 @@ server <- function (input , output, session ){
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
     validate(need(length(unique(dati$DS[,input$ftest_variab2]))==2,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1])
@@ -1584,31 +1569,31 @@ server <- function (input , output, session ){
   
   output$ftest_media_camp_titolo<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     "Stime puntuali"
   })
   
   output$ftest_sd_camp1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     paste("dev. standard campionaria gr 1=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1]),3))
   })
   
   output$ftest_sd_camp2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     paste("dev. standard campionaria gr 2=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1]),3))
   })
   
   output$ftest_stat<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1])
@@ -1619,8 +1604,8 @@ server <- function (input , output, session ){
   
   output$ftest_pval<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1])
@@ -1637,15 +1622,15 @@ server <- function (input , output, session ){
   
   output$ftest_ic_titolo<-renderText({
     validate(need(input$ftest_alfa>0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     "Stima per intervallo"
   })
   
   output$ftest_ic_inf<-renderText({
     validate(need(input$ftest_alfa>0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1])
@@ -1659,8 +1644,8 @@ server <- function (input , output, session ){
   
   output$ftest_ic_sup<-renderText({
     validate(need(input$ftest_alfa>0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     vrb1<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1])
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1])
@@ -1675,8 +1660,8 @@ server <- function (input , output, session ){
   output$ftest_qqplot1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],]
     ggplot(dati,aes(sample=dati[,input$ftest_variab1]))+
@@ -1687,8 +1672,8 @@ server <- function (input , output, session ){
   
   output$ftest_shapiro1<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],]
     Campione.1<-dati[,input$ftest_variab1]
@@ -1698,8 +1683,8 @@ server <- function (input , output, session ){
   output$ftest_qqplot2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],]
     ggplot(dati,aes(sample=dati[,input$ftest_variab1]))+
@@ -1711,8 +1696,8 @@ server <- function (input , output, session ){
   
   output$ftest_shapiro2<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$ftest_variab1)
-    req(input$ftest_variab2)
+    req(input$ftest_variab1%in%colnames(dati$DS))
+    req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],]
     Campione.2<-dati[,input$ftest_variab1]
@@ -1731,8 +1716,8 @@ server <- function (input , output, session ){
   output$anovatest_graf_distr<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
@@ -1766,8 +1751,8 @@ server <- function (input , output, session ){
 
   output$anovatest_stat<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     mod<-aov(x~gr,df)
@@ -1780,8 +1765,8 @@ server <- function (input , output, session ){
   
   output$anovatest_pval<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     mod<-aov(x~gr,df)
@@ -1794,8 +1779,8 @@ server <- function (input , output, session ){
   }) 
 
   output$anovatest_R<-renderPrint({
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
@@ -1807,8 +1792,8 @@ server <- function (input , output, session ){
   output$anovatest_qqplot1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     mod<-aov(x~gr,df)
@@ -1821,8 +1806,8 @@ server <- function (input , output, session ){
   
   output$anovatest_shapiro1<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     mod<-aov(x~gr,df)
@@ -1833,8 +1818,8 @@ server <- function (input , output, session ){
   output$anovatest_bartlett<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
@@ -1845,8 +1830,8 @@ server <- function (input , output, session ){
   output$anovatest_fligner<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
@@ -1857,8 +1842,8 @@ server <- function (input , output, session ){
   output$anovatest_levene<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
@@ -1869,8 +1854,8 @@ server <- function (input , output, session ){
   output$anovatest_bp<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     Modello.aov<-aov(x~gr,df)
@@ -1880,22 +1865,15 @@ server <- function (input , output, session ){
   output$anovatest_cochran<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anovatest_variab1)
-    req(input$anovatest_variab2)
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
     Modello.aov<-as.formula(paste(input$anovatest_variab1,"~",input$anovatest_variab2,sep=""))
     outliers::cochran.test(Modello.aov,df) 
   })
-  
 
-  
-  
-  
-  
-  
-  
   # Anova2 test-----------------------------------------------------------------
   output$anova2test_variab1<-renderUI({
     selectizeInput(inputId = "anova2test_variab1"," ",
@@ -1925,9 +1903,9 @@ server <- function (input , output, session ){
   output$anova2test_graf_distr1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
@@ -1969,9 +1947,9 @@ server <- function (input , output, session ){
   
   output$anova2test_stat1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -1993,9 +1971,9 @@ server <- function (input , output, session ){
   
   output$anova2test_pval1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2019,9 +1997,9 @@ server <- function (input , output, session ){
   output$anova2test_graf_distr2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
@@ -2063,9 +2041,9 @@ server <- function (input , output, session ){
   
   output$anova2test_stat2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2087,9 +2065,9 @@ server <- function (input , output, session ){
   
   output$anova2test_pval2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2113,9 +2091,9 @@ server <- function (input , output, session ){
   output$anova2test_graf_distr12<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
@@ -2156,9 +2134,9 @@ server <- function (input , output, session ){
   
   output$anova2test_stat12<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2180,9 +2158,9 @@ server <- function (input , output, session ){
   
   output$anova2test_pval12<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2204,9 +2182,9 @@ server <- function (input , output, session ){
   }) 
 
   output$anova2test_R<-renderPrint({
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -2226,9 +2204,9 @@ server <- function (input , output, session ){
   output$anova2test_graf_interaz1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
@@ -2245,9 +2223,9 @@ server <- function (input , output, session ){
   output$anova2test_graf_interaz2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
@@ -2264,9 +2242,9 @@ server <- function (input , output, session ){
   output$anova2test_qqplot1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],gr2=dati$DS[,input$anova2test_variab3])
     colnames(df)<-c(input$anova2test_variab1,input$anova2test_variab2,input$anova2test_variab3)
@@ -2286,9 +2264,9 @@ server <- function (input , output, session ){
   
   output$anova2test_shapiro1<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],gr2=dati$DS[,input$anova2test_variab3])
     colnames(df)<-c(input$anova2test_variab1,input$anova2test_variab2,input$anova2test_variab3)
@@ -2306,9 +2284,9 @@ server <- function (input , output, session ){
   output$anova2test_bartlett<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],int)
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
@@ -2325,9 +2303,9 @@ server <- function (input , output, session ){
   output$anova2test_fligner<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],int)
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
@@ -2344,9 +2322,9 @@ server <- function (input , output, session ){
   output$anova2test_levene<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],int)
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
@@ -2363,9 +2341,9 @@ server <- function (input , output, session ){
   output$anova2test_bp<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],int)
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
@@ -2383,9 +2361,9 @@ server <- function (input , output, session ){
   output$anova2test_cochran<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova2test_variab1)
-    req(input$anova2test_variab2)
-    req(input$anova2test_variab3)
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr=dati$DS[,input$anova2test_variab2])
     df$gr<-as.factor(df$gr)
     colnames(df)<-c(input$anova2test_variab1,input$anova2test_variab2)
@@ -2420,10 +2398,10 @@ server <- function (input , output, session ){
                    choices = dati$var_ql[!(dati$var_ql%in%input$anova3test_variab2 | dati$var_ql%in%input$anova3test_variab3)])})
   
   output$anova3test_R<-renderPrint({
-    req(input$anova3test_variab1)
-    req(input$anova3test_variab2)
-    req(input$anova3test_variab3)
-    req(input$anova3test_variab4)
+    req(input$anova3test_variab1%in%colnames(dati$DS))
+    req(input$anova3test_variab2%in%colnames(dati$DS))
+    req(input$anova3test_variab3%in%colnames(dati$DS))
+    req(input$anova3test_variab4%in%colnames(dati$DS))
 
     df<-cbind.data.frame(x=dati$DS[,input$anova3test_variab1],gr1=dati$DS[,input$anova3test_variab2],
                          gr2=dati$DS[,input$anova3test_variab3],gr3=dati$DS[,input$anova3test_variab4])
@@ -2438,17 +2416,17 @@ server <- function (input , output, session ){
   
   
   output$anova3test_graf_interaz_txt<-renderText({
-    req(input$anova3test_variab4)
+    req(input$anova3test_variab4%in%colnames(dati$DS))
     input$anova3test_variab4
   })
 
   output$anova3test_graf_interaz1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova3test_variab1)
-    req(input$anova3test_variab2)
-    req(input$anova3test_variab3)
-    req(input$anova3test_variab4)
+    req(input$anova3test_variab1%in%colnames(dati$DS))
+    req(input$anova3test_variab2%in%colnames(dati$DS))
+    req(input$anova3test_variab3%in%colnames(dati$DS))
+    req(input$anova3test_variab4%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova3test_variab1],gr1=dati$DS[,input$anova3test_variab2],
                          gr2=dati$DS[,input$anova3test_variab3],gr3=dati$DS[,input$anova3test_variab4])
@@ -2466,10 +2444,10 @@ server <- function (input , output, session ){
   output$anova3test_graf_interaz2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$anova3test_variab1)
-    req(input$anova3test_variab2)
-    req(input$anova3test_variab3)
-    req(input$anova3test_variab4)
+    req(input$anova3test_variab1%in%colnames(dati$DS))
+    req(input$anova3test_variab2%in%colnames(dati$DS))
+    req(input$anova3test_variab3%in%colnames(dati$DS))
+    req(input$anova3test_variab4%in%colnames(dati$DS))
     
     df<-cbind.data.frame(x=dati$DS[,input$anova3test_variab1],gr1=dati$DS[,input$anova3test_variab2],
                          gr2=dati$DS[,input$anova3test_variab3],gr3=dati$DS[,input$anova3test_variab4])
@@ -2491,28 +2469,28 @@ server <- function (input , output, session ){
   
   output$outlierstest_dixon_magg<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$outlierstest_variab)
+    req(input$outlierstest_variab%in%colnames(dati$DS))
     x<-dati$DS[,input$outlierstest_variab]
     outliers::dixon.test(x)
   })
   
   output$outlierstest_dixon_min<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$outlierstest_variab)
+    req(input$outlierstest_variab%in%colnames(dati$DS))
     x<-dati$DS[,input$outlierstest_variab]
     outliers::dixon.test(x,opposite = TRUE)
   })
   
   output$outlierstest_grubbs_magg<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$outlierstest_variab)
+    req(input$outlierstest_variab%in%colnames(dati$DS))
     x<-dati$DS[,input$outlierstest_variab]
     outliers::grubbs.test(x)
   })
   
   output$outlierstest_grubbs_min<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$outlierstest_variab)
+    req(input$outlierstest_variab%in%colnames(dati$DS))
     x<-dati$DS[,input$outlierstest_variab]
     outliers::grubbs.test(x,opposite = TRUE)
   })
@@ -2528,8 +2506,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_graf<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c("x","y")
     mod<-lm(y~x,df)
@@ -2541,8 +2519,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_parpt<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2552,8 +2530,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_parint<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2563,8 +2541,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_prev<-renderPrint({
     validate(need(nrow(dati$DS)!=0 & input$regrsemplice_prevx!="",""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2576,8 +2554,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_summary<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2587,8 +2565,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_verifhp_ttest<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2598,8 +2576,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_verifhp_grlin<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2612,8 +2590,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_verifhp_shapiro<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2625,8 +2603,8 @@ server <- function (input , output, session ){
   output$regrsemplice_verifhp_qqplot<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2641,8 +2619,8 @@ server <- function (input , output, session ){
   output$regrsemplice_verifhp_bp<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2652,8 +2630,8 @@ server <- function (input , output, session ){
 
   output$regrsemplice_verifhp_omosch<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2667,8 +2645,8 @@ server <- function (input , output, session ){
   output$regrsemplice_verifhp_dw<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2678,8 +2656,8 @@ server <- function (input , output, session ){
   
   output$regrsemplice_verifhp_corr<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrsemplice_variaby)
-    req(input$regrsemplice_variabx)
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
@@ -2702,8 +2680,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_graf<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c("x","y")
@@ -2723,8 +2701,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_parpt<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2742,8 +2720,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_parint<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2760,8 +2738,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_prev<-renderPrint({
     validate(need(nrow(dati$DS)!=0 & input$regrpoli_prevx!="",""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2780,8 +2758,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_summary<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2798,8 +2776,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_verifhp_ttest<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2816,8 +2794,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_verifhp_grlin<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2837,8 +2815,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_verifhp_shapiro<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2857,8 +2835,8 @@ server <- function (input , output, session ){
   output$regrpoli_verifhp_qqplot<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2880,8 +2858,8 @@ server <- function (input , output, session ){
   output$regrpoli_verifhp_bp<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2898,8 +2876,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_verifhp_omosch<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2920,8 +2898,8 @@ server <- function (input , output, session ){
   output$regrpoli_verifhp_dw<-renderPrint({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2938,8 +2916,8 @@ server <- function (input , output, session ){
   
   output$regrpoli_verifhp_corr<-renderPlot({
     validate(need(nrow(dati$DS)!=0,""))
-    req(input$regrpoli_variaby)
-    req(input$regrpoli_variabx)
+    req(input$regrpoli_variaby%in%colnames(dati$DS))
+    req(input$regrpoli_variabx%in%colnames(dati$DS))
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c(input$regrpoli_variabx,input$regrpoli_variaby)
@@ -2971,8 +2949,8 @@ output$regrmulti_variabx<-renderUI({
 
 output$regrmulti_graf<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3001,8 +2979,8 @@ output$regrmulti_graf<-renderPlot({
 
 output$regrmulti_parpt<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3023,8 +3001,8 @@ output$regrmulti_parpt<-renderPrint({
 
 output$regrmulti_parint<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3045,8 +3023,8 @@ output$regrmulti_parint<-renderPrint({
 
 output$regrmulti_prev<-renderPrint({
   validate(need(nrow(dati$DS)!=0 & length(as.numeric(unlist(strsplit(input$regrmulti_prevx," "))))==length(input$regrmulti_variabx),""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3070,8 +3048,8 @@ output$regrmulti_prev<-renderPrint({
 
 output$regrmulti_summary<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3092,8 +3070,8 @@ output$regrmulti_summary<-renderPrint({
 
 output$regrmulti_verifhp_ttest<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3114,8 +3092,8 @@ output$regrmulti_verifhp_ttest<-renderPrint({
 
 output$regrmulti_verifhp_grlin<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3139,8 +3117,8 @@ output$regrmulti_verifhp_grlin<-renderPlot({
 
 output$regrmulti_verifhp_shapiro<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3163,8 +3141,8 @@ output$regrmulti_verifhp_shapiro<-renderPrint({
 output$regrmulti_verifhp_qqplot<-renderPlot({
   require(ggplot2)
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3190,8 +3168,8 @@ output$regrmulti_verifhp_qqplot<-renderPlot({
 output$regrmulti_verifhp_bp<-renderPrint({
   require(ggplot2)
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3212,8 +3190,8 @@ output$regrmulti_verifhp_bp<-renderPrint({
 
 output$regrmulti_verifhp_omosch<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3238,8 +3216,8 @@ output$regrmulti_verifhp_omosch<-renderPlot({
 output$regrmulti_verifhp_dw<-renderPrint({
   require(ggplot2)
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
@@ -3260,8 +3238,8 @@ output$regrmulti_verifhp_dw<-renderPrint({
 
 output$regrmulti_verifhp_corr<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
-  req(input$regrmulti_variaby)
-  req(input$regrmulti_variabx)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)

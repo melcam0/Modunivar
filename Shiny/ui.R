@@ -161,10 +161,10 @@ body<-dashboardBody(
                                actionButton("desel_righe","Deseleziona tutte le righe")))), 
 
 # Statistica descrittiva --------------------------------------------------
-   
+
       tabItem(tabName = "vedi",
               fluidPage(titlePanel("Dati"),
-                       DT::dataTableOutput("dati"))),
+                        div(style = 'overflow-x: scroll;',DT::dataTableOutput("dati")))),
       
       tabItem(tabName = "summary",
               fluidPage(titlePanel("Descrittori di posizione e di dispersione "),
@@ -796,7 +796,7 @@ tabItem(tabName = "regrmulti",
                                        column(2),
                                        column(2,
                                               radioButtons("regrmulti_addi", label = h4("Modello:"),
-                                                           choices = list("additivo" = 1, "interativo" = 2), 
+                                                           choices = list("additivo" = 1, "interattivo" = 2), 
                                                            selected = 1)),
                                        column(12),
                                        column(4,

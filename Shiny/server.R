@@ -2663,7 +2663,7 @@ server <- function (input , output, session ){
     frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
     mod<-lm(frm,df)
     n<-length(mod$residuals)
-    df_xy<-cbind.data.frame(x=mod$residuals[-1],y=mod$residuals[-n])
+    df_xy<-cbind.data.frame(x=mod$residuals[-n],y=mod$residuals[-1])
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
       ylab(expression(residui[n]))+xlab(expression(residui[n-1]))

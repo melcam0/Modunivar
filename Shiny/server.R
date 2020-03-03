@@ -318,7 +318,6 @@ server <- function (input , output, session ){
                        choices = dati$righe,selected =dati$righe_tolte)
   })
   
-  
   observeEvent(input$righe_tolte,ignoreNULL = FALSE,{
     if(length(input$righe_tolte)!=0){
       dati$righe_tolte<-input$righe_tolte
@@ -331,7 +330,6 @@ server <- function (input , output, session ){
       dati$righe_tolte<-NULL
       dati$righe_rest<-dati$righe
     }
-    
   })
   
   output$righe_restanti <- renderPrint({
@@ -340,11 +338,12 @@ server <- function (input , output, session ){
     }else{
      "Non ci sono righe cancellate"
     }
-    
   })
   
   observeEvent(input$desel_righe,{
-    dati$DS
+    dati$DS<-dati$DS_righe
+    dati$righe_tolte<-NULL
+    dati$righe_rest<-dati$righe
   })
  
 

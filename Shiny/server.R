@@ -456,16 +456,11 @@ server <- function (input , output, session ){
     dati$righe_tolte<-c(righe_tolte,dati$righe_tolte)
     dati$righe_rest<-righe[!righe%in%dati$righe_tolte]
     dati$DS<-as.data.frame(dati$DS[dati$righe_rest, , drop = FALSE])
-    
-    
    # if(length(dati$var_nr)==2) {
    #   names(dati$DS)<-dati$var_nr[input$var_nr!=dati$var_nr]
    # } else {
     colnames(dati$DS)<-colnames(dati$DS_righe)
    # }
-    
-    
-    
     row.names(dati$DS)<-dati$righe_rest
     })
   
@@ -475,8 +470,6 @@ server <- function (input , output, session ){
     dati$DS<-dati$DS_righe
    # if(length(dati$var_nr)==2) names(dati$DS)<-dati$var_nr[input$var_nr!=dati$var_nr]
   })
-  
-
   output$graf_disp_selez<-renderPrint({
     req(input$graf_disp_brush)
     brush <- input$graf_disp_brush
@@ -487,9 +480,6 @@ server <- function (input , output, session ){
     colnames(df)<-colnames(dati$DS)
     row.names(df)<-row.names(dati$DS)[cr]
     df
-    
-    
-    
   })
 
 # Istogramma --------------------------------------------------------------
@@ -3703,11 +3693,11 @@ output$regrmulti_verifhp_corr<-renderPlot({
   })
   
   output$lc_pop_media<-renderText({
-    paste("media =",input$graf_lc_prob)
+    paste("media =",2*input$graf_lc_prob-1)
   })
   
   output$lc_pop_var<-renderText({
-    paste("varianza =",1-input$graf_lc_prob)
+    paste("varianza =",4*input$graf_lc_prob*(1-input$graf_lc_prob))
   })
   
   output$graf_lc_titolo<-renderText({

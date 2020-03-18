@@ -1177,7 +1177,7 @@ server <- function (input , output, session ){
   output$ttest2_var_uguale<-renderUI({
     validate(need(input$ttest2_var==2," "))
     radioButtons("ttest2_var_uguale", label = "",
-                 choices = list("Varianze uguale" = 1, "Varianze non ugualae" = 2),
+                 choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
                  selected = 1)
   })
   
@@ -4199,13 +4199,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   anova_camp2<-reactive({
     input$anova_resample
-    set.seed(as.numeric(Sys.time()))
+    set.seed(as.numeric(Sys.time())/2)
     rnorm(n = input$anova_numta_camp,mean = input$anova_media2,sd = input$anova_ds)
   })
   
   anova_camp3<-reactive({
     input$anova_resample
-    set.seed(as.numeric(Sys.time()))
+    set.seed(as.numeric(Sys.time())/4)
     rnorm(n = input$anova_numta_camp,mean = input$anova_media3,sd = input$anova_ds)
   })
   
@@ -4261,7 +4261,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     m<-mean(c(anova_camp1(),anova_camp2(),anova_camp3()))
     n<-input$anova_numta_camp
     ss<- n*sum((m.a-m)^2)+n*sum((m.b-m)^2)+n*sum((m.c-m)^2)
-    HTML("SS<SUB>tra</SUB> = ",ss,"<br>
+    HTML("SS<SUB>tra</SUB> = ",round(ss,3),"<br>
          gradi di libertà = 2 <br>
          MS<SUB>tra</SUB> =",round(ss/2,3))
   })

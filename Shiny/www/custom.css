@@ -1,0 +1,13 @@
+@import url("//fonts.googleapis.com/css?family=Lobster|Cabin:400,700");
+/* logo */
+.main-header .logo {
+  font-family: 'Lobster';
+  font-weight: bold;
+  font-size: 30px;
+  }
+  
+
+.main-header {
+  border-bottom: #1f6b3d solid 2px;
+  }
+  

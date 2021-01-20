@@ -199,10 +199,13 @@ server <- function (input , output, session ){
 
 # dati caricati -----------------------------------------------------------
   
-  output$dati<-DT::renderDataTable(rownames=TRUE,
-                                   options = list(autoWidth = TRUE),
-                                                 
-                                                 
+  output$dati<-DT::renderDataTable(rownames=TRUE,extensions = 'ColReorder',
+                                   options = list(
+                                     autoWidth = TRUE,
+                                     columnDefs = list(list(width = '100px', targets = "_all")),
+                                     colReorder = TRUE),
+                                   class = 'cell-border stripe',
+                                   # filter = 'bottom',
                                    {
     validate(need(nrow(dati$DS)!=0,""))
     #if(length(dati$nr)==0){
@@ -5007,7 +5010,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
 
 # Introduzione ----------------------------------------------------------------
-  output$Intro_G<-renderUI({includeHTML("Introduzione/Introduzione.html")})
+  #output$Intro_G<-renderUI({includeHTML("Introduzione/Introduzione.html")})
 
 # Dispense ----------------------------------------------------------------
   #output$dispensa_descr<-renderUI({

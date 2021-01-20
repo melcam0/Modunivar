@@ -1,7 +1,7 @@
-The Master app is distributed under GPL-3 (GNU GENERAL PUBLIC
+The MODUNIVAR app is distributed under GPL-3 (GNU GENERAL PUBLIC
 LICENSE version 3)
 
-Master License
+MODUNIVAR License
 --------------------------------------------------------------------
 
 

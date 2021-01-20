@@ -1,6 +1,6 @@
-  #define MyAppName "Master"
-#define MyAppVersion "1.0"
-#define MyAppExeName "Master.vbs"
+#define MyAppName "MODUNIVAR"
+#define MyAppVersion "1.7"
+#define MyAppExeName "MODUNIVAR.vbs"
 #define MyAppPublisher ""
 #define MyAppURL ""
 
@@ -11,7 +11,7 @@ DefaultDirName = {sd}\{#MyAppName}
 DefaultGroupName = {#MyAppName}
 OutputDir = SetUp
 OutputBaseFilename = setup_{#MyAppName}
-SetupIconFile = master.ico
+SetupIconFile = MODUNIVAR.ico
 AppVersion = {#MyAppVersion}
 AppPublisher = {#MyAppPublisher}
 AppPublisherURL = {#MyAppURL}
@@ -20,9 +20,8 @@ AppUpdatesURL = {#MyAppURL}
 PrivilegesRequired = none
 InfoBeforeFile = infobefore.txt
 InfoAfterFile = infoafter.txt
-Compression = lzma2/ultra64
+Compression = lzma
 SolidCompression = yes
-ArchitecturesInstallIn64BitMode = x64
 LicenseFile = gpl_3.0.txt
 
 [Languages]
@@ -32,14 +31,14 @@ Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\master.ico"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\MODUNIVAR.ico"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\master.ico"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\master.ico"
+Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\MODUNIVAR.ico"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\MODUNIVAR.ico"
 
 [Files]
 
-Source: "C:\Users\Camillo\GitHub\Master\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Camillo\GitHub\Modunivar\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

@@ -48,9 +48,8 @@ sidebar<- dashboardSidebar(
                          ),
                 hr(),
                 menuItem(text = "File",icon = icon("briefcase", lib = "font-awesome"),
-                         menuSubItem("Introduzione",tabName = "introduzione"),
-                         menuSubItem("Dispensa",tabName = "dispensa"),
-                         menuSubItem("Diapositive",tabName = "diapositive"),
+                         # menuSubItem("Dispensa",tabName = "dispensa"),
+                         # menuSubItem("Diapositive",tabName = "diapositive"),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%')
                         )))
@@ -1483,17 +1482,17 @@ tabItem(tabName = "regr",
         )), 
 
 # File --------------------------------------------------------------------
-
-      tabItem(tabName = "introduzione",
-              fluidPage(htmlOutput("Intro_G"))),
       
       tabItem(tabName = "dispensa",
               fluidPage(
                 tabsetPanel(type = "tabs",
+                            tabPanel("Glossario",
+                                     tags$iframe(style="height:600px; width:100%; scrolling=yes", 
+                                                 src="00_Glossario.pdf")),
                             tabPanel("Statistica descrittiva",
                                      tags$iframe(style="height:600px; width:100%; scrolling=yes", 
-                                                 src="01_Statistica-descrittiva.pdf")),
-                            tabPanel("Satistica inferenziale",
+                                                 src="01_Statistica_descrittiva.pdf")),
+                            tabPanel("Statistica inferenziale",
                                      tags$iframe(style="height:600px; width:100%; scrolling=yes", 
                                                  src="02_Statistica_inferenziale.pdf")),
                             tabPanel("Regressione",
@@ -1507,25 +1506,29 @@ tabItem(tabName = "regr",
       tabItem(tabName = "diapositive",
              fluidPage(
                 tabsetPanel(type = "tabs",
-                           tabPanel("Statistica descrittiva",
-                                    htmlOutput("esercitazioni_descr")),
-                           tabPanel("Errori: distribuzione normale",
-                                    htmlOutput("esercitazioni_errori")),
-                           tabPanel("Statistica inferenziale",
-                                    tags$iframe(style="height:600px; width:100%; scrolling=yes", 
-                                                src="Statistica_inferenziale_dia.pdf")),
-                           tabPanel("Anova",
-                                    htmlOutput("esercitazioni_anova")),
-                           tabPanel("Regressione",
-                                    htmlOutput("esercitazioni_regr")))))
-
+                            tabPanel("Statistica descrittiva",
+                                     tags$iframe(style="height:600px; width:100%; scrolling=yes", 
+                                                 src="01_Statistica_descrittiva_dia.pdf")),
+                            tabPanel("Statistica inferenziale",
+                                     tags$iframe(style="height:600px; width:100%; scrolling=yes", 
+                                                 src="02_Statistica_inferenziale_dia.pdf")),
+                            tabPanel("Regressione",
+                                     tags$iframe(style="height:600px; width:100%; scrolling=yes", 
+                                                 src="03_Regressione_dia.pdf")),
+                            tabPanel("Anova",
+                                     tags$iframe(style="height:600px; width:100%; scrolling=yes", 
+                                                 src="04_Anova_dia.pdf"))
+                           
+                           
+                           )))
 )))
 
 
 
 
 
-ui <- dashboardPage(skin="purple",header, sidebar, body)
+ui <- dashboardPage(skin = 'purple',header, sidebar, body,
+                    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "tema.css")))
 
 
 

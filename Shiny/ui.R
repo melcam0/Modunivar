@@ -50,6 +50,12 @@ sidebar<- dashboardSidebar(
                 menuItem(text = "File",icon = icon("briefcase", lib = "font-awesome"),
                          # menuSubItem("Dispensa",tabName = "dispensa"),
                          # menuSubItem("Diapositive",tabName = "diapositive"),
+                         tags$header(
+                           em(  
+                             a(href="https://dispensemodunivar.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
+                           )
+                         ),
+                         br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%')
                         )))
@@ -1102,8 +1108,8 @@ tabItem(tabName = "limcentr",
                                      value = 1,step=1)),
                   column(4,
                          sliderInput(inputId="graf_lc_num_camp",label = "Numero campioni",
-                                     min = 10,max = 10000,
-                                     value = 10,step=10))
+                                     min = 1,max = 10000,
+                                     value = 1,step=10))
         )),
 
 tabItem(tabName = "intconf",
@@ -1528,7 +1534,7 @@ tabItem(tabName = "regr",
 
 
 ui <- dashboardPage(skin = 'purple',header, sidebar, body,
-                    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "tema.css")))
+                    tags$head(HTML("<title>Modunivar</title>"),tags$link(rel = "stylesheet", type = "text/css", href = "tema.css")))
 
 
 

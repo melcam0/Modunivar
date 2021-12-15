@@ -171,6 +171,7 @@ server <- function (input , output, session ){
   observeEvent(input$file_incolla,{
       df<-tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE),
                    error = function(e) "Selezionare un dataset!")
+      df <- type.convert(df)
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
@@ -184,15 +185,15 @@ server <- function (input , output, session ){
   output$contents_incolla <- renderTable({
     validate(need(input$file_incolla>0,""))
     req(input$file_incolla)
-    req(dati$DS)
-    if(!dati$DS=="Selezionare un dataset!"){
+    req(!is.null(dati$DS))
+    # if(!dati$DS=="Selezionare un dataset!"){
       if(input$disp_incolla == "head") {
         return(head(dati$DS))
       }
       else {
         return(dati$DS)
       }
-    }
+    # }
  
   })
   
@@ -937,6 +938,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
+    req(input$ttest2a_var==1)
     numericInput("ttest2a_var_nota",label = "Dev. standard differenze nota",
                  value=round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3),width = "40%")
   })
@@ -4216,7 +4218,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     require(ggplot2)
     
     m<-input$anova_numta_camp
-    df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp1()),gr=c(rep(1,m),rep(2,m),rep(3,m)))
+    df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp3()),gr=c(rep(1,m),rep(2,m),rep(3,m)))
     df$gr<-as.factor(df$gr)
     
     p<-ggplot(df, aes(x=gr, y=x)) + theme_light()+xlab("gruppo")+ylim(-7,7)+
@@ -4810,7 +4812,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("intercetta =",round(s$coefficients[2,1],digits = 3))
+    paste("pendenza =",round(s$coefficients[2,1],digits = 3))
   })
   
   output$regr_sp_pen_es<-renderText({

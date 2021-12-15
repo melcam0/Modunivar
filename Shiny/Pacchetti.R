@@ -5,7 +5,8 @@ pacchetti<-c('shiny',
              'ggplot2',
              'readxl',
              'RcmdrMisc',
-             'DT')
+             'DT',
+             'outliers')
 
 install.packages(pkgs = pacchetti)
 

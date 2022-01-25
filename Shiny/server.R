@@ -2543,9 +2543,33 @@ server <- function (input , output, session ){
     mod<-lm(frm,df)
     nd<-cbind.data.frame(x=input$regrsemplice_prevx)
     colnames(nd)<-input$regrsemplice_variabx
-    predict(object = mod,newdata=nd,interval="confidence")
+    X <- predict(object = mod,newdata=nd,interval="confidence")
+    rownames(X) <- ''
+    X
   })
-  
+
+  output$regrsemplice_prev_inv<-renderPrint({
+    validate(need(nrow(dati$DS)!=0 & input$regrsemplice_prevy!="",""))
+    req(input$regrsemplice_variaby%in%colnames(dati$DS))
+    req(input$regrsemplice_variabx%in%colnames(dati$DS))
+    df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
+    colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
+    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    mod<-lm(frm,df)
+    b0 <- mod$coefficients[1]
+    b1 <- mod$coefficients[2]
+    req(b1!=0)
+    x <- (input$regrsemplice_prevy-b0)/b1
+    nd<-cbind.data.frame(x)
+    colnames(nd)<-input$regrsemplice_variabx
+    pred_M <- predict(object = mod,newdata=nd,interval="prediction")
+    x_upr<-(pred_M[3]-b0)/b1
+    semi.amp <- abs(x_upr-x)
+    X <- cbind.data.frame(fit=x,lwr=x-semi.amp,upr=x+semi.amp)
+    rownames(X) <- ''
+    X
+  })
+
   output$regrsemplice_summary<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$regrsemplice_variaby%in%colnames(dati$DS))

@@ -2982,7 +2982,10 @@ output$regrmulti_graf<-renderPlot({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   require(ggplot2)
   df_coeff<-data.frame(names(mod$coefficients),mod$coefficients,confint(mod))
@@ -3012,9 +3015,11 @@ output$regrmulti_parpt<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
- mod<-lm(frm,df)
- mod$coefficients
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')###
+  frm <- formula(frm)
+  mod<-lm(frm,df)
+  mod$coefficients
 })
 
 output$regrmulti_parint<-renderPrint({
@@ -3034,7 +3039,9 @@ output$regrmulti_parint<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   confint(object = mod,level = 0.95)
 })
@@ -3056,7 +3063,9 @@ output$regrmulti_prev<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   x<- as.numeric(unlist(strsplit(input$regrmulti_prevx," ")))
   nd<-rbind.data.frame(x)
@@ -3081,7 +3090,9 @@ output$regrmulti_summary<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   summary(mod,cor=TRUE)
 })
@@ -3103,7 +3114,9 @@ output$regrmulti_verifhp_ttest<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   t.test(mod$residuals)
 })
@@ -3125,7 +3138,9 @@ output$regrmulti_verifhp_grlin<-renderPlot({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
@@ -3150,7 +3165,9 @@ output$regrmulti_verifhp_shapiro<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   residui=mod$residuals
   shapiro.test(x = residui) 
@@ -3174,7 +3191,9 @@ output$regrmulti_verifhp_qqplot<-renderPlot({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   df_res<-cbind.data.frame(residui=mod$residuals)
   ggplot(df_res,aes(sample=residui))+
@@ -3201,7 +3220,9 @@ output$regrmulti_verifhp_bp<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   modello<-lm(frm,df)
   lmtest::bptest(modello)
 })
@@ -3223,7 +3244,9 @@ output$regrmulti_verifhp_omosch<-renderPlot({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
@@ -3249,7 +3272,9 @@ output$regrmulti_verifhp_dw<-renderPrint({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   modello<-lm(frm,df)
   lmtest::dwtest(modello)
 })
@@ -3271,7 +3296,9 @@ output$regrmulti_verifhp_corr<-renderPlot({
       }
     }
   }
-  frm<-formula(paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin))
+  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  frm <- formula(frm)
   mod<-lm(frm,df)
   n<-length(mod$residuals)
   df_xy<-cbind.data.frame(x=mod$residuals[-1],y=mod$residuals[-n])

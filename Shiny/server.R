@@ -2504,11 +2504,14 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c("x","y")
-    mod<-lm(y~x,df)
+
+    frm <- 'y~x'
+    if(!input$regrsemplice_intercetta)frm <- paste(frm,'-1')
+    
     require(ggplot2)
     ggplot(data = df,aes(x=x,y=y))+xlab(input$regrsemplice_variabx)+ylab(input$regrsemplice_variaby)+
       geom_point()+theme_light()+
-      stat_smooth(method = "lm", col = "red")
+      stat_smooth(method = "lm", col = "red",formula = formula(frm))
   })
   
   output$regrsemplice_parpt<-renderPrint({
@@ -2517,7 +2520,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     mod$coefficients
   })
@@ -2528,7 +2533,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     confint(object = mod,level = 0.95)
   })
@@ -2539,7 +2546,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     nd<-cbind.data.frame(x=input$regrsemplice_prevx)
     colnames(nd)<-input$regrsemplice_variabx
@@ -2554,10 +2563,16 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
+    
     b0 <- mod$coefficients[1]
     b1 <- mod$coefficients[2]
+    if(!input$regrsemplice_intercetta)b0=0
+    if(!input$regrsemplice_intercetta)b1 <- mod$coefficients[1]
+    
     req(b1!=0)
     x <- (input$regrsemplice_prevy-b0)/b1
     nd<-cbind.data.frame(x)
@@ -2576,7 +2591,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     summary(mod)
   })
@@ -2587,7 +2604,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     t.test(mod$residuals)
   })
@@ -2598,7 +2617,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
@@ -2612,7 +2633,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     residui=mod$residuals
     shapiro.test(x = residui) 
@@ -2625,7 +2648,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     df_res<-cbind.data.frame(residui=mod$residuals)
     ggplot(df_res,aes(sample=residui))+
@@ -2641,7 +2666,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     modello<-lm(frm,df)
     lmtest::bptest(modello)
   })
@@ -2652,7 +2679,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
@@ -2667,7 +2696,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     modello<-lm(frm,df)
     lmtest::dwtest(modello)
   })
@@ -2678,7 +2709,9 @@ server <- function (input , output, session ){
     req(input$regrsemplice_variabx%in%colnames(dati$DS))
     df<-cbind.data.frame(x=dati$DS[,input$regrsemplice_variabx],y=dati$DS[,input$regrsemplice_variaby])
     colnames(df)<-c(input$regrsemplice_variabx,input$regrsemplice_variaby)
-    frm<-as.formula(paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep=""))
+    frm <- paste(input$regrsemplice_variaby,"~",input$regrsemplice_variabx,sep="")
+    if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
+    frm <- formula(frm)
     mod<-lm(frm,df)
     n<-length(mod$residuals)
     df_xy<-cbind.data.frame(x=mod$residuals[-n],y=mod$residuals[-1])
@@ -2703,14 +2736,7 @@ server <- function (input , output, session ){
     req(input$regrpoli_grado)
     df<-cbind.data.frame(x=dati$DS[,input$regrpoli_variabx],y=dati$DS[,input$regrpoli_variaby])
     colnames(df)<-c("x","y")
-    pol<-NULL
-    if(input$regrpoli_grado>1){
-      for(i in 2:input$regrpoli_grado){
-      frm<-paste(pol,"+I(x^",i,")",sep="")
-     }
-    }
-    frm<-as.formula(paste("y~x",pol))
-    mod<-lm(frm,df)
+ 
     require(ggplot2)
     ggplot(data = df,aes(x=x,y=y))+xlab(input$regrpoli_variabx)+ylab(input$regrpoli_variaby)+
       geom_point()+theme_light()+

@@ -1117,15 +1117,18 @@ tabItem(tabName = "limcentr",
                   column(8,div(textOutput("graf_lc_titolo"),style="font-size:125%;"),
                          br(),
                          plotOutput("graf_lc")),
-                  
                   column(4,
+                         hr(),
                          sliderInput(inputId="graf_lc_numta_camp",label = "Numerosità del campione",
                                      min = 1,max = 500,
                                      value = 1,step=1)),
                   column(4,
                          sliderInput(inputId="graf_lc_num_camp",label = "Numero campioni",
                                      min = 1,max = 10000,
-                                     value = 1,step=10))
+                                     value = 1,step=10)),
+                  column(4,
+                         hr(),hr(),hr(),hr(),hr(),hr(),hr(),
+                         actionButton("lc_resample","Ricampiona",style='padding:4px; font-size:100%'))
         )),
 
 tabItem(tabName = "intconf",

@@ -3786,17 +3786,22 @@ output$regrmulti_verifhp_corr<-renderPlot({
    paste("distribuzione della media di",input$graf_lc_numta_camp,"variabili")
    })
   
-  output$graf_lc<-renderPlot({
-    require(ggplot2)
+  df_tlc<-reactive({
+    input$lc_resample
+    set.seed(as.numeric(Sys.time()))
     df<-c(NULL)
     for(i in 1: input$graf_lc_num_camp){
       df[i]<-mean(rbinom(n = input$graf_lc_numta_camp,size = 1,prob = input$graf_lc_prob))
     }
     df<-as.data.frame(df)
-    
     df<-2*df-1
     names(df)<-"x"
+    df
+  })
 
+  output$graf_lc<-renderPlot({
+    require(ggplot2)
+    df <- df_tlc()
     ggplot()+theme_classic()+
       geom_histogram(df, mapping=aes(x = x,y = ..density..),fill="blue",col="white",
                      

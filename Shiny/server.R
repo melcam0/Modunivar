@@ -251,15 +251,21 @@ server <- function (input , output, session ){
   observeEvent(input$var_nr,ignoreNULL = FALSE,{
     req(input$var_nr)
     if(length(input$var_nr)!=0){
-      dati$col_nr<-input$var_n
-      dati$DS<-as.data.frame(dati$DS_nr[,!dati$var_nr%in%input$var_nr])
-      if(length(dati$var_nr)==2) names(dati$DS)<-dati$var_nr[input$var_nr!=dati$var_nr]
-      dati$DS_righe<-as.data.frame(dati$DS_nr[,!dati$var_nr%in%input$var_nr])
-      dati$nr<-dati$DS_nr[,dati$var_nr%in%input$var_nr]
-      row.names(dati$DS)<-dati$nr
-      dati$var<-colnames(dati$DS)
-      dati$var_qt<-colnames(dati$DS)
-      dati$righe<-dati$DS_nr[,dati$var_nr%in%input$var_nr]
+      if(sum(duplicated(dati$DS[,input$var_nr]))==0){
+        dati$col_nr<-input$var_n
+        dati$DS<-as.data.frame(dati$DS_nr[,!dati$var_nr%in%input$var_nr])
+        if(length(dati$var_nr)==2) names(dati$DS)<-dati$var_nr[input$var_nr!=dati$var_nr]
+        dati$DS_righe<-as.data.frame(dati$DS_nr[,!dati$var_nr%in%input$var_nr])
+        dati$nr<-dati$DS_nr[,dati$var_nr%in%input$var_nr]
+        row.names(dati$DS)<-dati$nr
+        dati$var<-colnames(dati$DS)
+        dati$var_qt<-colnames(dati$DS)
+        dati$righe<-dati$DS_nr[,dati$var_nr%in%input$var_nr]
+      }else{
+        sendSweetAlert(session, title = "Input Error",
+                       text = 'Non sono ammessi duplicati nei Nomi Righe!',
+                       type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+      }
     } else {
       dati$DS<-dati$DS_nr
       dati$nr<-NULL
@@ -267,7 +273,6 @@ server <- function (input , output, session ){
       dati$var_qt<-colnames(dati$DS)
       dati$righe<-row.names(dati$DS)
     }
-     
     })
   
   output$nomi_righe<-renderPrint({
@@ -283,6 +288,7 @@ server <- function (input , output, session ){
 # summary -----------------------------------------------------------------
   
   output$var_gruppo<-renderUI({
+    req(!is.null(dati$var_ql))
     checkboxGroupInput(inputId = "var_gr",label = "seleziona i fattori",
                        choices = dati$var_ql,selected =dati$var_gr)
   })
@@ -293,7 +299,7 @@ server <- function (input , output, session ){
   
   output$sum_dati <- renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
-    tryCatch({
+    varqual <- tryCatch({
       if(length(dati$var_gr)==0){
         RcmdrMisc::numSummary(dati$DS[,dati$var_qt])
       } else if (length(dati$var_gr)==1){
@@ -309,12 +315,17 @@ server <- function (input , output, session ){
       } 
     },
     error = function(e) {
-      print("selezionare le variabili qualitative")
+      # print("selezionare le variabili qualitative")
     })
+    if(is.null(varqual)){
+      sendSweetAlert(session, title = "Attenzione",
+                     text = 'Selezionare le variabili qualitative!',
+                     type = "warning",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }else{
+      print(varqual)
+    }
   })
   
- 
-
 # oggetti  ------------------------------------------------
   
   output$righe_tolte<-renderUI({
@@ -409,41 +420,49 @@ server <- function (input , output, session ){
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
     req(input$graf_disp_var%in%colnames(dati$DS))
-    df<-cbind.data.frame(dati$DS[,input$graf_disp_var,drop=FALSE],c(1:length(dati$DS[,input$graf_disp_var])))
-    colnames(df)<-c("y","indice")
-    if(!is.null(graf$var_gr)){
-      if (length(graf$var_gr)==1){
-        lab<-as.factor(dati$DS[,input$graf_disp_var_gr])
-      } else if (length(graf$var_gr)==2){
-        lab<-as.factor(interaction(dati$DS[,input$graf_disp_var_gr[1]],dati$DS[,input$graf_disp_var_gr[2]]))
-      } else if (length(graf$var_gr)==3){
-        lab<-as.factor(interaction(dati$DS[,input$graf_disp_var_gr[1]],dati$DS[,input$graf_disp_var_gr[2]],dati$DS[,input$graf_disp_var_gr[3]]))
-      }
-    } else {
-      lab<-rep("0",nrow(df))
-    }
-    df<-cbind.data.frame(df,gruppo=lab)
-    row.names(df)<-row.names(dati$DS)
-    gr<-ggplot(df,mapping = aes(x=indice,y=y))+labs(x="indice",y=input$graf_disp_var)+
-      theme_light()+ coord_cartesian(xlim = graf$xlim, ylim = graf$ylim, expand = TRUE)
-    if(is.null(graf$gr)){
-      if(!input$graf_disp_labels){
-        gr<-gr+geom_point(cex=2,col="blue")
-        gr+geom_hline(yintercept = mean(df$y),col="blue",lty=2)
+    
+    if(is.numeric(as.data.frame(dati$DS[,input$graf_disp_var,drop=FALSE])[,1])){
+      
+      df<-cbind.data.frame(dati$DS[,input$graf_disp_var,drop=FALSE],c(1:length(dati$DS[,input$graf_disp_var])))
+      colnames(df)<-c("y","indice")
+      if(!is.null(graf$var_gr)){
+        if (length(graf$var_gr)==1){
+          lab<-as.factor(dati$DS[,input$graf_disp_var_gr])
+        } else if (length(graf$var_gr)==2){
+          lab<-as.factor(interaction(dati$DS[,input$graf_disp_var_gr[1]],dati$DS[,input$graf_disp_var_gr[2]]))
+        } else if (length(graf$var_gr)==3){
+          lab<-as.factor(interaction(dati$DS[,input$graf_disp_var_gr[1]],dati$DS[,input$graf_disp_var_gr[2]],dati$DS[,input$graf_disp_var_gr[3]]))
+        }
       } else {
-        gr<-gr+geom_text(mapping = aes(label=row.names(df)),col="blue")
-        gr+geom_hline(yintercept = mean(df$y),col="blue",lty=2)
+        lab<-rep("0",nrow(df))
       }
-    } else {
-      if(!input$graf_disp_labels){
-        gr<-gr+geom_point(cex=2,mapping = aes(colour=gruppo))
-        gr<-gr%+%subset(df,df$gruppo%in%graf$gr)
-        gr+geom_hline(yintercept = mean(df$y[df$gruppo%in%graf$gr]),col="blue",lty=2)
+      df<-cbind.data.frame(df,gruppo=lab)
+      row.names(df)<-row.names(dati$DS)
+      gr<-ggplot(df,mapping = aes(x=indice,y=y))+labs(x="indice",y=input$graf_disp_var)+
+        theme_light()+ coord_cartesian(xlim = graf$xlim, ylim = graf$ylim, expand = TRUE)
+      if(is.null(graf$gr)){
+        if(!input$graf_disp_labels){
+          gr<-gr+geom_point(cex=2,col="blue")
+          gr+geom_hline(yintercept = mean(df$y),col="blue",lty=2)
+        } else {
+          gr<-gr+geom_text(mapping = aes(label=row.names(df)),col="blue")
+          gr+geom_hline(yintercept = mean(df$y),col="blue",lty=2)
+        }
       } else {
-        gr<-gr%+%subset(df,df$gruppo%in%graf$gr)
-        gr<-gr+geom_text(mapping = aes(label=row.names(subset(df,df$gruppo%in%graf$gr)),colour=gruppo))
-        gr+geom_hline(yintercept = mean(df$y[df$gruppo%in%graf$gr]),col="blue",lty=2)
+        if(!input$graf_disp_labels){
+          gr<-gr+geom_point(cex=2,mapping = aes(colour=gruppo))
+          gr<-gr%+%subset(df,df$gruppo%in%graf$gr)
+          gr+geom_hline(yintercept = mean(df$y[df$gruppo%in%graf$gr]),col="blue",lty=2)
+        } else {
+          gr<-gr%+%subset(df,df$gruppo%in%graf$gr)
+          gr<-gr+geom_text(mapping = aes(label=row.names(subset(df,df$gruppo%in%graf$gr)),colour=gruppo))
+          gr+geom_hline(yintercept = mean(df$y[df$gruppo%in%graf$gr]),col="blue",lty=2)
+        }
       }
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare una variabile quantitativa!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
   
@@ -531,11 +550,17 @@ server <- function (input , output, session ){
 
   output$graf_hist_bin<-renderUI({
     req(input$graf_hist_var%in%colnames(dati$DS))
-    sliderInput(inputId = "graf_hist_bin",label = "larghezza barra",ticks = FALSE,
-                min = round((1/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
-                max = round((7/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
-                step = round((3/20)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
-                value = round((max(dati$DS[,input$graf_hist_var])-min(dati$DS[,input$graf_hist_var]))/sqrt(nrow(dati$DS)),3))
+    if(is.numeric(as.data.frame(dati$DS[,input$graf_hist_var,drop=FALSE])[,1])){
+      sliderInput(inputId = "graf_hist_bin",label = "larghezza barra",ticks = FALSE,
+                  min = round((1/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
+                  max = round((7/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
+                  step = round((3/20)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
+                  value = round((max(dati$DS[,input$graf_hist_var])-min(dati$DS[,input$graf_hist_var]))/sqrt(nrow(dati$DS)),3))
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare una variabile quantitativa!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }
   })
   
   output$graf_hist<-renderPlot({
@@ -543,6 +568,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0 & input$graf_hist_var%in%colnames(dati$DS),""))
     req(input$graf_hist_var)
     req(input$graf_hist_bin)
+    req(is.numeric(as.data.frame(dati$DS[,input$graf_hist_var,drop=FALSE])[,1]))
     df<-as.data.frame(dati$DS[,input$graf_hist_var,drop=FALSE])
     if(!is.null(graf$var_gr)){
       if (length(graf$var_gr)==1){
@@ -628,28 +654,36 @@ server <- function (input , output, session ){
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
     req(input$graf_box_var%in%colnames(dati$DS))
-    df<-as.data.frame(dati$DS[,input$graf_box_var,drop=FALSE])
-    if(!is.null(graf$var_gr)){
-      if (length(graf$var_gr)==1){
-        lab<-as.factor(dati$DS[,input$graf_box_var_gr])
-      } else if (length(graf$var_gr)==2){
-        lab<-as.factor(interaction(dati$DS[,input$graf_box_var_gr[1]],dati$DS[,input$graf_box_var_gr[2]]))
-      } else if (length(graf$var_gr)==3){
-        lab<-as.factor(interaction(dati$DS[,input$graf_box_var_gr[1]],dati$DS[,input$graf_box_var_gr[2]],dati$DS[,input$graf_box_var_gr[3]]))
+    
+    if(is.numeric(as.data.frame(dati$DS[,input$graf_box_var,drop=FALSE])[,1])){
+      df<-as.data.frame(dati$DS[,input$graf_box_var,drop=FALSE])
+      if(!is.null(graf$var_gr)){
+        if (length(graf$var_gr)==1){
+          lab<-as.factor(dati$DS[,input$graf_box_var_gr])
+        } else if (length(graf$var_gr)==2){
+          lab<-as.factor(interaction(dati$DS[,input$graf_box_var_gr[1]],dati$DS[,input$graf_box_var_gr[2]]))
+        } else if (length(graf$var_gr)==3){
+          lab<-as.factor(interaction(dati$DS[,input$graf_box_var_gr[1]],dati$DS[,input$graf_box_var_gr[2]],dati$DS[,input$graf_box_var_gr[3]]))
+        }
+      } else {
+        lab<-rep("0",nrow(df))
       }
-    } else {
-      lab<-rep("0",nrow(df))
-    }
-    df<-cbind.data.frame(df,lab)
-    colnames(df)<-c("y","gruppo")
-    row.names(df)<-row.names(dati$DS)
-    gr<-ggplot(df,mapping = aes(x=gruppo,y=y))+labs(y=input$graf_box_var)+ theme_light()
-    if(is.null(graf$gr)){
-      gr+geom_boxplot(notch = input$graf_box_notch,fill="blue",width=0.5)+labs(x="")
-    } else {
-      gr<-gr+geom_boxplot(notch = input$graf_box_notch,mapping = aes(fill=gruppo))+
-        scale_x_discrete(limits=graf$gr)+theme(legend.position="none")
-      gr%+%subset(df,df$gruppo%in%graf$gr)
+      df<-cbind.data.frame(df,lab)
+      colnames(df)<-c("y","gruppo")
+      row.names(df)<-row.names(dati$DS)
+      gr<-ggplot(df,mapping = aes(x=gruppo,y=y))+labs(y=input$graf_box_var)+ theme_light()
+      if(is.null(graf$gr)){
+        gr+geom_boxplot(notch = input$graf_box_notch,fill="blue",width=0.5)+labs(x="")
+      } else {
+        gr<-gr+geom_boxplot(notch = input$graf_box_notch,mapping = aes(fill=gruppo))+
+          scale_x_discrete(limits=graf$gr)+theme(legend.position="none")
+        gr%+%subset(df,df$gruppo%in%graf$gr)
+      }
+      
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare una variabile quantitativa!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
   
@@ -723,8 +757,14 @@ server <- function (input , output, session ){
   output$ttest1_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest1_variab%in%colnames(dati$DS))
-    numericInput("ttest1_H0",label = "Media ipotizzata",
-                 value=round(mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3),width = "40%")
+    if(is.numeric(as.data.frame(dati$DS[,input$ttest1_variab,drop=FALSE])[,1])){
+      numericInput("ttest1_H0",label = "Media ipotizzata",
+                   value=round(mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1]),3),width = "40%")
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare una variabile quantitativa!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }
   })
   
   output$ttest1_var_nota<-renderUI({
@@ -952,63 +992,68 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    vrb<-as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])
-    
-    x<-seq(-6, 6,by = 0.1)
-    if(input$ttest2a_var==1){
-      df<-cbind.data.frame(x=x,y=dnorm(x,mean=0,sd=1))
-      if(input$ttest2a_alfa>0){
-        q<-qnorm(input$ttest2a_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
-        if(q>6) q<-6
-        x.b<-seq(q,6,by = 0.1)
-        x.a<- -x.b[order(x.b,decreasing = TRUE)]
-        df.a<-cbind.data.frame(x=x.a,y=dnorm(x.a,mean =0,sd = 1))
-        df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
-        df.b<-cbind.data.frame(x=x.b,y=dnorm(x.b,mean =0,sd = 1))
-        df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
-      }
-      gr<-ggplot() +theme_classic()+
-        geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(d)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
-        theme(plot.title = element_text(size = 20, face = "bold",
-                                        hjust = 0.5))
-      
-      if(input$ttest2a_alfa>0){
-        gr<-gr+geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
-          geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
-      gr+geom_vline(xintercept = (mean(vrb[,1])-input$ttest2a_H0)/(input$ttest2a_var_nota*sqrt(1/nrow(vrb))),col="green")
-    } else {
-      dof<-nrow(vrb)-1
-      if (dof==0){
-        plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-             numerosità del campione almeno 2 \n",col="red",cex=2)
-      } else {
-        ds<-sd(vrb[,1])
-        df<-cbind.data.frame(x=x,y=dt(x,df = dof))
+    if(is.numeric(dati$DS[,input$ttest2a_variab1])&is.numeric(dati$DS[,input$ttest2a_variab2])){
+      vrb<-as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])
+      x<-seq(-6, 6,by = 0.1)
+      if(input$ttest2a_var==1){
+        df<-cbind.data.frame(x=x,y=dnorm(x,mean=0,sd=1))
         if(input$ttest2a_alfa>0){
-          q<-qt(input$ttest2a_alfa/2,df = dof,lower.tail = FALSE)
+          q<-qnorm(input$ttest2a_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
           if(q>6) q<-6
           x.b<-seq(q,6,by = 0.1)
           x.a<- -x.b[order(x.b,decreasing = TRUE)]
-          df.a<-cbind.data.frame(x=x.a,y=dt(x.a,df = dof))
+          df.a<-cbind.data.frame(x=x.a,y=dnorm(x.a,mean =0,sd = 1))
           df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
-          df.b<-cbind.data.frame(x=x.b,y=dt(x.b,df = dof))
+          df.b<-cbind.data.frame(x=x.b,y=dnorm(x.b,mean =0,sd = 1))
           df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
         }
-        
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(d)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+          ylab("densità")+xlab(expression(frac(bar(d)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
         if(input$ttest2a_alfa>0){
           gr<-gr+geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
             geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
-        
-        gr+geom_vline(xintercept = (mean(vrb[,1])-input$ttest2a_H0)/(ds*sqrt(1/nrow(vrb))),col="green") 
+        gr+geom_vline(xintercept = (mean(vrb[,1])-input$ttest2a_H0)/(input$ttest2a_var_nota*sqrt(1/nrow(vrb))),col="green")
+      } else {
+        dof<-nrow(vrb)-1
+        if (dof==0){
+          plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
+          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
+             numerosità del campione almeno 2 \n",col="red",cex=2)
+        } else {
+          ds<-sd(vrb[,1])
+          df<-cbind.data.frame(x=x,y=dt(x,df = dof))
+          if(input$ttest2a_alfa>0){
+            q<-qt(input$ttest2a_alfa/2,df = dof,lower.tail = FALSE)
+            if(q>6) q<-6
+            x.b<-seq(q,6,by = 0.1)
+            x.a<- -x.b[order(x.b,decreasing = TRUE)]
+            df.a<-cbind.data.frame(x=x.a,y=dt(x.a,df = dof))
+            df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
+            df.b<-cbind.data.frame(x=x.b,y=dt(x.b,df = dof))
+            df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
+          }
+          
+          gr<-ggplot() +theme_classic()+
+            geom_line(data = df,mapping = aes(x=x,y=y))+
+            ylab("densità")+xlab(expression(frac(bar(d)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            theme(plot.title = element_text(size = 20, face = "bold",
+                                            hjust = 0.5))
+          
+          if(input$ttest2a_alfa>0){
+            gr<-gr+geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
+              geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
+          
+          gr+geom_vline(xintercept = (mean(vrb[,1])-input$ttest2a_H0)/(ds*sqrt(1/nrow(vrb))),col="green") 
+        }
       }
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare due variabili quantitative!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
   
@@ -1245,7 +1290,7 @@ server <- function (input , output, session ){
           dof<-nrow(vrb1)+nrow(vrb2)-2
         }else{
           dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
-              (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+            (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
         }
         sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))

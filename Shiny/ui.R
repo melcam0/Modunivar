@@ -55,9 +55,11 @@ sidebar<- dashboardSidebar(
                              a(href="https://dispensemodunivar.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
                            )
                          ),
-                         br(),
+                         
+                             br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
-                                      style='padding:4px; font-size:80%')
+                                      style='padding:4px; font-size:80%'),
+                         HTML('<p><center><font color="cyan"><br> Versione 2.4 </font></center>')
                         )))
 
 

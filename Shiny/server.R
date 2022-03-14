@@ -43,9 +43,9 @@ server <- function (input , output, session ){
     graf$xvar_gr=NULL
     graf$xgr=NULL
 
-    reset("lista_esempi")
-    reset("file_xlsx")
-    reset("file_csv")
+    shinyjs::reset("lista_esempi")
+    shinyjs::reset("file_xlsx")
+    shinyjs::reset("file_csv")
   })
   
 
@@ -3944,6 +3944,34 @@ output$regrmulti_verifhp_corr<-renderPlot({
     }
     })
   
+  # output$int_conf_graf_ic<-renderPlot({
+  #   validate(need(input$int_conf_alfa>0,""))
+  #   library(lattice)
+  #   media<-mean(int_conf_camp())
+  #   m<-length(int_conf_camp())
+  #   if(input$int_conf_var==1){
+  #     s<-input$int_conf_ds
+  #     q<-qnorm(input$int_conf_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
+  #   } else {
+  #     s<-sd(int_conf_camp())
+  #     q<-qt(input$int_conf_alfa/2,df = m-1,lower.tail = FALSE)
+  #   }
+  #   x=media;y=0
+  #   gr<-xyplot(y~x,type="n",xlim=c(input$int_conf_media - 4*q*s*sqrt(1/m),
+  #                                  input$int_conf_media + 4*q*s*sqrt(1/m)),ylim=c(-1,2),
+  #          par.settings=list(axis.line=list(col=NA), axis.text=list(col=NA)),xlab=NULL, ylab=NULL)
+  #   print(gr)
+  #   trellis.focus("panel", 1, 1, highlight=FALSE)
+  #   panel.arrows(input$int_conf_media - 4*q*s*sqrt(1/m),0,
+  #                input$int_conf_media + 4*q*s*sqrt(1/m),0,angle=20,length=0,lwd=0.1)
+  #   panel.text(x=input$int_conf_media,y=-0.3,expression(mu))
+  #   panel.arrows(input$int_conf_media,0,input$int_conf_media,2,lty=2,length=0)
+  #   
+  #   panel.arrows(media,1,media-q*s*sqrt(1/m),1,angle=90,length=0.05,col="green4")
+  #   panel.arrows(media,1,media+q*s*sqrt(1/m),1,angle=90,length=0.05,col="green4")
+  #   trellis.unfocus()
+  # })
+  
   output$int_conf_graf_ic<-renderPlot({
     validate(need(input$int_conf_alfa>0,""))
     library(lattice)
@@ -3957,13 +3985,14 @@ output$regrmulti_verifhp_corr<-renderPlot({
       q<-qt(input$int_conf_alfa/2,df = m-1,lower.tail = FALSE)
     }
     x=media;y=0
-    gr<-xyplot(y~x,type="n",xlim=c(input$int_conf_media - 4*q*s*sqrt(1/m),
-                                   input$int_conf_media + 4*q*s*sqrt(1/m)),ylim=c(-1,2),
-           par.settings=list(axis.line=list(col=NA), axis.text=list(col=NA)),xlab=NULL, ylab=NULL)
+    gr<-xyplot(y~x,type="n",xlim=c(input$int_conf_media - 6*s*sqrt(1/m),
+                                   input$int_conf_media + 6*s*sqrt(1/m)),ylim=c(-1,2),
+               par.settings=list(axis.line=list(col=NA),axis.text=list(col=NA)),
+               xlab=NULL, ylab=NULL)
     print(gr)
     trellis.focus("panel", 1, 1, highlight=FALSE)
-    panel.arrows(input$int_conf_media - 4*q*s*sqrt(1/m),0,
-                 input$int_conf_media + 4*q*s*sqrt(1/m),0,angle=20,length=0,lwd=0.1)
+    panel.arrows(input$int_conf_media - 6*s*sqrt(1/m),0,
+                 input$int_conf_media + 6*s*sqrt(1/m),0,angle=20,length=0,lwd=0.1)
     panel.text(x=input$int_conf_media,y=-0.3,expression(mu))
     panel.arrows(input$int_conf_media,0,input$int_conf_media,2,lty=2,length=0)
     
@@ -3971,7 +4000,6 @@ output$regrmulti_verifhp_corr<-renderPlot({
     panel.arrows(media,1,media+q*s*sqrt(1/m),1,angle=90,length=0.05,col="green4")
     trellis.unfocus()
   })
-  
   
   output$int_conf_IC_txt<-renderText({
     validate(need(input$int_conf_alfa>0," "))

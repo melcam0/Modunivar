@@ -7,7 +7,8 @@ pacchetti<-c('shiny',
              'readxl',
              'RcmdrMisc',
              'DT',
-             'outliers')
+             'outliers',
+             'lmtest')
 
 install.packages(pkgs = pacchetti)
 

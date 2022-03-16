@@ -1288,11 +1288,15 @@ server <- function (input , output, session ){
         ds2<-sd(vrb2[,1])
         if(input$ttest2_var_uguale==1){
           dof<-nrow(vrb1)+nrow(vrb2)-2
+          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),s[c]*sqrt(1/m[1]+1/m[2])))
+          sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
+          stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
         }else{
           dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
             (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
+          stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
-        sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
         if(input$ttest2_alfa>0){
           q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
@@ -1307,7 +1311,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),s[c]*sqrt(1/m[1]+1/m[2]))))+ggtitle(paste("t(",round(dof,3),")",sep=""))+
+          ylab("densità")+xlab(x.text)+ggtitle(paste("t(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1315,7 +1319,7 @@ server <- function (input , output, session ){
           gr<-gr+geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
             geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
         
-        gr+geom_vline(xintercept = ((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),col="green") 
+        gr+geom_vline(xintercept = stat,col="green") 
       }
     }
   })
@@ -1363,6 +1367,7 @@ server <- function (input , output, session ){
   
   output$ttest2_ds_c<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(input$ttest2_var_uguale==1,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
@@ -1388,7 +1393,11 @@ server <- function (input , output, session ){
     if(input$ttest2_var=="1"){
       paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(input$ttest2_var_nota1^2/nrow(vrb1)+input$ttest2_var_nota2^2/nrow(vrb2))),4)) 
     }else{
-      paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
+      if(input$ttest2_var_uguale==1){
+        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
+      }else{
+        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
+      }
     }
   })  
   
@@ -1407,10 +1416,11 @@ server <- function (input , output, session ){
       p<-pnorm(q = abs(q),mean = 0,sd = 1,lower.tail = FALSE)
       p<-format(2*p,digits = 4,format="e")
     }else{
-      q<-((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
       if(input$ttest2_var_uguale==1){
+        q<-((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
         dof<-nrow(vrb1)+nrow(vrb2)-2
       }else{
+        q<-((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
       }
@@ -1448,12 +1458,14 @@ server <- function (input , output, session ){
       sc<-sqrt(((m1-1)*ds1^2+(m2-1)*ds2^2)/(m1+m2-2))
       if(input$ttest2_var_uguale==1){
         dof<-nrow(vrb1)+nrow(vrb2)-2
+        q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
+        paste("estremo inferiore =",round(media-q*sc*sqrt(1/m1+1/m2),4))
       }else{
         dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+        q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
+        paste("estremo inferiore =",round(media-q*sqrt(ds1^2/m1+ds2^2/m2),4))
       }
-      q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-      paste("estremo inferiore =",round(media-q*sc*sqrt(1/m1+1/m2),4))
     }
   })
   
@@ -1478,12 +1490,14 @@ server <- function (input , output, session ){
       sc<-sqrt(((m1-1)*ds1^2+(m2-1)*ds2^2)/(m1+m2-2))
       if(input$ttest2_var_uguale==1){
         dof<-nrow(vrb1)+nrow(vrb2)-2
+        q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
+        paste("estremo superiore =",round(media+q*sc*sqrt(1/m1+1/m2),4))
       }else{
         dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+        q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
+        paste("estremo superiore =",round(media+q*sqrt(ds1^2/m1+ds2^2/m2),4))
       }
-      q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-      paste("estremo superiore =",round(media+q*sc*sqrt(1/m1+1/m2),4))
     }
   })
   

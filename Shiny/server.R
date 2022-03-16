@@ -4232,22 +4232,25 @@ output$regrmulti_verifhp_corr<-renderPlot({
       q<-qnorm(input$potenza_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
-        geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
-        theme(plot.title = element_text(size = 20, face = "bold",
-                                        hjust = 0.5))+
-        annotate(geom="text", x=-2.5, y=0.2, label=expression(H[0]),size=10)
+        geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
+        ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+
+        # ggtitle("N(0,1)")+
+        # theme(plot.title = element_text(size = 20, face = "bold",
+        #                                 hjust = 0.5,colour = 'grey'))+
+        annotate(geom="text", x=-2.5, y=0.2, label=expression(H[0]),size=10,colour = 'grey')+
+        annotate(geom="text", x=-2.5, y=0.35, label=expression(bold(N(0,1))),size=7,colour = 'grey')
     } else {
       df<-cbind.data.frame(x=x,y=dt(x,df = input$potenza_num_pop-1))
       q<-qt(input$potenza_alfa/2,df = input$potenza_num_pop-1,lower.tail = FALSE)
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
-        geom_line(data = df,mapping = aes(x=x,y=y))+
+        geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
         ylab("densità")+xlab(expression(frac(bar(x)-mu,s * sqrt(1/m))))+
-        ggtitle(paste("t(",input$potenza_num_pop-1,")",sep=""))+
-        theme(plot.title = element_text(size = 20, face = "bold",
-                                        hjust = 0.5))+
-        annotate(geom="text", x=-2.5, y=0.2, label=expression(H[0]),size=10)
+        # ggtitle(paste("t(",input$potenza_num_pop-1,")",sep=""))+
+        # theme(plot.title = element_text(size = 20, face = "bold",
+        #                                 hjust = 0.5))+
+        annotate(geom="text", x=-2.5, y=0.2, label=expression(H[0]),size=10,colour = 'grey')+
+        annotate(geom="text", x=-2.5, y=0.35, label=paste("t(",input$potenza_num_pop-1,")",sep=""),size=7,colour = 'grey',fontface='bold')
     }
     
     if(input$potenza_alfa>0){
@@ -4279,16 +4282,21 @@ output$regrmulti_verifhp_corr<-renderPlot({
         df1<-cbind.data.frame(x=x,y=dnorm(x,mean=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop)),sd=1))
         gr<-gr+geom_line(data = df1,mapping = aes(x=x,y=y))+
           geom_polygon(df.b,mapping = aes(x=x,y=y),fill="green")+
-          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)
+          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)+
+          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+3.5, y=0.35, label=expression(bold(N(frac(d,sigma* sqrt(1/m)),1))),size=7)
       } else {
         delta<-input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))
         x.b<-seq(-q,q,by = 0.1)
         df.b<-cbind.data.frame(x=c(-q,x.b,q),
                                y=c(0,dt(x.b,ncp = delta,df =input$potenza_num_pop-1),0))
         df1<-cbind.data.frame(x=x,y=dt(x,ncp = delta,df =input$potenza_num_pop-1))
+ 
         gr<-gr+geom_line(data = df1,mapping = aes(x=x,y=y))+
           geom_polygon(df.b,mapping = aes(x=x,y=y),fill="green")+
-          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)
+          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)+
+          annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+3.5, y=0.35, 
+                   label=expression(bold(paste("t(m-1, ",frac(d,s* sqrt(1/m)),")"))),
+                   size=7)
       }
     }
     gr

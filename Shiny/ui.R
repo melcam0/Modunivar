@@ -50,16 +50,22 @@ sidebar<- dashboardSidebar(
                 menuItem(text = "File",icon = icon("briefcase", lib = "font-awesome"),
                          # menuSubItem("Dispensa",tabName = "dispensa"),
                          # menuSubItem("Diapositive",tabName = "diapositive"),
+                         br(),
                          tags$header(
                            em(  
                              a(href="https://dispensemodunivar.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
                            )
                          ),
-                         
-                             br(),
+                         br(),
+                         tags$header(
+                           em(  
+                             a(href="https://www.statskingdom.com/",  "   Statistics calculators" ,target="_blank",style="white-space: pre-wrap")
+                           )
+                         ),
+                         br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 2.6 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 2.7 </font></center>')
                         )))
 
 

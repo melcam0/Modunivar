@@ -6,6 +6,7 @@ library(shinyjs)
 
 library(lattice)
 library(ggplot2)
+library(ggiraph)
 library(tools)
 library(DT)
 library(RcmdrMisc)

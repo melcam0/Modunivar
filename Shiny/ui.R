@@ -24,7 +24,8 @@ sidebar<- dashboardSidebar(
                          menuSubItem("Test media: due popolazioni",tabName = "ttest2"),
                          menuSubItem("Test varianza: due popolazioni",tabName = "ftest"),
                          menuSubItem("Anova",tabName = "anovatest"),
-                         menuSubItem("Outliers",tabName = "outlierstest")
+                         menuSubItem("Outliers",tabName = "outlierstest"),
+                         menuSubItem("Calcolatore potenza",tabName = "calc_potenza")
                 ),
                 menuItem(text = "Regressione lineare",icon = shiny::icon("line-chart"),
                          menuSubItem("Semplice",tabName = "regrsemplice"),
@@ -685,6 +686,61 @@ tabItem(tabName = "outlierstest",
                          h5("(differenza dalla media minore)"),
                          verbatimTextOutput("outlierstest_grubbs_min"))
                   )),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tabItem(tabName = "calc_potenza",
+        fluidPage(titlePanel("Calcolo della potenza in funzione della numerosità"),
+                  column(4,
+                         selectizeInput(inputId = "calc_potenza_test"," ",
+                                        choices = c('T-test: una popolazione','T-test: due popolazioni','F-test: test varianza','Anova: una via'))),
+                  column(12),
+                  
+                  column(4,
+                         sliderInput(inputId="calc_potenza_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                step=0.01),
+                         uiOutput("calc_potenza_t1_diff_medie"),
+                         uiOutput("calc_potenza_t1_devst"),
+                         uiOutput('calc_potenza_t1_effetto')),
+                  column(8,
+                         girafeOutput('calc_potenza_t1_graf'))
+                  
+                  
+        )),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Regressione -----------------------------------------------------------
 

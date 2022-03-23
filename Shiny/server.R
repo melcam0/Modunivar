@@ -2548,6 +2548,94 @@ server <- function (input , output, session ){
     outliers::grubbs.test(x,opposite = TRUE)
   })
   
+  
+  
+  
+  
+  
+  
+  
+  
+# Calcolatore potenza-----------------------------------------------------------------
+  
+  
+  
+  
+  
+  output$calc_potenza_t1_diff_medie <- renderUI({
+    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
+    numericInput("calc_potenza_t1_diff_medie",label = "Differenza dalla media vera",
+                 value=0.5,width = "40%")})
+  
+  output$calc_potenza_t1_devst <- renderUI({
+    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
+    numericInput("calc_potenza_t1_devst",label = "Dev. standard",
+                 value=1,width = "40%")})
+  
+  output$calc_potenza_t1_effetto <- renderUI({
+    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
+    HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t1_diff_medie/input$calc_potenza_t1_devst,2))
+    })
+  
+  output$calc_potenza_t1_graf <- renderggiraph({
+    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
+    req(input$calc_potenza_alfa)
+    req(input$calc_potenza_t1_diff_medie)
+    req(input$calc_potenza_t1_devst)
+  
+    alfa=input$calc_potenza_alfa
+    d=input$calc_potenza_t1_diff_medie
+    sd=input$calc_potenza_t1_devst
+    
+    n=0
+    PT <- as.data.frame(NULL)
+    while(n<=99){
+      n=n+1
+      txt <- power.t.test(n = n,delta = d,sd = sd,sig.level = alfa,power = NULL,
+                          alternative = 'two.sided',type = 'one.sample')
+      p <- txt$power
+      PT[n,1] <- n
+      PT[n,2] <- p
+      if(p>=1)break
+    }
+    colnames(PT) <- c('n','pt')
+    
+    
+
+    tooltip_text = paste0('n: ',PT$n, "\n",
+                          'potenza: ',round(PT$pt*100,2), "%")
+ 
+    latest_vax_graph <- ggplot(PT,
+                               aes(x = n,
+                                   y = pt,
+                                   tooltip = tooltip_text, data_id = n #<<
+                               )) +
+      geom_col_interactive(color = "chartreuse4", fill="chartreuse4", size = 0.5) +  #<<
+      theme_minimal() +
+      theme(axis.text=element_text(size = 6)) +  #<<
+      labs(title = "Potenza in funzione della numerosità",
+           subtitle = paste("T-test una popolazione: grandezza effetto =", round(d/sd,2))
+      ) +
+      ylab("potenza") +
+      xlab("numerosità") +
+      ylim(c(0,1))
+
+    girafe(ggobj = latest_vax_graph,
+           options = list(opts_tooltip(css = "background-color:orange;color:black;
+                                   padding:2px;border-radius:2px;
+                                   font-style:bold;"),
+                          opts_selection(type = "single"),
+                          opts_sizing(width = 1) ))
+    
+
+  })
+  
+  
+  
+  
+  
+  
+  
 # Regressione semplice-----------------------------------------------------------------
   output$regrsemplice_variaby<-renderUI({
     selectizeInput(inputId = "regrsemplice_variaby",div("Variabile dipendente (y)",style="font-weight: 400;"),
@@ -4233,7 +4321,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+
+        ylab("densità")+xlab(expression(frac(bar(x)-mu[0],sigma * sqrt(1/m))))+
         # ggtitle("N(0,1)")+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5,colour = 'grey'))+
@@ -4245,7 +4333,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,s * sqrt(1/m))))+
+        ylab("densità")+xlab(expression(frac(bar(x)-mu[0],s * sqrt(1/m))))+
         # ggtitle(paste("t(",input$potenza_num_pop-1,")",sep=""))+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5))+
@@ -4295,7 +4383,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
           geom_polygon(df.b,mapping = aes(x=x,y=y),fill="green")+
           annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)+
           annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+3.5, y=0.35, 
-                   label=expression(bold(paste("t(m-1, ",frac(d,s* sqrt(1/m)),")"))),
+                   label=expression(bold(paste("t(m-1, ",frac(d,sigma* sqrt(1/m)),")"))),
                    size=7)
       }
     }

@@ -8,7 +8,8 @@ pacchetti<-c('shiny',
              'RcmdrMisc',
              'DT',
              'outliers',
-             'lmtest')
+             'lmtest',
+             'ggiraph')
 
 install.packages(pkgs = pacchetti)
 

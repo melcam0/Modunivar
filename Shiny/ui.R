@@ -710,16 +710,52 @@ tabItem(tabName = "calc_potenza",
                   column(4,
                          selectizeInput(inputId = "calc_potenza_test"," ",
                                         choices = c('T-test: una popolazione','T-test: due popolazioni','F-test: test varianza','Anova: una via'))),
+                  
+                  
+                  
+                  
+                  column(4,
+                         uiOutput('calc_potenza_t2_var_uguali')),
+                  
                   column(12),
+                  
+                  
+                  
+                 
+                  
+                  
+                  br(),
                   
                   column(4,
                          sliderInput(inputId="calc_potenza_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
                                 step=0.01),
+                         
                          uiOutput("calc_potenza_t1_diff_medie"),
                          uiOutput("calc_potenza_t1_devst"),
-                         uiOutput('calc_potenza_t1_effetto')),
+                         uiOutput('calc_potenza_t1_effetto'),
+                         
+                         
+                         
+                         
+                        
+                         uiOutput("calc_potenza_t2_diff_medie"),
+                         uiOutput("calc_potenza_t2_devst"),
+                         uiOutput("calc_potenza_t2_devst1"),
+                         uiOutput("calc_potenza_t2_devst2"),
+                         uiOutput('calc_potenza_t2_effetto1'),
+                         uiOutput('calc_potenza_t2_effetto2')
+                         
+                         
+                         
+                         
+                         
+                         
+                         
+                         ),
                   column(8,
-                         girafeOutput('calc_potenza_t1_graf'))
+                         girafeOutput('calc_potenza_t1_graf')),
+                  
+                  
                   
                   
         )),

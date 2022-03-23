@@ -13,6 +13,8 @@ library(RcmdrMisc)
 library(car)
 library(lmtest)
 library(outliers)
+library(MESS)
+library(pwr)
 
 options(warn = -1)
 options(shiny.maxRequestSize = 30 * 1024 ^ 2)

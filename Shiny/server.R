@@ -2558,7 +2558,7 @@ server <- function (input , output, session ){
   
 # Calcolatore potenza-----------------------------------------------------------------
   
-  
+## T-test: una popolazione-----------------------------------------------------------------
   
   
   
@@ -2592,7 +2592,7 @@ server <- function (input , output, session ){
     while(n<=99){
       n=n+1
       txt <- power.t.test(n = n,delta = d,sd = sd,sig.level = alfa,power = NULL,
-                          alternative = 'two.sided',type = 'one.sample')
+                          alternative = 'two.sided',type = 'one.sample',strict = TRUE)
       p <- txt$power
       PT[n,1] <- n
       PT[n,2] <- p
@@ -2631,7 +2631,65 @@ server <- function (input , output, session ){
   })
   
   
+  ## T-test: due popolazioni----------------------------------------------------------------- 
   
+  output$calc_potenza_t2_var_uguali <- renderUI({
+    validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+    radioButtons("calc_potenza_t2_var_uguali", label = "",
+                 choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
+                 selected = 1)
+    })
+    
+    
+    
+    
+    output$calc_potenza_t2_diff_medie <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      numericInput("calc_potenza_t2_diff_medie",label = "Differenza dalla media vera",
+                   value=0.5,width = "40%")})
+    
+    output$calc_potenza_t2_devst <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_t2_var_uguali==1,""))
+      numericInput("calc_potenza_t2_devst",label = "Dev. standard",
+                   value=1,width = "40%")})
+    
+    output$calc_potenza_t2_effetto1 <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_t2_var_uguali==1,""))
+      HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t2_diff_medie/input$calc_potenza_t2_devst,2))
+    })
+    
+    
+    
+    output$calc_potenza_t2_devst1 <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_t2_var_uguali==2,""))
+      numericInput("calc_potenza_t2_devst1",label = "Dev. standard gr. 1",
+                   value=1,width = "40%")})
+    
+    output$calc_potenza_t2_devst2 <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_t2_var_uguali==2,""))
+      numericInput("calc_potenza_t2_devst2",label = "Dev. standard gr. 2",
+                   value=1,width = "40%")})
+    
+    output$calc_potenza_t2_effetto2 <- renderUI({
+      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_t2_var_uguali==2,""))
+      HTML('Grandezza effetto <sup>d</sup>&frasl;<sub><span>&#8730;(<span>&#963;</span><sub>1</sub><sup>2</sup>+<span>&#963;</span><sub>2</sub><sup>2</sup>)/2
+      </span></sub> =',
+           round(input$calc_potenza_t2_diff_medie/sqrt((input$calc_potenza_t2_devst1^2+input$calc_potenza_t2_devst2^2)/2),2))
+    })
+    
+    
+    
+   
+    
+    
+    
+    
+ 
   
   
   

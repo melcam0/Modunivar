@@ -743,7 +743,20 @@ tabItem(tabName = "calc_potenza",
                          uiOutput("calc_potenza_t2_devst1"),
                          uiOutput("calc_potenza_t2_devst2"),
                          uiOutput('calc_potenza_t2_effetto1'),
-                         uiOutput('calc_potenza_t2_effetto2')
+                         uiOutput('calc_potenza_t2_effetto2'),
+                         
+                         
+                         
+                         uiOutput("calc_potenza_f_devst1"),
+                         uiOutput("calc_potenza_f_devst2"),
+                         uiOutput('calc_potenza_f_effetto'),
+                         
+                         
+                         
+                         uiOutput("calc_potenza_aov1_ngruppi"),
+                         uiOutput("calc_potenza_aov1_diff_medie"),
+                         uiOutput("calc_potenza_aov1_devst"),
+                         uiOutput('calc_potenza_aov1_effetto'),
                          
                          
                          
@@ -752,10 +765,16 @@ tabItem(tabName = "calc_potenza",
                          
                          
                          ),
+                  # column(8,
+                  #        girafeOutput('calc_potenza_t2_graf1')
+                  #        # girafeOutput('calc_potenza_t1_graf')
+                  #        # girafeOutput('calc_potenza_t2_graf1')
+                  #        # girafeOutput('calc_potenza_t2_graf1')
+                  #        ),
+                  
                   column(8,
-                         girafeOutput('calc_potenza_t1_graf')),
-                  
-                  
+                         girafeOutput('calc_potenza_graf'),
+                         )
                   
                   
         )),

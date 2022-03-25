@@ -2558,10 +2558,8 @@ server <- function (input , output, session ){
   
 # Calcolatore potenza-----------------------------------------------------------------
   
-## T-test: una popolazione-----------------------------------------------------------------
-  
-  
-  
+ ## T-test: una popolazione-----------------------------------------------------------------
+
   output$calc_potenza_t1_diff_medie <- renderUI({
     validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
     numericInput("calc_potenza_t1_diff_medie",label = "Differenza dalla media vera",
@@ -2576,61 +2574,7 @@ server <- function (input , output, session ){
     validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
     HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t1_diff_medie/input$calc_potenza_t1_devst,2))
     })
-  
-  output$calc_potenza_t1_graf <- renderggiraph({
-    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
-    req(input$calc_potenza_alfa)
-    req(input$calc_potenza_t1_diff_medie)
-    req(input$calc_potenza_t1_devst)
-  
-    alfa=input$calc_potenza_alfa
-    d=input$calc_potenza_t1_diff_medie
-    sd=input$calc_potenza_t1_devst
-    
-    n=0
-    PT <- as.data.frame(NULL)
-    while(n<=99){
-      n=n+1
-      txt <- power.t.test(n = n,delta = d,sd = sd,sig.level = alfa,power = NULL,
-                          alternative = 'two.sided',type = 'one.sample',strict = TRUE)
-      p <- txt$power
-      PT[n,1] <- n
-      PT[n,2] <- p
-      if(p>=1)break
-    }
-    colnames(PT) <- c('n','pt')
-    
-    
 
-    tooltip_text = paste0('n: ',PT$n, "\n",
-                          'potenza: ',round(PT$pt*100,2), "%")
- 
-    latest_vax_graph <- ggplot(PT,
-                               aes(x = n,
-                                   y = pt,
-                                   tooltip = tooltip_text, data_id = n #<<
-                               )) +
-      geom_col_interactive(color = "chartreuse4", fill="chartreuse4", size = 0.5) +  #<<
-      theme_minimal() +
-      theme(axis.text=element_text(size = 6)) +  #<<
-      labs(title = "Potenza in funzione della numerosità",
-           subtitle = paste("T-test una popolazione: grandezza effetto =", round(d/sd,2))
-      ) +
-      ylab("potenza") +
-      xlab("numerosità") +
-      ylim(c(0,1))
-
-    girafe(ggobj = latest_vax_graph,
-           options = list(opts_tooltip(css = "background-color:orange;color:black;
-                                   padding:2px;border-radius:2px;
-                                   font-style:bold;"),
-                          opts_selection(type = "single"),
-                          opts_sizing(width = 1) ))
-    
-
-  })
-  
-  
   ## T-test: due popolazioni----------------------------------------------------------------- 
   
   output$calc_potenza_t2_var_uguali <- renderUI({
@@ -2639,10 +2583,7 @@ server <- function (input , output, session ){
                  choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
                  selected = 1)
     })
-    
-    
-    
-    
+
     output$calc_potenza_t2_diff_medie <- renderUI({
       validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
       numericInput("calc_potenza_t2_diff_medie",label = "Differenza dalla media vera",
@@ -2659,8 +2600,6 @@ server <- function (input , output, session ){
       validate(need(input$calc_potenza_t2_var_uguali==1,""))
       HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t2_diff_medie/input$calc_potenza_t2_devst,2))
     })
-    
-    
     
     output$calc_potenza_t2_devst1 <- renderUI({
       validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
@@ -2681,10 +2620,269 @@ server <- function (input , output, session ){
       </span></sub> =',
            round(input$calc_potenza_t2_diff_medie/sqrt((input$calc_potenza_t2_devst1^2+input$calc_potenza_t2_devst2^2)/2),2))
     })
+
+    ## F-test: test varianza ----------------------------------------------------------------- 
+
+    output$calc_potenza_f_devst1 <- renderUI({
+      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
+      numericInput("calc_potenza_f_devst1",label = "Dev. standard gr. 1",
+                   value=1.15,width = "40%")})
+    
+    output$calc_potenza_f_devst2 <- renderUI({
+      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
+      numericInput("calc_potenza_f_devst2",label = "Dev. standard gr. 2",
+                   value=1,width = "40%")})
+    
+    output$calc_potenza_f_effetto <- renderUI({
+      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
+      HTML('Grandezza effetto    <span>&#963;</span><sub>1</sub> &frasl;   <span>&#963;</span><sub>2</sub>  =',
+      round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2)
+      )
+    })
     
     
     
+    
+  
+    
+    
+    ## Anova: una via -----------------------------------------------------------------
+    
+    
+    output$calc_potenza_aov1_ngruppi <- renderUI({
+      validate(need(input$calc_potenza_test=='Anova: una via',""))
+      numericInput("calc_potenza_aov1_ngruppi",label = "Numero gruppi",
+                   value=4,width = "40%")})
+    
+    output$calc_potenza_aov1_diff_medie <- renderUI({
+      validate(need(input$calc_potenza_test=='Anova: una via',""))
+      numericInput("calc_potenza_aov1_diff_medie",label = HTML("Eff. trattamento &#8721;&alpha;<sub>j</sub><sup>2</sup>"),
+                   value=input$calc_potenza_aov1_ngruppi/16,width = "40%")})
+    
+    output$calc_potenza_aov1_devst <- renderUI({
+      validate(need(input$calc_potenza_test=='Anova: una via',""))
+      numericInput("calc_potenza_aov1_devst",label = "Dev. standard",
+                   value=1,width = "40%")})
+    
+    output$calc_potenza_aov1_effetto <- renderUI({
+      validate(need(input$calc_potenza_test=='Anova: una via',""))
+      # HTML('Grandezza effetto &#963; =') ###
+      HTML('<span class="frac"> &#8730; <sup>&#8721;&alpha;<sub>j</sub><sup>2</sup>/k </sup> <span>/</span> <sub>&#963</sub> </span> = ',
+           round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
+      
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  ## Grafico ----------------------------------------------------------------- 
    
+    output$calc_potenza_graf <- renderggiraph({
+      if(input$calc_potenza_test=='T-test: una popolazione'){
+        
+        req(input$calc_potenza_alfa)
+        req(input$calc_potenza_t1_diff_medie)
+        req(input$calc_potenza_t1_devst)
+        
+        alfa=input$calc_potenza_alfa
+        d=input$calc_potenza_t1_diff_medie
+        sd=input$calc_potenza_t1_devst
+        
+        n=0
+        PT <- as.data.frame(NULL)
+        while(n<=99){
+          n=n+1
+          txt <- power.t.test(n = n,delta = d,sd = sd,sig.level = alfa,power = NULL,
+                              alternative = 'two.sided',type = 'one.sample',strict = TRUE)
+          p <- txt$power
+          PT[n,1] <- n
+          PT[n,2] <- p
+          if(p>=1)break
+        }
+        colnames(PT) <- c('n','pt')
+        
+        subtitolo <- paste("T-test una popolazione: grandezza effetto =", round(d/sd,2))
+        xtxt <- "numerosità"
+      }
+      
+      if(input$calc_potenza_test=='T-test: due popolazioni'){
+        req(input$calc_potenza_t2_var_uguali)
+        
+        if(input$calc_potenza_t2_var_uguali==1){
+          req(input$calc_potenza_alfa)
+          req(input$calc_potenza_t2_diff_medie)
+          req(input$calc_potenza_t2_devst)
+          
+          alfa=input$calc_potenza_alfa
+          d=input$calc_potenza_t2_diff_medie
+          sd=input$calc_potenza_t2_devst
+          
+          n=1
+          PT <- as.data.frame(NULL)
+          while(n<=99){
+            n=n+1
+            txt <- power_t_test(n=n,ratio=1,delta=d,sd=sd, sd.ratio=1, 
+                                type = "two.sample",alternative = "two.sided",strict = TRUE, df.method="classical")
+            
+            p <- txt$power
+            PT[n,1] <- n
+            PT[n,2] <- p
+            if(p>=1)break
+          }
+          
+          colnames(PT) <- c('n','pt')
+          PT <- PT[-1,]
+          
+          subtitolo <- paste("T-test due popolazioni var. uguali: grandezza effetto =", round(d/sd,2))
+          xtxt <- "numerosità per ogni gruppo"
+        }
+        
+        if(input$calc_potenza_t2_var_uguali==2){
+          req(input$calc_potenza_alfa)
+          req(input$calc_potenza_t2_diff_medie)
+          req(input$calc_potenza_t2_devst1)
+          req(input$calc_potenza_t2_devst2)
+          
+          alfa=input$calc_potenza_alfa
+          d=input$calc_potenza_t2_diff_medie
+          sd1=input$calc_potenza_t2_devst1
+          sd2=input$calc_potenza_t2_devst2
+          
+          n=1
+          PT <- as.data.frame(NULL)
+          while(n<=99){
+            n=n+1
+            txt <- power_t_test(n=n,ratio=1, delta=d, sd=sd1,  sd.ratio=sd2/sd1, 
+                                type = "two.sample",alternative = "two.sided",strict = TRUE,df.method="welch")
+            p <- txt$power
+            PT[n,1] <- n
+            PT[n,2] <- p
+            if(p>=1)break
+          }
+          
+          colnames(PT) <- c('n','pt')
+          PT <- PT[-1,]
+          
+          subtitolo <- paste("T-test due popolazioni var. diverse: grandezza effetto =", 
+                             round(input$calc_potenza_t2_diff_medie/sqrt((input$calc_potenza_t2_devst1^2+input$calc_potenza_t2_devst2^2)/2),2))
+          xtxt <- "numerosità per ogni gruppo"
+        }
+      }
+
+      if(input$calc_potenza_test=='F-test: test varianza'){
+        req(input$calc_potenza_alfa)
+        req(input$calc_potenza_f_devst1)
+        req(input$calc_potenza_f_devst2)
+        
+        alfa=input$calc_potenza_alfa
+        sd1=input$calc_potenza_f_devst1
+        sd2=input$calc_potenza_f_devst2
+        lambda=sd1/sd2
+        
+        n=1
+        PT <- as.data.frame(NULL)
+        while(n<=99){
+          n=n+1
+          f1<-qf(p = alfa/2,df1 = n-1,df2 = n-1,lower.tail = TRUE)
+          f2<-qf(p = alfa/2,df1 = n-1,df2 = n-1,lower.tail = FALSE)
+          p <- pf(q = f1/lambda,df1 = n-1,df2 = n-1,lower.tail = TRUE)+
+            pf(q = f2/lambda,df1 = n-1,df2 = n-1,lower.tail = FALSE)
+          PT[n,1] <- n
+          PT[n,2] <- p
+          if(p>=1)break
+        }
+        
+        colnames(PT) <- c('n','pt')
+        PT <- PT[-1,]
+        
+        subtitolo <- paste("F-test: test varianza: grandezza effetto =", 
+                           round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2))
+        xtxt <- "numerosità per ogni gruppo"
+        
+      }
+      
+      
+      
+      
+      
+      if(input$calc_potenza_test=='Anova: una via'){
+        
+        req(input$calc_potenza_alfa)
+        req(input$calc_potenza_aov1_ngruppi)
+        req(input$calc_potenza_aov1_diff_medie)
+        req(input$calc_potenza_aov1_devst)
+        
+        alfa=input$calc_potenza_alfa
+        k <- input$calc_potenza_aov1_ngruppi
+        d=input$calc_potenza_t1_diff_medie
+        sd=input$calc_potenza_t1_devst
+        f <- sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst
+        
+        n=1
+        PT <- as.data.frame(NULL)
+        while(n<=99){
+          n=n+1
+          txt <- pwr.anova.test(k = k,n = n,f = f,sig.level = alfa)
+          p <- txt$power
+          PT[n,1] <- n
+          PT[n,2] <- p
+          if(p>=1)break
+        }
+        colnames(PT) <- c('n','pt')
+        
+        subtitolo <- paste("Anova una via: grandezza effetto =", 
+                           round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
+        xtxt <- "numerosità per ogni gruppo"
+      }
+      
+      
+      
+      
+
+      
+      
+      
+      tooltip_text = paste0('n: ',PT$n, "\n",
+                            'potenza: ',round(PT$pt*100,2), "%")
+      
+      latest_vax_graph <- ggplot(PT,
+                                 aes(x = n,
+                                     y = pt,
+                                     tooltip = tooltip_text, data_id = n #<<
+                                 )) +
+        geom_col_interactive(color = "chartreuse4", fill="chartreuse4", size = 0.5) +  #<<
+        theme_minimal() +
+        theme(axis.text=element_text(size = 6)) +  #<<
+        labs(title = "Potenza in funzione della numerosità",
+             subtitle = subtitolo) +
+        ylab("potenza") +
+        xlab(xtxt) +
+        ylim(c(0,1))
+
+      girafe(ggobj = latest_vax_graph,
+             options = list(opts_tooltip(css = "background-color:orange;color:black;
+                                   padding:2px;border-radius:2px;
+                                   font-style:bold;"),
+                            opts_selection(type = "single"),
+                            opts_sizing(width = 1) ))
+  
+    })
     
     
     

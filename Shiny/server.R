@@ -2547,15 +2547,7 @@ server <- function (input , output, session ){
     x<-dati$DS[,input$outlierstest_variab]
     outliers::grubbs.test(x,opposite = TRUE)
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
 # Calcolatore potenza-----------------------------------------------------------------
   
  ## T-test: una popolazione-----------------------------------------------------------------
@@ -2639,16 +2631,9 @@ server <- function (input , output, session ){
       round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2)
       )
     })
-    
-    
-    
-    
-  
-    
-    
+
     ## Anova: una via -----------------------------------------------------------------
-    
-    
+  
     output$calc_potenza_aov1_ngruppi <- renderUI({
       validate(need(input$calc_potenza_test=='Anova: una via',""))
       numericInput("calc_potenza_aov1_ngruppi",label = "Numero gruppi",
@@ -2667,30 +2652,10 @@ server <- function (input , output, session ){
     output$calc_potenza_aov1_effetto <- renderUI({
       validate(need(input$calc_potenza_test=='Anova: una via',""))
       # HTML('Grandezza effetto &#963; =') ###
-      HTML('<span class="frac"> &#8730; <sup>&#8721;&alpha;<sub>j</sub><sup>2</sup>/k </sup> <span>/</span> <sub>&#963</sub> </span> = ',
+      HTML('Grandezza effetto <span class="frac"> &#8730; <sup>&#8721;&alpha;<sub>j</sub><sup>2</sup>/k </sup> <span>/</span> <sub>&#963</sub> </span> = ',
            round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
-      
     })
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
   ## Grafico ----------------------------------------------------------------- 
    
     output$calc_potenza_graf <- renderggiraph({
@@ -2814,15 +2779,9 @@ server <- function (input , output, session ){
         subtitolo <- paste("F-test: test varianza: grandezza effetto =", 
                            round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2))
         xtxt <- "numerosità per ogni gruppo"
-        
       }
-      
-      
-      
-      
-      
+
       if(input$calc_potenza_test=='Anova: una via'){
-        
         req(input$calc_potenza_alfa)
         req(input$calc_potenza_aov1_ngruppi)
         req(input$calc_potenza_aov1_diff_medie)
@@ -2850,14 +2809,7 @@ server <- function (input , output, session ){
                            round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
         xtxt <- "numerosità per ogni gruppo"
       }
-      
-      
-      
-      
 
-      
-      
-      
       tooltip_text = paste0('n: ',PT$n, "\n",
                             'potenza: ',round(PT$pt*100,2), "%")
       
@@ -2881,17 +2833,8 @@ server <- function (input , output, session ){
                                    font-style:bold;"),
                             opts_selection(type = "single"),
                             opts_sizing(width = 1) ))
-  
     })
-    
-    
-    
-    
- 
-  
-  
-  
-  
+
 # Regressione semplice-----------------------------------------------------------------
   output$regrsemplice_variaby<-renderUI({
     selectizeInput(inputId = "regrsemplice_variaby",div("Variabile dipendente (y)",style="font-weight: 400;"),

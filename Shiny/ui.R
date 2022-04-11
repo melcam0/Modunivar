@@ -67,7 +67,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 3.0 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 4.0 </font></center>')
                         )))
 
 
@@ -299,57 +299,6 @@ tabItem(tabName = "ttest1",
 tabItem(tabName = "ttest2",
         fluidPage(titlePanel("Test sulla media: due popolazioni gaussiane"),
                   tabsetPanel(type = "tabs",
-                              tabPanel("Test: dati accoppiati",
-                                       # column(12,div("Stima della media",style="font-size:150%;")),
-                                       column(4,
-                                              uiOutput("ttest2a_variab1"),
-                                              uiOutput("ttest2a_variab2")),
-                                       column(4,
-                                              radioButtons("ttest2a_var", label = "",
-                                                           choices = list("Varianza differenze nota" = 1, "Varianza differenze non nota" = 2),
-                                                           selected = 2)),
-                                       column(4,
-                                              uiOutput("ttest2a_var_nota")),
-                                       hr(),
-                                       column(12,
-                                              h3(textOutput("ttest2a_Test1")),
-                                              h3(textOutput("ttest2a_Test2"))),       
-                                       hr(),
-                                       column(4,
-                                              uiOutput("ttest2a_H0"),
-                                              h4("Ipotesi:"),
-                                              h4(uiOutput("ttest2a_H0_txt")),
-                                              br(),
-                                              sliderInput(inputId="ttest2a_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
-                                                          step=0.01),
-                                              textOutput("ttest2a_stat"),
-                                              textOutput("ttest2a_pval"),
-                                              hr(),
-                                              h4(textOutput("ttest2a_media_camp_titolo")),
-                                              textOutput("ttest2a_media_camp"),
-                                              textOutput("ttest2a_sd_camp"),
-                                              br(),
-                                              h4(textOutput("ttest2a_ic_titolo")),
-                                              textOutput("ttest2a_ic_inf"),
-                                              textOutput("ttest2a_ic_sup")
-                                       ),
-                                       column(8,
-                                              plotOutput("ttest2a_graf_distr"))
-                                       
-                              ),
-                              
-                              tabPanel("Verifica ipotesi: dati accoppiati",
-                                       column(4,h3("Test di Shapiro-Wilk")), 
-                                       column(8,h3("QQ-plot")),       
-                                       hr(),
-                                       hr(),
-                                       hr(),
-                                       column(4,
-                                              verbatimTextOutput("ttest2a_shapiro")),
-                                       column(8,
-                                              plotOutput("ttest2a_qqplot"))),
-                              
-                              
                               tabPanel("Test: dati indipendenti",
                                        # column(12,div("Stima della media",style="font-size:150%;")),
                                        column(4,
@@ -393,8 +342,7 @@ tabItem(tabName = "ttest2",
                                        ),
                                        column(8,
                                               div(textOutput("ttest2_errore"),style="font-size: 175%;color: red;font-weight: bold;"),
-                                              plotOutput("ttest2_graf_distr"))
-                              ),
+                                              plotOutput("ttest2_graf_distr"))),
                               
                               tabPanel("Verifica ipotesi: dati indipendenti",
                                        column(4,h3("Test di Shapiro-Wilk")), 
@@ -411,31 +359,63 @@ tabItem(tabName = "ttest2",
                                        column(4,
                                               verbatimTextOutput("ttest2_shapiro2")),
                                        column(8,
-                                              plotOutput("ttest2_qqplot2")))
-                              )
-        )),
-
-
-
-
-
-
-
-
-
-
-
-######################################################################################################################################################
-
-
-
+                                              plotOutput("ttest2_qqplot2"))),
+ 
+                              tabPanel("Test: dati accoppiati",
+                                       # column(12,div("Stima della media",style="font-size:150%;")),
+                                       column(4,
+                                              uiOutput("ttest2a_variab1"),
+                                              uiOutput("ttest2a_variab2")),
+                                       column(4,
+                                              radioButtons("ttest2a_var", label = "",
+                                                           choices = list("Varianza differenze nota" = 1, "Varianza differenze non nota" = 2),
+                                                           selected = 2)),
+                                       column(4,
+                                              uiOutput("ttest2a_var_nota")),
+                                       hr(),
+                                       column(12,
+                                              h3(textOutput("ttest2a_Test1")),
+                                              h3(textOutput("ttest2a_Test2"))),       
+                                       hr(),
+                                       column(4,
+                                              uiOutput("ttest2a_H0"),
+                                              h4("Ipotesi:"),
+                                              h4(uiOutput("ttest2a_H0_txt")),
+                                              br(),
+                                              sliderInput(inputId="ttest2a_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                                          step=0.01),
+                                              textOutput("ttest2a_stat"),
+                                              textOutput("ttest2a_pval"),
+                                              hr(),
+                                              h4(textOutput("ttest2a_media_camp_titolo")),
+                                              textOutput("ttest2a_media_camp"),
+                                              textOutput("ttest2a_sd_camp"),
+                                              br(),
+                                              h4(textOutput("ttest2a_ic_titolo")),
+                                              textOutput("ttest2a_ic_inf"),
+                                              textOutput("ttest2a_ic_sup")
+                                       ),
+                                       column(8,
+                                              plotOutput("ttest2a_graf_distr"))),
+                              
+                              tabPanel("Verifica ipotesi: dati accoppiati",
+                                       column(4,h3("Test di Shapiro-Wilk")), 
+                                       column(8,h3("QQ-plot")),       
+                                       hr(),
+                                       hr(),
+                                       hr(),
+                                       column(4,
+                                              verbatimTextOutput("ttest2a_shapiro")),
+                                       column(8,
+                                              plotOutput("ttest2a_qqplot")))
+                              ))),
 
 tabItem(tabName = "equiv",
         fluidPage(titlePanel("Test equivalenza medie"),
                   tabsetPanel(type = "tabs",
                   
                               
-                              tabPanel("Test equivalenza",
+                              tabPanel("Test: dati indipendenti",
                                        # column(12,div("Stima della media",style="font-size:150%;")),
                                        column(4,
                                               uiOutput("equiv_variab1"),
@@ -452,117 +432,46 @@ tabItem(tabName = "equiv",
                                        column(12),
                                        column(4,
                                               uiOutput("equiv_H0"),
-                                              # hr(),
                                               sliderInput(inputId="equiv_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
                                                           step=0.01),),
-                                       
                                        column(12,
-                                             
-                                            
-
                                               h3(textOutput("equiv_Test1_1")),
                                               h3(textOutput("equiv_Test1_2"))),       
                                        hr(),
                                        column(4,
-                                              
                                               h4("Ipotesi:"),
                                               h4(uiOutput("equiv_H0_txt1")),
                                               br(),
-                            
-                                              
                                               textOutput("equiv_stat1"),
-                                              textOutput("equiv_pval1")
-                                              # hr(),
-                                              # h4(textOutput("equiv_media_camp_titolo")),
-                                              # textOutput("equiv_media_camp1"),
-                                              # textOutput("equiv_sd_camp1"),
-                                              # br(),
-                                              # textOutput("equiv_media_camp2"),
-                                              # textOutput("equiv_sd_camp2"),
-                                              # br(),
-                                              # textOutput("equiv_ds_c"),
-                                              # br(),
-                                              # h4(textOutput("equiv_ic_titolo")),
-                                              # textOutput("equiv_ic_inf"),
-                                              # textOutput("equiv_ic_sup")
-                                       ),
+                                              textOutput("equiv_pval1")),
                                        column(8,
                                               div(textOutput("equiv_errore1"),style="font-size: 175%;color: red;font-weight: bold;"),
-                                              plotOutput("equiv_graf_distr1"))
-                                       ,
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
+                                              plotOutput("equiv_graf_distr1")),
                                        column(12,
-                                              
-                                              
-                                              
                                               h3(textOutput("equiv_Test2_1")),
                                               h3(textOutput("equiv_Test2_2"))),       
                                        hr(),
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
-                                       
                                        column(4,
-                                              
                                               h4("Ipotesi:"),
                                               h4(uiOutput("equiv_H0_txt2")),
                                               br(),
-                                              
-                                              
                                               textOutput("equiv_stat2"),
-                                              textOutput("equiv_pval2")
-                                              # hr(),
-                                              # h4(textOutput("equiv_media_camp_titolo")),
-                                              # textOutput("equiv_media_camp1"),
-                                              # textOutput("equiv_sd_camp1"),
-                                              # br(),
-                                              # textOutput("equiv_media_camp2"),
-                                              # textOutput("equiv_sd_camp2"),
-                                              # br(),
-                                              # textOutput("equiv_ds_c"),
-                                              # br(),
-                                              # h4(textOutput("equiv_ic_titolo")),
-                                              # textOutput("equiv_ic_inf"),
-                                              # textOutput("equiv_ic_sup")
-                                       )
-                                       ,
+                                              textOutput("equiv_pval2")),
                                        column(8,
-                                              div(textOutput("equiv_errore2"),style="font-size: 175%;color: red;font-weight: bold;")
-                                              ,
-                                              plotOutput("equiv_graf_distr2")
-                                              )
-                              ),
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
+                                              div(textOutput("equiv_errore2"),style="font-size: 175%;color: red;font-weight: bold;"),
+                                              plotOutput("equiv_graf_distr2")),
+                                       column(12,br(),br(),
+                                              h3('TOST')),
+                                       column(4,
+                                              h4(textOutput("equiv_ic_titolo")),
+                                              textOutput("equiv_ic_inf"),
+                                              textOutput("equiv_ic_sup"),
+                                              br(),
+                                              textOutput("equiv_pval")),
+                                       column(8,
+                                              # div(textOutput("equiv_errore2"),style="font-size: 175%;color: red;font-weight: bold;"),
+                                              plotOutput('equiv_graf_intconf'))),
+
                               tabPanel("Verifica ipotesi: dati indipendenti",
                                        column(4,h3("Test di Shapiro-Wilk")), 
                                        column(8,h3("QQ-plot")),       
@@ -578,50 +487,78 @@ tabItem(tabName = "equiv",
                                        column(4,
                                               verbatimTextOutput("equiv_shapiro2")),
                                        column(8,
-                                              plotOutput("equiv_qqplot2")))
+                                              plotOutput("equiv_qqplot2"))),
+
+                              tabPanel("Test: dati accoppiati",
+                                       # column(12,div("Stima della media",style="font-size:150%;")),
+                                       column(4,
+                                              uiOutput("equiva_variab1"),
+                                              uiOutput("equiva_variab2")),
+                                       column(4,
+                                              radioButtons("equiva_var", label = "",
+                                                           choices = list("Varianze note" = 1, "Varianze non note" = 2),
+                                                           selected = 2)),
+                                       column(4,
+                                              uiOutput("equiva_var_nota1"),
+                                              uiOutput("equiva_var_nota2"),
+                                              uiOutput("equiva_var_uguale")),
+                                       br(),
+                                       column(12),
+                                       column(4,
+                                              uiOutput("equiva_H0"),
+                                              # hr(),
+                                              sliderInput(inputId="equiva_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                                          step=0.01),),
+                                       column(12,
+                                              h3(textOutput("equiva_Test1_1")),
+                                              h3(textOutput("equiva_Test1_2"))),       
+                                       hr(),
+                                       column(4,
+                                              h4("Ipotesi:"),
+                                              h4(uiOutput("equiva_H0_txt1")),
+                                              br(),
+                                              textOutput("equiva_stat1"),
+                                              textOutput("equiva_pval1")),
+                                       column(8,
+                                              div(textOutput("equiva_errore1"),style="font-size: 175%;color: red;font-weight: bold;"),
+                                              plotOutput("equiva_graf_distr1")),
+                                       column(12,
+                                              h3(textOutput("equiva_Test2_1")),
+                                              h3(textOutput("equiva_Test2_2"))),       
+                                       hr(),
+                                       column(4,
+                                              h4("Ipotesi:"),
+                                              h4(uiOutput("equiva_H0_txt2")),
+                                              br(),
+                                              textOutput("equiva_stat2"),
+                                              textOutput("equiva_pval2")),
+                                       column(8,
+                                              div(textOutput("equiva_errore2"),style="font-size: 175%;color: red;font-weight: bold;"),
+                                              plotOutput("equiva_graf_distr2")),
+                                       column(12,br(),br(),
+                                              h3('TOST')),
+                                       column(4,
+                                              h4(textOutput("equiva_ic_titolo")),
+                                              textOutput("equiva_ic_inf"),
+                                              textOutput("equiva_ic_sup"),
+                                              br(),
+                                              textOutput("equiva_pval")),
+                                       column(8,
+                                              # div(textOutput("equiva_errore2"),style="font-size: 175%;color: red;font-weight: bold;"),
+                                              plotOutput('equiva_graf_intconf'))),
+
+                              tabPanel("Verifica ipotesi: dati accoppiati",
+                                       column(4,h3("Test di Shapiro-Wilk")), 
+                                       column(8,h3("QQ-plot")),       
+                                       hr(),
+                                       hr(),
+                                       hr(),
+                                       column(4,
+                                              verbatimTextOutput("equiva_shapiro")),
+                                       column(8,
+                                              plotOutput("equiva_qqplot")))
                   ))
         ),
-
-
-
-
-
-
-
-
-
-
-
-
-######################################################################################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 tabItem(tabName = "ftest",
         fluidPage(titlePanel("Test sulla varianza: due popolazioni gaussiane"),

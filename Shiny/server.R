@@ -1175,7 +1175,7 @@ server <- function (input , output, session ){
     shapiro.test(Differenze) 
   })
   
-
+  
   # ttest2 -----------------------------------------------------------------
   
   output$ttest2_variab1<-renderUI({
@@ -1237,14 +1237,16 @@ server <- function (input , output, session ){
   
   output$ttest2_errore<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(length(unique(dati$DS[,input$ttest2_variab2]))!=2,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
     "La variabile gruppo deve avere 2 livelli "
   })
-  
+
   output$ttest2_graf_distr<-renderPlot({
     require(ggplot2)
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(nrow(dati$DS)!=0,""))
     validate(need(length(unique(dati$DS[,input$ttest2_variab2]))==2,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
@@ -1322,6 +1324,7 @@ server <- function (input , output, session ){
         gr+geom_vline(xintercept = stat,col="green") 
       }
     }
+
   })
   
   output$ttest2_media_camp_titolo<-renderText({
@@ -1548,25 +1551,17 @@ server <- function (input , output, session ){
     shapiro.test(Campione.2) 
   })
 
-  
-  
-  
-  
-  
-  #############################################################
-  
-  
   # equiv_test -----------------------------------------------------------------
   
   output$equiv_variab1<-renderUI({
     selectizeInput(inputId = "equiv_variab1"," ",
-                   choices = dati$var_qt)})
-  
-
+                   choices = dati$var_qt)
+    })
   
   output$equiv_variab2<-renderUI({
     selectizeInput(inputId = "equiv_variab2",div("Variabile gruppo",style="font-weight: 400;"),
-                   choices = dati$var_ql)})
+                   choices = dati$var_ql)
+    })
   
   output$equiv_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
@@ -1574,7 +1569,7 @@ server <- function (input , output, session ){
     req(input$equiv_variab2%in%colnames(dati$DS))
     numericInput("equiv_H0",label = HTML("Differenza critica per equivalenza &delta;"),
                  value=1,width = "40%")
-  })
+    })
   
   output$equiv_var_nota1<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
@@ -1584,7 +1579,7 @@ server <- function (input , output, session ){
     gruppi<-unique(dati$DS[,input$equiv_variab2])
     numericInput("equiv_var_nota1",label = "Dev. standard nota gr. 1",
                  value=round(sd(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[1],input$equiv_variab1]),3),width = "40%")
-  })
+    })
   
   output$equiv_var_nota2<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
@@ -1602,17 +1597,7 @@ server <- function (input , output, session ){
                  choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
                  selected = 2)
   })
-  
-  
-  
 
-  
-  
-  
-  
-  
- ############### test 1 
-  
   output$equiv_Test1_1<-renderText({
     validate(need(input$equiv_var==1,""))
     "z-test 1"
@@ -1623,13 +1608,13 @@ server <- function (input , output, session ){
     "t-test 1"
   })
   
-  
   output$equiv_H0_txt1 = renderUI({        
     HTML("H<SUB>0</SUB>: &mu;<SUB>1</SUB>-&mu;<SUB>2</SUB> = -", input$equiv_H0,"<p> H<SUB>1</SUB>: &mu;<SUB>1</SUB>-&mu;<SUB>2</SUB> &gt; -",input$equiv_H0)
   })
 
   output$equiv_errore1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))!=2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1639,6 +1624,7 @@ server <- function (input , output, session ){
   output$equiv_graf_distr1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))==2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1678,11 +1664,6 @@ server <- function (input , output, session ){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
         text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
       } else {
-        
-        
-        
-        
-        
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
         if(input$equiv_var_uguale==1){
@@ -1696,9 +1677,6 @@ server <- function (input , output, session ){
           x.text <- expression(frac((bar(x)[1]-bar(x)[2])+delta,sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
-        
-        
-        
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
         if(input$equiv_alfa>0){
           q<-qt(input$equiv_alfa,df = dof,lower.tail = FALSE)
@@ -1726,16 +1704,7 @@ server <- function (input , output, session ){
       }
     }
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   output$equiv_stat1<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
@@ -1756,8 +1725,8 @@ server <- function (input , output, session ){
       }
     }
   })  
-  
-  output$equiv_pval1<-renderText({
+
+  equiv_pval1 <- reactive({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1770,7 +1739,7 @@ server <- function (input , output, session ){
     if(input$equiv_var=="1"){
       q<-((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2)))
       p<-pnorm(q = q,mean = 0,sd = 1,lower.tail = FALSE)
-      p<-format(p,digits = 4,format="e")
+      # p<-format(p,digits = 4,format="e")
     }else{
       if(input$equiv_var_uguale==1){
         q<-((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
@@ -1781,34 +1750,25 @@ server <- function (input , output, session ){
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
       }
       p<-pt(q = q,df = dof,lower.tail = FALSE)
-      p<-format(p,digits = 4,format="e")
+      # p<-format(p,digits = 4,format="e")
     }
+    p
+  })
+
+  output$equiv_pval1<-renderText({
+    p <- equiv_pval1()
+    p<-format(p,digits = 4,format="e")
     paste("p-value =",p)
   }) 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  ############### test 2
-  
+
   output$equiv_Test2_1<-renderText({
     validate(need(input$equiv_var==1,""))
-    "z-test 1"
+    "z-test 2"
   })
   
   output$equiv_Test2_2<-renderText({
     validate(need(input$equiv_var==2,""))
-    "t-test 1"
+    "t-test 2"
   })
   
   output$equiv_H0_txt2 = renderUI({        
@@ -1817,6 +1777,7 @@ server <- function (input , output, session ){
   
   output$equiv_errore2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))!=2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1826,6 +1787,7 @@ server <- function (input , output, session ){
   output$equiv_graf_distr2<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
+    validate(need(!is.null(dati$var_ql),""))
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))==2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1867,11 +1829,6 @@ server <- function (input , output, session ){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
         text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
       } else {
-        
-        
-        
-        
-        
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
         if(input$equiv_var_uguale==1){
@@ -1885,8 +1842,6 @@ server <- function (input , output, session ){
           x.text <- expression(frac((bar(x)[1]-bar(x)[2])-delta,sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
-        
-        
         
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
         if(input$equiv_alfa>0){
@@ -1917,16 +1872,7 @@ server <- function (input , output, session ){
       }
     }
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   output$equiv_stat2<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
@@ -1947,8 +1893,8 @@ server <- function (input , output, session ){
       }
     }
   })  
-  
-  output$equiv_pval2<-renderText({
+
+  equiv_pval2 <- reactive({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
@@ -1961,7 +1907,7 @@ server <- function (input , output, session ){
     if(input$equiv_var=="1"){
       q<-((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2)))
       p<-pnorm(q = q,mean = 0,sd = 1,lower.tail = TRUE)
-      p<-format(p,digits = 4,format="e")
+      # p<-format(p,digits = 4,format="e")
     }else{
       if(input$equiv_var_uguale==1){
         q<-((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
@@ -1972,35 +1918,130 @@ server <- function (input , output, session ){
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
       }
       p<-pt(q = q,df = dof,lower.tail = TRUE)
-      p<-format(p,digits = 4,format="e")
+      # p<-format(p,digits = 4,format="e")
     }
+    p
+  })
+
+  output$equiv_pval2<-renderText({
+    p <- equiv_pval2()
+    p<-format(p,digits = 4,format="e")
     paste("p-value =",p)
   }) 
+
+  output$equiv_ic_titolo<-renderText({
+    validate(need(input$equiv_alfa>0,""))
+    req(input$equiv_variab1%in%colnames(dati$DS))
+    req(input$equiv_variab2%in%colnames(dati$DS))
+    "Intervallo di confidenza"
+  })
   
+  equiv_ic_inf <- reactive({
+    validate(need(input$equiv_alfa>0,""))
+    req(input$equiv_variab1%in%colnames(dati$DS))
+    req(input$equiv_variab2%in%colnames(dati$DS))
+    gruppi<-unique(dati$DS[,input$equiv_variab2])
+    vrb1<-as.data.frame(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[1],input$equiv_variab1])
+    vrb2<-as.data.frame(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[2],input$equiv_variab1])
+    media<-mean(vrb1[,1])-mean(vrb2[,1])
+    m1<-nrow(vrb1)
+    m2<-nrow(vrb2)
+    if(input$equiv_var==1){
+      s1<-input$equiv_var_nota1
+      s2<-input$equiv_var_nota2
+      q<-qnorm(input$equiv_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+      ei <- media-q*sqrt(s1^2/m1+s2^2/m2)
+    } else {
+      ds1<-sd(vrb1[,1])
+      ds2<-sd(vrb2[,1])
+      sc<-sqrt(((m1-1)*ds1^2+(m2-1)*ds2^2)/(m1+m2-2))
+      if(input$equiv_var_uguale==1){
+        dof<-nrow(vrb1)+nrow(vrb2)-2
+        q<-qt(input$equiv_alfa,df = dof,lower.tail = FALSE)
+        ei <- media-q*sc*sqrt(1/m1+1/m2)
+      }else{
+        dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
+          (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+        q<-qt(input$equiv_alfa,df = dof,lower.tail = FALSE)
+        ei <- media-q*sqrt(ds1^2/m1+ds2^2/m2)
+      }
+    }
+    ei
+  })
   
+  output$equiv_ic_inf<-renderText({
+    paste("estremo inferiore =",round(equiv_ic_inf(),4))
+  })
   
+  equiv_ic_sup <- reactive({
+    validate(need(input$equiv_alfa>0,""))
+    req(input$equiv_variab1%in%colnames(dati$DS))
+    req(input$equiv_variab2%in%colnames(dati$DS))
+    gruppi<-unique(dati$DS[,input$equiv_variab2])
+    vrb1<-as.data.frame(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[1],input$equiv_variab1])
+    vrb2<-as.data.frame(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[2],input$equiv_variab1])
+    media<-mean(vrb1[,1])-mean(vrb2[,1])
+    m1<-nrow(vrb1)
+    m2<-nrow(vrb2)
+    if(input$equiv_var==1){
+      s1<-input$equiv_var_nota1
+      s2<-input$equiv_var_nota2
+      q<-qnorm(input$equiv_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+      es <- media+q*sqrt(s1^2/m1+s2^2/m2)
+    } else {
+      ds1<-sd(vrb1[,1])
+      ds2<-sd(vrb2[,1])
+      sc<-sqrt(((m1-1)*ds1^2+(m2-1)*ds2^2)/(m1+m2-2))
+      if(input$equiv_var_uguale==1){
+        dof<-nrow(vrb1)+nrow(vrb2)-2
+        q<-qt(input$equiv_alfa,df = dof,lower.tail = FALSE)
+        es <- media+q*sc*sqrt(1/m1+1/m2)
+      }else{
+        dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
+          (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
+        q<-qt(input$equiv_alfa,df = dof,lower.tail = FALSE)
+      es <- media+q*sqrt(ds1^2/m1+ds2^2/m2)
+      }
+    }
+  })
   
+  output$equiv_ic_sup<-renderText({
+    paste("estremo superiore =",round(equiv_ic_sup(),4))
+  })
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  ############### verif ipotesi
-  
-  
-  
+  output$equiv_pval<-renderText({
+    p <- max(equiv_pval1(),equiv_pval2())
+    p<-format(p,digits = 4,format="e")
+    paste("p-value =",p)
+  }) 
+
+  output$equiv_graf_intconf <- renderPlot({
+    req(input$equiv_H0)
+    validate(need(nrow(dati$DS)!=0,""))
+    validate(need(length(unique(dati$DS[,input$equiv_variab2]))==2,""))
+    
+    delta <- input$equiv_H0
+    inf <- equiv_ic_inf()
+    sup <- equiv_ic_sup()
+    pval <- max(equiv_pval1(),equiv_pval2())
+    
+    plot(x=0,y=0,type="n",frame.plot = FALSE,yaxt="n",xlab="",ylab="",xlim=c(-2*delta,2*delta))
+    abline(v=-delta,lty=2,col="blue")
+    mtext(text =expression(-delta),at = -delta,side = 1,line = 2,col="blue")
+    abline(v=delta,lty=2,col="blue")
+    mtext(text =expression(-delta),at = delta,side = 1,line = 2,col="blue" )
+
+    arrows(x0 = inf,y0 = 0,x1 = sup,y1 = 0,length = 0.1,angle = 90,code = 3,col = "green4")
+
+    if(pval<0.05){
+      txt <- "equiv."
+    }else{
+      txt <- "no equiv."
+    }
+
+    mtext(text =txt,at =(inf+sup)/2,side = 1,line = 2,col="green4",cex=0.8 )
+  })
+
   output$equiv_qqplot1<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0,""))
@@ -2037,7 +2078,6 @@ server <- function (input , output, session ){
       theme_classic()
   })
   
-  
   output$equiv_shapiro2<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
@@ -2047,40 +2087,387 @@ server <- function (input , output, session ){
     Campione.2<-dati[,input$equiv_variab1]
     shapiro.test(Campione.2) 
   }) 
+
+  # equiv_test_a -----------------------------------------------------------------
   
+  output$equiva_variab1<-renderUI({
+    selectizeInput(inputId = "equiva_variab1"," ",
+                   choices = dati$var_qt)})
   
+  output$equiva_variab2<-renderUI({
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    selectizeInput(inputId = "equiva_variab2"," ",
+                   choices = dati$var_qt[!dati$var_qt%in%input$equiva_variab1])})
   
+  output$equiva_H0<-renderUI({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    numericInput("equiva_H0",label = "Differenza critica per equivalenza &delta;",
+                 value=1,width = "40%")
+  })
   
+  output$equiva_var_nota<-renderUI({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    req(input$equiva_var==1)
+    numericInput("equiva_var_nota",label = "Dev. standard differenze nota",
+                 value=round(sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1]),3),width = "40%")
+  })
+
+  output$equiva_Test1_1<-renderText({
+    validate(need(input$equiva_var==1,""))
+    "z-test 1"
+  })
   
+  output$equiva_Test1_2<-renderText({
+    validate(need(input$equiva_var==2,""))
+    "t-test 1"
+  })
   
+  output$equiva_H0_txt1 = renderUI({        
+    HTML("H<SUB>0</SUB>: &mu;<SUB>d</SUB> = -", input$equiva_H0,"<p> H<SUB>1</SUB>: &mu;<SUB>d</SUB> &gt; -",input$equiva_H0)
+  })
   
+  output$equiva_graf_distr1<-renderPlot({
+    require(ggplot2)
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(is.numeric(dati$DS[,input$equiva_variab1])&is.numeric(dati$DS[,input$equiva_variab2])){
+      vrb<-as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])
+      x<-seq(-6, 6,by = 0.1)
+      if(input$equiva_var==1){
+        df<-cbind.data.frame(x=x,y=dnorm(x,mean=0,sd=1))
+        if(input$equiva_alfa>0){
+          q<-qnorm(input$equiva_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+          if(q>6) q<-6
+          x.b<-seq(q,6,by = 0.1)
+          # x.a<- -x.b[order(x.b,decreasing = TRUE)]
+          # df.a<-cbind.data.frame(x=x.a,y=dnorm(x.a,mean =0,sd = 1))
+          # df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
+          df.b<-cbind.data.frame(x=x.b,y=dnorm(x.b,mean =0,sd = 1))
+          df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
+        }
+        gr<-ggplot() +theme_classic()+
+          geom_line(data = df,mapping = aes(x=x,y=y))+
+          ylab("densità")+xlab(expression(frac(bar(d)+delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          theme(plot.title = element_text(size = 20, face = "bold",
+                                          hjust = 0.5))
+        
+        if(input$equiva_alfa>0){
+          gr<-gr+
+            # geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
+            geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
+        gr+geom_vline(xintercept = (mean(vrb[,1])+input$equiva_H0)/(input$equiva_var_nota*sqrt(1/nrow(vrb))),col="green")
+      } else {
+        dof<-nrow(vrb)-1
+        if (dof==0){
+          plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
+          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
+             numerosità del campione almeno 2 \n",col="red",cex=2)
+        } else {
+          ds<-sd(vrb[,1])
+          df<-cbind.data.frame(x=x,y=dt(x,df = dof))
+          if(input$equiva_alfa>0){
+            q<-qt(input$equiva_alfa,df = dof,lower.tail = FALSE)
+            if(q>6) q<-6
+            x.b<-seq(q,6,by = 0.1)
+            # x.a<- -x.b[order(x.b,decreasing = TRUE)]
+            # df.a<-cbind.data.frame(x=x.a,y=dt(x.a,df = dof))
+            # df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
+            df.b<-cbind.data.frame(x=x.b,y=dt(x.b,df = dof))
+            df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
+          }
+          
+          gr<-ggplot() +theme_classic()+
+            geom_line(data = df,mapping = aes(x=x,y=y))+
+            ylab("densità")+xlab(expression(frac(bar(d)+delta,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            theme(plot.title = element_text(size = 20, face = "bold",
+                                            hjust = 0.5))
+          
+          if(input$equiva_alfa>0){
+            gr<-gr+
+              # geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
+              geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
+          
+          gr+geom_vline(xintercept = (mean(vrb[,1])+input$equiva_H0)/(ds*sqrt(1/nrow(vrb))),col="green") 
+        }
+      }
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare due variabili quantitative!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }
+  })
+
+  output$equiva_stat1<-renderText({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(input$ttest2_var=="1"){
+      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$ttest2_H0)/
+                                   (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
+    }else{
+      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$equiva_H0)/
+                                   (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
+    }
+  }) 
+
+  equiva_pval1<- reactive({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(input$equiva_var=="1"){
+      q<-(mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$equiva_H0)/
+        (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))) 
+      p<-pnorm(q = abs(q),mean = 0,sd = 1,lower.tail = FALSE)
+      # p<-format(2*p,digits = 4,format="e")
+    }else{
+      q<-(mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$equiva_H0)/
+        (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1]))))
+      dof<-nrow(as.data.frame(dati$DS[,input$equiva_variab1]))-1
+      p<-pt(q = abs(q),df = dof,lower.tail = FALSE)
+      # p<-format(2*p,digits = 4,format="e")
+    }
+    p
+  })
+
+  output$equiva_pval1<-renderText({
+    p <- equiva_pval1()
+    p<-format(p,digits = 4,format="e")
+    paste("p-value =",p)
+  }) 
+
+  output$equiva_Test2_1<-renderText({
+    validate(need(input$equiva_var==1,""))
+    "z-test 2"
+  })
   
+  output$equiva_Test2_2<-renderText({
+    validate(need(input$equiva_var==2,""))
+    "t-test 2"
+  })
   
+  output$equiva_H0_txt2 = renderUI({        
+    HTML("H<SUB>0</SUB>: &mu;<SUB>d</SUB> = ", input$equiva_H0,"<p> H<SUB>1</SUB>: &mu;<SUB>d</SUB> &lt;",input$equiva_H0)
+  })
   
+  output$equiva_graf_distr2<-renderPlot({
+    require(ggplot2)
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(is.numeric(dati$DS[,input$equiva_variab1])&is.numeric(dati$DS[,input$equiva_variab2])){
+      vrb<-as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])
+      x<-seq(-6, 6,by = 0.1)
+      if(input$equiva_var==1){
+        df<-cbind.data.frame(x=x,y=dnorm(x,mean=0,sd=1))
+        if(input$equiva_alfa>0){
+          q<-qnorm(input$equiva_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+          if(q>6) q<-6
+          x.b<-seq(q,6,by = 0.1)
+          x.a<- -x.b[order(x.b,decreasing = TRUE)]
+          df.a<-cbind.data.frame(x=x.a,y=dnorm(x.a,mean =0,sd = 1))
+          df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
+          # df.b<-cbind.data.frame(x=x.b,y=dnorm(x.b,mean =0,sd = 1))
+          # df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
+        }
+        gr<-ggplot() +theme_classic()+
+          geom_line(data = df,mapping = aes(x=x,y=y))+
+          ylab("densità")+xlab(expression(frac(bar(d)-delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          theme(plot.title = element_text(size = 20, face = "bold",
+                                          hjust = 0.5))
+        
+        if(input$equiva_alfa>0){
+          gr<-gr+
+            geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")
+          # +
+          # geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")
+        } 
+        gr+geom_vline(xintercept = (mean(vrb[,1])-input$equiva_H0)/(input$equiva_var_nota*sqrt(1/nrow(vrb))),col="green")
+      } else {
+        dof<-nrow(vrb)-1
+        if (dof==0){
+          plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
+          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
+             numerosità del campione almeno 2 \n",col="red",cex=2)
+        } else {
+          ds<-sd(vrb[,1])
+          df<-cbind.data.frame(x=x,y=dt(x,df = dof))
+          if(input$equiva_alfa>0){
+            q<-qt(input$equiva_alfa,df = dof,lower.tail = FALSE)
+            if(q>6) q<-6
+            x.b<-seq(q,6,by = 0.1)
+            x.a<- -x.b[order(x.b,decreasing = TRUE)]
+            df.a<-cbind.data.frame(x=x.a,y=dt(x.a,df = dof))
+            df.a<-rbind(c(min(x.a), 0), df.a, c(max(x.a), 0))
+            # df.b<-cbind.data.frame(x=x.b,y=dt(x.b,df = dof))
+            # df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
+          }
+          
+          gr<-ggplot() +theme_classic()+
+            geom_line(data = df,mapping = aes(x=x,y=y))+
+            ylab("densità")+xlab(expression(frac(bar(d)-delta,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            theme(plot.title = element_text(size = 20, face = "bold",
+                                            hjust = 0.5))
+          
+          if(input$equiva_alfa>0){
+            gr<-gr+
+              geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")
+            # +
+            # geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")
+          } 
+          
+          gr+geom_vline(xintercept = (mean(vrb[,1])-input$equiva_H0)/(ds*sqrt(1/nrow(vrb))),col="green") 
+        }
+      }
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare due variabili quantitative!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }
+  })
+
+  output$equiva_stat2<-renderText({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(input$ttest2_var=="1"){
+      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$ttest2_H0)/
+                                   (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
+    }else{
+      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$equiva_H0)/
+                                   (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
+    }
+  }) 
+
+  equiva_pval2<- reactive({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    if(input$equiva_var=="1"){
+      q<-(mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$equiva_H0)/
+        (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))) 
+      p<-pnorm(q = abs(q),mean = 0,sd = 1,lower.tail = FALSE)
+      # p<-format(2*p,digits = 4,format="e")
+    }else{
+      q<-(mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$equiva_H0)/
+        (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1]))))
+      dof<-nrow(as.data.frame(dati$DS[,input$equiva_variab1]))-1
+      p<-pt(q = abs(q),df = dof,lower.tail = FALSE)
+      # p<-format(2*p,digits = 4,format="e")
+    }
+    p
+  })
+
+  output$equiva_pval2<-renderText({
+    p <- equiva_pval2()
+    p<-format(p,digits = 4,format="e")
+    paste("p-value =",p)
+  }) 
+
+  output$equiva_ic_titolo<-renderText({
+    validate(need(input$equiva_alfa>0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    "Intervallo di confidenza"
+  })
+
+  equiva_ic_inf <- reactive({
+    validate(need(input$equiva_alfa>0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    media<-mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])
+    m<-nrow(as.data.frame(dati$DS[,input$equiva_variab1]))
+    if(input$equiva_var==1){
+      s<-input$equiva_var_nota
+      q<-qnorm(input$equiva_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+    } else {
+      s<-sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])
+      q<-qt(input$equiva_alfa,df = m-1,lower.tail = FALSE)
+    }
+    ei <- media-q*s*sqrt(1/m)
+    ei
+  })
+
+  output$equiva_ic_inf<-renderText({
+    paste("estremo inferiore =",round(equiva_ic_inf(),4))
+  })
+
+  equiva_ic_sup <- reactive({
+    validate(need(input$equiva_alfa>0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    media<-mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])
+    m<-nrow(as.data.frame(dati$DS[,input$equiva_variab1]))
+    if(input$equiva_var==1){
+      s<-input$equiva_var_nota
+      q<-qnorm(input$equiva_alfa,mean = 0,sd = 1,lower.tail = FALSE)
+    } else {
+      s<-sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])
+      q<-qt(input$equiva_alfa,df = m-1,lower.tail = FALSE)
+    }
+    es <- media+q*s*sqrt(1/m)
+    es
+  })
+
+  output$equiva_ic_sup<-renderText({
+    paste("estremo superiore =",round(equiva_ic_sup(),4))
+  })
+
+  output$equiva_pval<-renderText({
+    p <- max(equiva_pval1(),equiva_pval2())
+    p<-format(p,digits = 4,format="e")
+    paste("p-value =",p)
+  }) 
+
+  output$equiva_graf_intconf <- renderPlot({
+    req(input$equiva_H0)
+    validate(need(nrow(dati$DS)!=0,""))
+
+    delta <- input$equiva_H0
+    inf <- equiva_ic_inf()
+    sup <- equiva_ic_sup()
+    pval <- max(equiva_pval1(),equiva_pval2())
+    
+    plot(x=0,y=0,type="n",frame.plot = FALSE,yaxt="n",xlab="",ylab="",xlim=c(-2*delta,2*delta))
+    abline(v=-delta,lty=2,col="blue")
+    mtext(text =expression(-delta),at = -delta,side = 1,line = 2,col="blue")
+    abline(v=delta,lty=2,col="blue")
+    mtext(text =expression(-delta),at = delta,side = 1,line = 2,col="blue" )
+    
+    arrows(x0 = inf,y0 = 0,x1 = sup,y1 = 0,length = 0.1,angle = 90,code = 3,col = "green4")
+    
+    if(pval<0.05){
+      txt <- "equiv."
+    }else{
+      txt <- "no equiv."
+    }
+    mtext(text =txt,at =(inf+sup)/2,side = 1,line = 2,col="green4",cex=0.8 )
+  })
+
+  output$equiva_qqplot<-renderPlot({
+    require(ggplot2)
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    Diff<-dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2]
+    ggplot(dati$DS,aes(sample=Diff))+
+      stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
+      labs(x="quantili teorici",  y = "quantili campione")+
+      theme_classic()
+  })
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  output$equiva_shapiro<-renderPrint({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$equiva_variab1%in%colnames(dati$DS))
+    req(input$equiva_variab2%in%colnames(dati$DS))
+    Differenze<-dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2]
+    shapiro.test(Differenze) 
+  })
+
   # ftest -----------------------------------------------------------------
   
   output$ftest_variab1<-renderUI({

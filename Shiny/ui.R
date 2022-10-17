@@ -16,6 +16,7 @@ sidebar<- dashboardSidebar(
                          menuSubItem("Vedi dati",tabName = "vedi"),
                          menuSubItem("Summary",tabName = "summary"),
                          menuSubItem("Graf. dispersione",tabName = "graf_disp"),
+                         menuSubItem("Graf. punti",tabName = "graf_pt"),
                          menuSubItem("Istogramma",tabName = "graf_hist"),
                          menuSubItem("Box plot",tabName = "graf_box")
                 ),
@@ -67,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 4.1 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 5.3 </font></center>')
                         )))
 
 
@@ -107,7 +108,6 @@ body<-dashboardBody(
                                                          choices = c(Head = "head",
                                                                      All = "all"),
                                                          selected = "head")),
-                                     
                                      column(8,
                                             div(style = 'overflow-x: scroll;',tableOutput("contents_xlsx")))),
                             tabPanel("CSV", 
@@ -175,11 +175,16 @@ body<-dashboardBody(
                                verbatimTextOutput("righe_restanti"),
                                actionButton("desel_righe","Deseleziona tutte le righe")))), 
 
-# Statistica descrittiva --------------------------------------------------
+      # Statistica descrittiva --------------------------------------------------
 
       tabItem(tabName = "vedi",
               fluidPage(titlePanel("Dati"),
-                        div(style = 'overflow-x: scroll;',DT::dataTableOutput("dati")))),
+                        div(style = 'overflow-x: scroll;',DT::dataTableOutput("dati")),
+                        br(),
+                        actionButton("dati_ripristina","Ripristina dati")
+                        # ,
+                        # rhandsontable::rHandsontableOutput('a')
+                        )),
       
       tabItem(tabName = "summary",
               fluidPage(titlePanel("Descrittori di posizione e di dispersione "),
@@ -205,6 +210,17 @@ body<-dashboardBody(
                                actionButton("graf_disp_ripr_brush","Ripristina dati cancellati"),
                                verbatimTextOutput("graf_disp_selez")))),
 
+      tabItem(tabName = "graf_pt",
+              fluidPage(titlePanel("Grafico a punti "),
+                        column(8,
+                               uiOutput("graf_pt_var")),
+                        column(4,
+                               uiOutput("graf_pt_var_gr")),
+                        column(8,
+                               plotOutput("graf_pt")),
+                        column(2,
+                               uiOutput("graf_pt_gr")))),
+
       tabItem(tabName = "graf_hist",
               fluidPage(titlePanel("Istogramma"),
                         column(8,
@@ -212,7 +228,8 @@ body<-dashboardBody(
                         column(4,
                                uiOutput("graf_hist_var_gr")),
                         column(8,
-                               plotOutput("graf_hist")),
+                               plotOutput("graf_hist"),
+                               uiOutput("graf_hist_var_gr_dodge")),
                         column(2),
                         column(2,
                                uiOutput("graf_hist_gr")),
@@ -885,6 +902,8 @@ tabItem(tabName = "regrsemplice",
                                        column(12),
                                        column(4,
                                               h3("Parametri regressione"),
+                                              sliderInput(inputId="regrsemplice_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                                          step=0.01),
                                               h4("Stima puntuale"),
                                               verbatimTextOutput("regrsemplice_parpt"),
                                               h4("Stima per intervallo"),
@@ -948,6 +967,8 @@ tabItem(tabName = "regrpoli",
                                        column(12),
                                        column(4,
                                               h3("Parametri regressione"),
+                                              sliderInput(inputId="regrpoli_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                                          step=0.01),
                                               h4("Stima puntuale"),
                                               verbatimTextOutput("regrpoli_parpt"),
                                               h4("Stima per intervallo"),
@@ -1010,6 +1031,8 @@ tabItem(tabName = "regrmulti",
                                        column(12),
                                        column(4,
                                               h3("Parametri regressione"),
+                                              sliderInput(inputId="regrmulti_alfa",label = "Significatività",min = 0,max = 1,value = 0.05,
+                                                          step=0.01),
                                               h4("Stima puntuale"),
                                               verbatimTextOutput("regrmulti_parpt"),
                                               h4("Stima per intervallo"),
@@ -1418,7 +1441,7 @@ tabItem(tabName = "potenza",
                                      step=0.1),
                          sliderInput(inputId="potenza_ds",label = "Dev. st",min = 0.1,max = 5,value = 1,
                                      step=0.1),
-                         sliderInput(inputId="potenza_num_pop",label = "Numerosità popolazione",min = 2,max = 100,value = 5,
+                         sliderInput(inputId="potenza_num_pop",label = "Numerosità del campione",min = 2,max = 100,value = 5,
                                      step=1),
                          hr(),
                          h4(textOutput("potenza_err2")),
@@ -1741,7 +1764,8 @@ tabItem(tabName = "regr",
 
 
 ui <- dashboardPage(skin = 'purple',header, sidebar, body,
-                    tags$head(HTML("<title>Modunivar</title>"),tags$link(rel = "stylesheet", type = "text/css", href = "tema.css")))
+                    tags$head(HTML("<title>Modunivar</title>"),tags$link(rel = "stylesheet", type = "text/css", href = "tema.css"),
+                              tags$link(rel = "shortcut icon", href = "MODUNIVAR.ico")))
 
 
 

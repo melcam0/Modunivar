@@ -199,22 +199,50 @@ server <- function (input , output, session ){
   
 
 # dati caricati -----------------------------------------------------------
-  
-  output$dati<-DT::renderDataTable(rownames=TRUE,extensions = 'ColReorder',
-                                   options = list(
-                                     autoWidth = TRUE,
-                                     columnDefs = list(list(width = '100px', targets = "_all")),
-                                     colReorder = TRUE),
-                                   class = 'cell-border stripe',
-                                   # filter = 'bottom',
-                                   {
+
+  output$dati<-DT::renderDataTable(                            {
     validate(need(nrow(dati$DS)!=0,""))
     #if(length(dati$nr)==0){
-      dati$DS
+    DT::datatable(dati$DS  ,editable = TRUE,class = 'cell-border stripe',rownames = TRUE,extensions = 'ColReorder',
+                  options = list(
+                    autoWidth = TRUE,
+                    columnDefs = list(list(width = '100px', 
+                                           targets = "_all"
+                                           )),
+                    colReorder = TRUE)
+                  )
    # } else {
     #  dati$DS_nr[!dati$righe%in%dati$righe_tolte,]}
       })
+  
+  # proxy = dataTableProxy("dati")
 
+  observeEvent(input$dati_cell_edit, {
+    info = input$dati_cell_edit
+    
+    i = info$row
+    j = info$col
+    k = info$value
+    
+    dati$DS[i, j] <<- DT::coerceValue(k, dati$DS[i, j])
+    
+    # replaceData(proxy, dati$DS, resetPaging = FALSE)  # replaces data displayed by the updated table
+  })
+  
+  observeEvent(input$dati_ripristina,ignoreNULL = FALSE, {
+    dati$DS<-dati$DS_righe
+  })
+  
+  
+  # output$a <- rhandsontable::renderRHandsontable({
+  #   rhandsontable::rhandsontable(dati$DS)%>%
+  #     rhandsontable::hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE)%>%
+  #     rhandsontable::hot_cols(columnSorting = TRUE)%>% 
+  #     hot_cols(format = "0.000000")
+  # })
+  
+  
+  
 # variabili qualitative ---------------------------------------------------
   
   output$var_quali<-renderUI({
@@ -439,7 +467,8 @@ server <- function (input , output, session ){
       df<-cbind.data.frame(df,gruppo=lab)
       row.names(df)<-row.names(dati$DS)
       gr<-ggplot(df,mapping = aes(x=indice,y=y))+labs(x="indice",y=input$graf_disp_var)+
-        theme_light()+ coord_cartesian(xlim = graf$xlim, ylim = graf$ylim, expand = TRUE)
+        theme_light()+ coord_cartesian(xlim = graf$xlim, ylim = graf$ylim, expand = TRUE)+
+        scale_x_continuous(breaks=df$indice)
       if(is.null(graf$gr)){
         if(!input$graf_disp_labels){
           gr<-gr+geom_point(cex=2,col="blue")
@@ -505,6 +534,90 @@ server <- function (input , output, session ){
     df
   })
 
+  # grafico a punti (dotplot) -----------------------------------------------------------
+  
+  output$graf_pt_var<-renderUI({
+    selectizeInput(inputId = "graf_pt_var"," ",
+                   choices = dati$var_qt)})
+  
+  output$graf_pt_var_gr<-renderUI({
+    req(dati$var_ql)
+    checkboxGroupInput(inputId = "graf_pt_var_gr",label = "seleziona i fattori",
+                       choices = dati$var_ql,selected =dati$var_gr)
+  })
+  
+  observeEvent(input$graf_pt_var_gr,ignoreNULL = FALSE,{
+    graf$var_gr<-input$graf_pt_var_gr
+    if(is.null(input$graf_pt_var_gr)){
+      graf$gr<-NULL
+    } else {
+      graf$gr<-input$graf_pt_gr
+    }
+  })
+ 
+  output$graf_pt_gr<-renderUI({
+    req(input$graf_pt_var_gr)
+    req(graf$var_gr)
+    if(length(graf$var_gr)==1){
+      checkboxGroupInput(inputId = "graf_pt_gr",label = "deseleziona i livelli che non interessano",
+                         choices = unique(dati$DS[,input$graf_pt_var_gr]),selected =unique(dati$DS[,input$graf_pt_var_gr]))
+    } else if (length(graf$var_gr)==2){
+      lv<-unique(interaction(dati$DS[,input$graf_pt_var_gr[1]],dati$DS[,input$graf_pt_var_gr[2]]))
+      checkboxGroupInput(inputId = "graf_pt_gr",label = "deseleziona i livelli che non interessano",
+                         choices = lv,selected =lv)
+    } else if (length(graf$var_gr)==3){
+      lv<-unique(interaction(dati$DS[,input$graf_pt_var_gr[1]],dati$DS[,input$graf_pt_var_gr[2]],dati$DS[,input$graf_pt_var_gr[3]]))
+      checkboxGroupInput(inputId = "graf_pt_gr",label = "deseleziona i livelli che non interessano",
+                         choices = lv,selected =lv)
+    } else if (length(graf$var_gr)>3){
+      print("Massimo 3 fattori")}
+  })
+  
+  observeEvent(input$graf_pt_gr,ignoreNULL = FALSE,{
+    graf$gr<-input$graf_pt_gr
+  })
+  
+  output$graf_pt<-renderPlot({
+    require(ggplot2)
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$graf_pt_var%in%colnames(dati$DS))
+    
+    if(is.numeric(as.data.frame(dati$DS[,input$graf_pt_var,drop=FALSE])[,1])){
+      
+      df<-cbind.data.frame(dati$DS[,input$graf_pt_var,drop=FALSE],c(1:length(dati$DS[,input$graf_pt_var])))
+      colnames(df)<-c("y","indice")
+      if(!is.null(graf$var_gr)){
+        if (length(graf$var_gr)==1){
+          lab<-as.factor(dati$DS[,input$graf_pt_var_gr])
+        } else if (length(graf$var_gr)==2){
+          lab<-as.factor(interaction(dati$DS[,input$graf_pt_var_gr[1]],dati$DS[,input$graf_pt_var_gr[2]]))
+        } else if (length(graf$var_gr)==3){
+          lab<-as.factor(interaction(dati$DS[,input$graf_pt_var_gr[1]],dati$DS[,input$graf_pt_var_gr[2]],dati$DS[,input$graf_pt_var_gr[3]]))
+        }
+      } else {
+        lab<-rep("0",nrow(df))
+      }
+      df<-cbind.data.frame(df,gruppo=lab)
+      row.names(df)<-row.names(dati$DS)
+
+      gr<-ggplot(df,mapping = aes(x=y))+labs(x="valore dati",y=" ")+
+        theme_light()
+      if(is.null(graf$gr)){
+        gr<-gr+geom_dotplot(dotsize = .75, stackratio = 1.2, fill = "steelblue",colour = "steelblue")
+        gr <- gr+scale_y_continuous(NULL, breaks = NULL)
+        print(gr)
+      } else {
+        gr<-gr+geom_dotplot(dotsize = .75, stackratio = 1.2,mapping = aes(colour=gruppo,fill=gruppo))
+        gr<-gr%+%subset(df,df$gruppo%in%graf$gr)
+        print(gr)
+      }
+    }else{
+      sendSweetAlert(session, title = "Input Error",
+                     text = 'Selezionare una variabile quantitativa!',
+                     type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
+    }
+  })
+
 # Istogramma --------------------------------------------------------------
   
   output$graf_hist_var<-renderUI({
@@ -516,7 +629,14 @@ server <- function (input , output, session ){
     checkboxGroupInput(inputId = "graf_hist_var_gr",label = "seleziona i fattori",
                        choices = dati$var_ql,selected =dati$var_gr)
   })
-  
+
+  output$graf_hist_var_gr_dodge<-renderUI({
+    req(dati$var_ql)
+    req(input$graf_hist_var_gr)
+    req(graf$var_gr)
+    checkboxInput(inputId = "graf_hist_var_gr_dodge", label = "dodge", value = FALSE)
+  })
+
   observeEvent(input$graf_hist_var_gr,ignoreNULL = FALSE,{
     graf$var_gr<-input$graf_hist_var_gr
     if(is.null(input$graf_hist_var_gr)){
@@ -551,18 +671,20 @@ server <- function (input , output, session ){
   output$graf_hist_bin<-renderUI({
     req(input$graf_hist_var%in%colnames(dati$DS))
     if(is.numeric(as.data.frame(dati$DS[,input$graf_hist_var,drop=FALSE])[,1])){
+
       sliderInput(inputId = "graf_hist_bin",label = "larghezza barra",ticks = FALSE,
                   min = round((1/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
                   max = round((7/4)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
                   step = round((3/20)*(max(abs(dati$DS[,input$graf_hist_var]))-min(abs(dati$DS[,input$graf_hist_var])))/sqrt(nrow(dati$DS)),3),
-                  value = round((max(dati$DS[,input$graf_hist_var])-min(dati$DS[,input$graf_hist_var]))/sqrt(nrow(dati$DS)),3))
+                  value = round((max(dati$DS[,input$graf_hist_var])-min(dati$DS[,input$graf_hist_var]))/sqrt(nrow(dati$DS)),3)
+                  )
     }else{
       sendSweetAlert(session, title = "Input Error",
                      text = 'Selezionare una variabile quantitativa!',
                      type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
-  
+
   output$graf_hist<-renderPlot({
     require(ggplot2)
     validate(need(nrow(dati$DS)!=0 & input$graf_hist_var%in%colnames(dati$DS),""))
@@ -589,20 +711,34 @@ server <- function (input , output, session ){
       if(is.null(graf$gr)){
         gr+geom_histogram(binwidth = input$graf_hist_bin,fill="blue",col="white",aes(y = ..count..))+labs(y="conteggio")
       } else {
-        gr<-gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..count..,fill=gruppo))+labs(y="conteggio")
-        gr%+%subset(df,df$gruppo%in%graf$gr)
+        if(input$graf_hist_var_gr_dodge==FALSE){
+          gr<-gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..count..,fill=gruppo),position='identity',alpha=0.5)+labs(y="conteggio")
+          gr%+%subset(df,df$gruppo%in%graf$gr)
+        }else{
+          gr<-gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..count..,fill=gruppo),position='dodge')+labs(y="conteggio")
+          gr%+%subset(df,df$gruppo%in%graf$gr)
+        }
       }
     } else if (input$graf_hist_tipo=="percentuale"){
       if(is.null(graf$gr)){
         gr+geom_histogram(binwidth = input$graf_hist_bin,fill="blue",col="white",aes(y = 100*(..count..)/sum(..count..)))+labs(y="percentuale")
       } else {
-        gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = 100*(..count..)/sum(..count..),fill=gruppo))+labs(y="percentuale")
+        if(input$graf_hist_var_gr_dodge==FALSE){
+          gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = 100*(..count..)/sum(..count..),fill=gruppo),position='identity',alpha=0.5)+labs(y="percentuale")
+        }else{
+          gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = 100*(..count..)/sum(..count..),fill=gruppo),position='dodge')+labs(y="percentuale")
+        }
       }
     } else if (input$graf_hist_tipo=="densità"){
       if(is.null(graf$gr)){
         gr+geom_histogram(binwidth = input$graf_hist_bin,fill="blue",col="white",aes(y = ..density..))+labs(y="densità")
       } else {
-        gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..density..,fill=gruppo))+labs(y="densità")
+        if(input$graf_hist_var_gr_dodge==FALSE){
+          gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..density..,fill=gruppo),position='identity',alpha=0.5)+labs(y="densità")
+        
+        }else{
+          gr+geom_histogram(binwidth = input$graf_hist_bin,col="blue",aes(y = ..density..,fill=gruppo),position='dodge')+labs(y="densità")
+        }
       }
     }
   })
@@ -3777,7 +3913,7 @@ server <- function (input , output, session ){
     require(ggplot2)
     ggplot(data = df,aes(x=x,y=y))+xlab(input$regrsemplice_variabx)+ylab(input$regrsemplice_variaby)+
       geom_point()+theme_light()+
-      stat_smooth(method = "lm", col = "red",formula = formula(frm))
+      stat_smooth(method = "lm", col = "red",formula = formula(frm),level=1-input$regrsemplice_alfa)
   })
   
   output$regrsemplice_parpt<-renderPrint({
@@ -3803,7 +3939,7 @@ server <- function (input , output, session ){
     if(!input$regrsemplice_intercetta)frm <- paste(frm, '- 1')
     frm <- formula(frm)
     mod<-lm(frm,df)
-    confint(object = mod,level = 0.95)
+    confint(object = mod,level = 1-input$regrsemplice_alfa)
   })
   
   output$regrsemplice_prev<-renderPrint({
@@ -3818,7 +3954,7 @@ server <- function (input , output, session ){
     mod<-lm(frm,df)
     nd<-cbind.data.frame(x=input$regrsemplice_prevx)
     colnames(nd)<-input$regrsemplice_variabx
-    X <- predict(object = mod,newdata=nd,interval="confidence")
+    X <- predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrsemplice_alfa)
     rownames(X) <- ''
     X
   })
@@ -3843,7 +3979,7 @@ server <- function (input , output, session ){
     x <- (input$regrsemplice_prevy-b0)/b1
     nd<-cbind.data.frame(x)
     colnames(nd)<-input$regrsemplice_variabx
-    pred_M <- predict(object = mod,newdata=nd,interval="prediction")
+    pred_M <- predict(object = mod,newdata=nd,interval="prediction",level=1-input$regrsemplice_alfa)
     x_upr<-(pred_M[3]-b0)/b1
     semi.amp <- abs(x_upr-x)
     X <- cbind.data.frame(fit=x,lwr=x-semi.amp,upr=x+semi.amp)
@@ -4006,7 +4142,7 @@ server <- function (input , output, session ){
     require(ggplot2)
     ggplot(data = df,aes(x=x,y=y))+xlab(input$regrpoli_variabx)+ylab(input$regrpoli_variaby)+
       geom_point()+theme_light()+
-      stat_smooth(method = "lm", col = "red",formula = y~poly(x,input$regrpoli_grado))
+      stat_smooth(method = "lm", col = "red",formula = y~poly(x,input$regrpoli_grado),level=1-input$regrpoli_alfa)
   })
   
   output$regrpoli_parpt<-renderPrint({
@@ -4043,7 +4179,7 @@ server <- function (input , output, session ){
     }
     frm<-as.formula(paste(input$regrpoli_variaby,"~",input$regrpoli_variabx,pol))
     mod<-lm(frm,df)
-    confint(object = mod,level = 0.95)
+    confint(object = mod,,level=1-input$regrpoli_alfa)
   })
   
   output$regrpoli_prev<-renderPrint({
@@ -4063,7 +4199,7 @@ server <- function (input , output, session ){
     mod<-lm(frm,df)
     nd<-cbind.data.frame(x=input$regrpoli_prevx)
     colnames(nd)<-input$regrpoli_variabx
-    predict(object = mod,newdata=nd,interval="confidence")
+    predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrpoli_alfa)
   })
   
   output$regrpoli_summary<-renderPrint({
@@ -4280,12 +4416,12 @@ output$regrmulti_graf<-renderPlot({
   frm <- formula(frm)
   mod<-lm(frm,df)
   require(ggplot2)
-  df_coeff<-data.frame(names(mod$coefficients),mod$coefficients,confint(mod))
+  df_coeff<-data.frame(names(mod$coefficients),mod$coefficients,confint(mod,level=1-input$regrmulti_alfa))
   ggplot(data = df_coeff,aes(x =df_coeff$names.mod.coefficients.,
                              y=df_coeff$mod.coefficients))+
     xlab("")+ylab("")+theme_light()+
     geom_bar(fill="red",stat="identity")+
-    geom_errorbar(aes(ymin=df_coeff$X2.5.., ymax=df_coeff$X97.5..),
+    geom_errorbar(aes(ymin=df_coeff[,3], ymax=df_coeff[,4]),
                   width=0.2, colour="green3")+
     scale_x_discrete(limits=df_coeff$names.modello.coefficients.)
 })
@@ -4335,7 +4471,7 @@ output$regrmulti_parint<-renderPrint({
   if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
   frm <- formula(frm)
   mod<-lm(frm,df)
-  confint(object = mod,level = 0.95)
+  confint(object = mod,level=1-input$regrmulti_alfa)
 })
 
 output$regrmulti_prev<-renderPrint({
@@ -4362,7 +4498,7 @@ output$regrmulti_prev<-renderPrint({
   x<- as.numeric(unlist(strsplit(input$regrmulti_prevx," ")))
   nd<-rbind.data.frame(x)
   colnames(nd)<-input$regrmulti_variabx
-  predict(object = mod,newdata=nd,interval="confidence")
+  predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrmulti_alfa)
 })
 
 output$regrmulti_summary<-renderPrint({

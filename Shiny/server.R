@@ -5,10 +5,7 @@ server <- function (input , output, session ){
   observeEvent(input$openModal, {
     showModal(
       modalDialog(title = "Autori:",size = 's',easyClose = TRUE,footer = NULL,
-                  
                   tags$img(src = base64enc::dataURI(file = "GC.jpg", mime = "image/jpg")),
-                  
-                  
                   HTML((paste(" "," ","Giorgio Marrubini","email: giorgio.marrubini@unipv.it"," ",
                               'Camillo Melzi','email: camillomelzi@gmail.com',sep="<br/>"))))
     )
@@ -113,6 +110,8 @@ server <- function (input , output, session ){
     tryCatch({
       require(readxl)
       df=read_excel(path = input$file_xlsx$datapath,sheet = input$foglio_n,col_names = input$header)
+      suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
+                       <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
@@ -129,7 +128,6 @@ server <- function (input , output, session ){
   
   output$contents_xlsx <- renderTable({
     req(input$file_xlsx)
-    
     if(input$disp_xlx == "head") {
       return(head(dati$DS))
     }

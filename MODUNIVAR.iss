@@ -1,5 +1,5 @@
 #define MyAppName "MODUNIVAR"
-#define MyAppVersion "5.3"
+#define MyAppVersion "5.4"
 #define MyAppExeName "MODUNIVAR.vbs"
 #define MyAppPublisher ""
 #define MyAppURL ""

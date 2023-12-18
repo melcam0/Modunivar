@@ -6,7 +6,7 @@ header<-dashboardHeader(title = "MODUNIVAR",
 sidebar<- dashboardSidebar(
     sidebarMenu(
                 menuItem(text = "Dati",icon = shiny::icon("file-text"),
-                  menuSubItem("Esempi Master",tabName = "esempi"),
+                  menuSubItem("Esempi",tabName = "esempi"),
                   menuSubItem("Importa dati",tabName = "importa"),
                   menuSubItem("Variabili",tabName = "variabili"),
                   menuSubItem("Oggetti",tabName = "oggetti"),
@@ -37,7 +37,7 @@ sidebar<- dashboardSidebar(
                 hr(),
                 menuItem(text = "Distribuzioni",icon = shiny::icon("area-chart"),
                          menuSubItem("Normale",tabName = "normale"),
-                         menuSubItem("t Student",tabName = "tstudent"),
+                         menuSubItem("T Student",tabName = "tstudent"),
                          menuSubItem("Chi quadro",tabName = "chiquadro"),
                          menuSubItem("F",tabName = "f")
                 ),
@@ -53,13 +53,13 @@ sidebar<- dashboardSidebar(
                 menuItem(text = "File",icon = icon("briefcase", lib = "font-awesome"),
                          # menuSubItem("Dispensa",tabName = "dispensa"),
                          # menuSubItem("Diapositive",tabName = "diapositive"),
-                         br(),
-                         tags$header(
-                           em(  
-                             a(href="https://dispensemodunivar.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
-                           )
-                         ),
-                         br(),
+                         # br(),
+                         # tags$header(
+                         #   em(  
+                         #     a(href="https://dispensemodunivar.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
+                         #   )
+                         # ),
+                         # br(),
                          tags$header(
                            em(  
                              a(href="https://www.statskingdom.com/",  "   Statistics calculators" ,target="_blank",style="white-space: pre-wrap")
@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 5.4 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 6.0 </font></center>')
                         )))
 
 
@@ -513,12 +513,14 @@ tabItem(tabName = "equiv",
                                               uiOutput("equiva_variab2")),
                                        column(4,
                                               radioButtons("equiva_var", label = "",
-                                                           choices = list("Varianze note" = 1, "Varianze non note" = 2),
+                                                           choices = list("Varianza differenza nota" = 1, "Varianza differenza non nota" = 2),
                                                            selected = 2)),
                                        column(4,
-                                              uiOutput("equiva_var_nota1"),
-                                              uiOutput("equiva_var_nota2"),
-                                              uiOutput("equiva_var_uguale")),
+                                              uiOutput("equiva_var_nota")
+                                              # uiOutput("equiva_var_nota1"),
+                                              # uiOutput("equiva_var_nota2"),
+                                              # uiOutput("equiva_var_uguale")
+                                              ),
                                        br(),
                                        column(12),
                                        column(4,
@@ -1137,7 +1139,7 @@ tabItem(tabName = "regrmulti",
             )),
 
 tabItem(tabName = "tstudent",
-        fluidPage(titlePanel("Distribuzione t di Student"),
+        fluidPage(titlePanel("Distribuzione T di Student"),
                   column(8,
                          plotOutput("graf_tstudent")),
                   column(4,
@@ -1195,7 +1197,7 @@ tabItem(tabName = "tstudent",
         )),
 
 tabItem(tabName = "chiquadro",
-        fluidPage(titlePanel("Distribuzione chi qaudro"),
+        fluidPage(titlePanel("Distribuzione chi quadro"),
                   
                   column(8,
                          plotOutput("graf_chi")),
@@ -1431,7 +1433,7 @@ tabItem(tabName = "potenza",
         fluidPage(titlePanel("Potenza di un test"),
                   column(4,
                          radioButtons("potenza_test", label = "",
-                                      choices = list("z-test" = 1, "t-test" = 2),
+                                      choices = list("Z-test" = 1, "T-test" = 2),
                                       selected = 1)),
                   column(12,br()),
                   column(4,      

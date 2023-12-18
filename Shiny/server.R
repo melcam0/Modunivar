@@ -71,7 +71,7 @@ server <- function (input , output, session ){
       require(readxl)
       path<-paste("Dati/",input$lista_esempi,".xlsx",sep="")
       df=read_excel(path = path,sheet = 1,col_names = TRUE)
-      dati$DS<-as.data.frame(df)
+      dati$DS<-data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
       dati$righe<-row.names(df)
@@ -110,9 +110,9 @@ server <- function (input , output, session ){
     tryCatch({
       require(readxl)
       df=read_excel(path = input$file_xlsx$datapath,sheet = input$foglio_n,col_names = input$header)
-      suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
-                       <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
-      dati$DS<-as.data.frame(df)
+      # suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
+      #                  <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
+      dati$DS<-data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
       dati$righe<-row.names(df)
@@ -800,7 +800,7 @@ server <- function (input , output, session ){
           lab<-as.factor(interaction(dati$DS[,input$graf_box_var_gr[1]],dati$DS[,input$graf_box_var_gr[2]],dati$DS[,input$graf_box_var_gr[3]]))
         }
       } else {
-        lab<-rep("0",nrow(df))
+        lab<-rep(" ",nrow(df))
       }
       df<-cbind.data.frame(df,lab)
       colnames(df)<-c("y","gruppo")
@@ -880,12 +880,12 @@ server <- function (input , output, session ){
   
   output$ttest1_Test1<-renderText({
     validate(need(input$ttest1_var==1,""))
-    "z-test"
+    "Z-test"
   })
   
   output$ttest1_Test2<-renderText({
     validate(need(input$ttest1_var==2,""))
-    "t-test"
+    "T-test"
   })
   
   output$ttest1_H0<-renderUI({
@@ -934,7 +934,7 @@ server <- function (input , output, session ){
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
       
@@ -964,7 +964,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(x)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+          ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1087,12 +1087,12 @@ server <- function (input , output, session ){
   
   output$ttest2a_Test1<-renderText({
     validate(need(input$ttest2a_var==1,""))
-    "z-test"
+    "Z-test"
   })
   
   output$ttest2a_Test2<-renderText({
     validate(need(input$ttest2a_var==2,""))
-    "t-test"
+    "T-test"
   })
   
   output$ttest2a_variab2<-renderUI({
@@ -1143,7 +1143,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(d)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("densità")+xlab(expression(frac(bar(D)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1173,7 +1173,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(d)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            ylab("densità")+xlab(expression(frac(bar(D)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -1318,12 +1318,12 @@ server <- function (input , output, session ){
   
   output$ttest2_Test1<-renderText({
     validate(need(input$ttest2_var==1,""))
-    "z-test"
+    "Z-test"
   })
   
   output$ttest2_Test2<-renderText({
     validate(need(input$ttest2_var==2,""))
-    "t-test"
+    "T-test"
   })
   
   output$ttest2_variab2<-renderUI({
@@ -1406,7 +1406,7 @@ server <- function (input , output, session ){
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
         ylab("densità")+
-        xlab(expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
+        xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-(mu[1]-mu[2]),sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
@@ -1424,13 +1424,13 @@ server <- function (input , output, session ){
         ds2<-sd(vrb2[,1])
         if(input$ttest2_var_uguale==1){
           dof<-nrow(vrb1)+nrow(vrb2)-2
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),s[c]*sqrt(1/m[1]+1/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-(mu[1]-mu[2]),S[c]*sqrt(1/m[1]+1/m[2])))
           sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
         }else{
           dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
             (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-(mu[1]-mu[2]),sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-(mu[1]-mu[2]),sqrt(S[m[1]]^2/m[1]+S[m[2]]^2/m[2])))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -1447,7 +1447,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("t(",round(dof,3),")",sep=""))+
+          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1734,12 +1734,12 @@ server <- function (input , output, session ){
 
   output$equiv_Test1_1<-renderText({
     validate(need(input$equiv_var==1,""))
-    "z-test 1"
+    "Z-test 1"
   })
   
   output$equiv_Test1_2<-renderText({
     validate(need(input$equiv_var==2,""))
-    "t-test 1"
+    "T-test 1"
   })
   
   output$equiv_H0_txt1 = renderUI({        
@@ -1783,7 +1783,7 @@ server <- function (input , output, session ){
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
         ylab("densità")+
-        xlab(expression(frac((bar(x)[1]-bar(x)[2])+ delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
+        xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])+ delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
@@ -1802,13 +1802,13 @@ server <- function (input , output, session ){
         ds2<-sd(vrb2[,1])
         if(input$equiv_var_uguale==1){
           dof<-nrow(vrb1)+nrow(vrb2)-2
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])+ delta,s[c]*sqrt(1/m[1]+1/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])+ delta,S[c]*sqrt(1/m[1]+1/m[2])))
           sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
         }else{
           dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
             (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])+delta,sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])+delta,sqrt(S[m[1]]^2/m[1]+S[m[2]]^2/m[2])))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -1825,7 +1825,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("t(",round(dof,3),")",sep=""))+
+          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1897,12 +1897,12 @@ server <- function (input , output, session ){
 
   output$equiv_Test2_1<-renderText({
     validate(need(input$equiv_var==1,""))
-    "z-test 2"
+    "Z-test 2"
   })
   
   output$equiv_Test2_2<-renderText({
     validate(need(input$equiv_var==2,""))
-    "t-test 2"
+    "T-test 2"
   })
   
   output$equiv_H0_txt2 = renderUI({        
@@ -1946,7 +1946,7 @@ server <- function (input , output, session ){
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
         ylab("densità")+
-        xlab(expression(frac((bar(x)[1]-bar(x)[2])- delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
+        xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])- delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
@@ -1967,13 +1967,13 @@ server <- function (input , output, session ){
         ds2<-sd(vrb2[,1])
         if(input$equiv_var_uguale==1){
           dof<-nrow(vrb1)+nrow(vrb2)-2
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-delta,s[c]*sqrt(1/m[1]+1/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-delta,S[c]*sqrt(1/m[1]+1/m[2])))
           sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2)))
         }else{
           dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
             (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
-          x.text <- expression(frac((bar(x)[1]-bar(x)[2])-delta,sqrt(s[1]^2/m[1]+s[2]^2/m[2])))
+          x.text <- expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-delta,sqrt(S[m[1]]^2/m[1]+S[m[2]]^2/m[2])))
           stat <- ((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2)))
         }
         
@@ -1991,7 +1991,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("t(",round(dof,3),")",sep=""))+
+          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2237,7 +2237,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
-    numericInput("equiva_H0",label = "Differenza critica per equivalenza &delta;",
+    numericInput("equiva_H0",label = HTML("Differenza critica per equivalenza &delta;"),
                  value=1,width = "40%")
   })
   
@@ -2252,12 +2252,12 @@ server <- function (input , output, session ){
 
   output$equiva_Test1_1<-renderText({
     validate(need(input$equiva_var==1,""))
-    "z-test 1"
+    "Z-test 1"
   })
   
   output$equiva_Test1_2<-renderText({
     validate(need(input$equiva_var==2,""))
-    "t-test 1"
+    "T-test 1"
   })
   
   output$equiva_H0_txt1 = renderUI({        
@@ -2286,7 +2286,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(d)+delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("densità")+xlab(expression(frac(bar(D)[m]+delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2317,7 +2317,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(d)+delta,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            ylab("densità")+xlab(expression(frac(bar(D)[m]+delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -2376,12 +2376,12 @@ server <- function (input , output, session ){
 
   output$equiva_Test2_1<-renderText({
     validate(need(input$equiva_var==1,""))
-    "z-test 2"
+    "Z-test 2"
   })
   
   output$equiva_Test2_2<-renderText({
     validate(need(input$equiva_var==2,""))
-    "t-test 2"
+    "Z-test 2"
   })
   
   output$equiva_H0_txt2 = renderUI({        
@@ -2410,7 +2410,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(d)-delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("densità")+xlab(expression(frac(bar(D)[m]-delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2443,7 +2443,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(d)-delta,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+            ylab("densità")+xlab(expression(frac(bar(D)[m]-delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -2660,7 +2660,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(s[1]^2,s[2]^2)))+
+          ylab("densità")+xlab(expression(frac(S[m[1]]^2,S[m[2]]^2)))+
           ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
@@ -2840,7 +2840,7 @@ server <- function (input , output, session ){
       
     gr<-ggplot() +theme_classic()+
     geom_line(data = df,mapping = aes(x=x,y=y))+
-    ylab("densità")+xlab("f")+
+    ylab("densità")+xlab("F")+
     ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
     theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
       
@@ -3037,7 +3037,7 @@ server <- function (input , output, session ){
 
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("f")+
+      ylab("densità")+xlab("F")+
       ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
     
@@ -3131,7 +3131,7 @@ server <- function (input , output, session ){
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("f")+
+      ylab("densità")+xlab("F")+
       ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
     
@@ -4765,7 +4765,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=dnorm(x,mean=input$graf_norm_media,sd=input$graf_norm_ds))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("x")
+      ylab("densità")+xlab("Y")
     if(input$graf_norm_area=="nessuna" & length(input$graf_norm_camp)!=0){
      if(input$graf_norm_camp==TRUE & !is.null(input$graf_norm_camp_num)){
       df_ist<-as.data.frame(x = rnorm(n = input$graf_norm_camp_num,mean=input$graf_norm_media,sd=input$graf_norm_ds))
@@ -4873,7 +4873,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=dt(x,df = input$graf_tstudent_dof))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("t")
+      ylab("densità")+xlab("T")
     if(input$graf_tstudent_area=="nessuna" & length(input$graf_tstudent_camp)!=0){
       if(input$graf_tstudent_camp==TRUE & !is.null(input$graf_tstudent_camp_num)){
         df_ist<-as.data.frame(x = rt(n = input$graf_tstudent_camp_num,df =input$graf_tstudent_dof ))
@@ -5087,7 +5087,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=df(x,df1 = input$graf_f_dof1,df2 = input$graf_f_dof2))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("f")
+      ylab("densità")+xlab("F")
     if(input$graf_f_area=="nessuna" & length(input$graf_f_camp)!=0){
       if(input$graf_f_camp==TRUE & !is.null(input$graf_f_camp_num)){
         df_ist<-as.data.frame(x = rf(n = input$graf_f_camp_num,df1 = input$graf_f_dof1,df2 = input$graf_f_dof2 ))
@@ -5171,7 +5171,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)*100
     df<-cbind.data.frame(gr,y)
    ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",width=0.005)+
-     theme_classic()+xlab("x")+ylab("probabilità (%)")
+     theme_classic()+xlab("Y")+ylab("probabilità (%)")
   })
   
   output$lc_pop_media<-renderText({
@@ -5208,7 +5208,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
                     # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
                     binwidth =0.01
                      )+
-        xlab(expression(bar(x)))+ylab("probalità (%)")+xlim(-1.1,1.1)
+        xlab(expression(bar(Y)))+ylab("probalità (%)")+xlim(-1.1,1.1)
   })
   
  
@@ -5237,7 +5237,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
  
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+      ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))
     
@@ -5267,7 +5267,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
       
@@ -5438,7 +5438,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
       
@@ -5483,7 +5483,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(x)-mu,s * sqrt(1/m))))+ggtitle(paste("t(",dof,")",sep=""))+
+          ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -5574,7 +5574,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu[0],sigma * sqrt(1/m))))+
+        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu[0],sigma * sqrt(1/m))))+
         # ggtitle("N(0,1)")+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5,colour = 'grey'))+
@@ -5586,12 +5586,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(x)-mu[0],s * sqrt(1/m))))+
+        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu[0],S[m] * sqrt(1/m))))+
         # ggtitle(paste("t(",input$potenza_num_pop-1,")",sep=""))+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5))+
         annotate(geom="text", x=-2.5, y=0.2, label=expression(H[0]),size=10,colour = 'grey')+
-        annotate(geom="text", x=-2.5, y=0.35, label=paste("t(",input$potenza_num_pop-1,")",sep=""),size=7,colour = 'grey',fontface='bold')
+        annotate(geom="text", x=-2.5, y=0.35, label=paste("T(",input$potenza_num_pop-1,")",sep=""),size=7,colour = 'grey',fontface='bold')
     }
     
     if(input$potenza_alfa>0){
@@ -5636,7 +5636,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
           geom_polygon(df.b,mapping = aes(x=x,y=y),fill="green")+
           annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+2.5, y=0.2, label=expression(H[1]),size=10)+
           annotate(geom="text", x=input$potenza_delta/(input$potenza_ds*sqrt(1/input$potenza_num_pop))+3.5, y=0.35, 
-                   label=expression(bold(paste("t(m-1, ",frac(d,sigma* sqrt(1/m)),")"))),
+                   label=expression(bold(paste("T(m-1, ",frac(d,sigma* sqrt(1/m)),")"))),
                    size=7)
       }
     }
@@ -5703,7 +5703,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df1,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("x")+ggtitle("Distribuzione popolazioni")+
+      ylab("densità")+xlab("Y")+ggtitle("Distribuzione popolazioni")+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))+
       geom_polygon(df1,mapping = aes(x=x,y=y),fill="blue",alpha=.5)+
@@ -5714,7 +5714,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     gr
   })
   
-   anova_camp1<-reactive({
+  anova_camp1<-reactive({
     input$anova_resample
     set.seed(as.numeric(Sys.time()))
     rnorm(n = input$anova_numta_camp,mean = input$anova_media1,sd = input$anova_ds)
@@ -5739,12 +5739,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp3()),gr=c(rep(1,m),rep(2,m),rep(3,m)))
     df$gr<-as.factor(df$gr)
     
-    p<-ggplot(df, aes(x=gr, y=x)) + theme_light()+xlab("gruppo")+ylim(-7,7)+
+    p<-ggplot(df, aes(x=gr, y=x)) + theme_light()+xlab("gruppo")+ylim(-7,7)+ylab("Y")+
       geom_dotplot(binaxis='y', stackdir='center',dotsize=4,fill=c("blue","green","coral")[df$gr],
                    binwidth = 0.1, alpha=0.4)
     p<-p + coord_flip()
     p<-p + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
-                     geom="pointrange", color="red",size=1.2)
+                        geom="pointrange", color="red",size=1.2)
     p
   })
   
@@ -5757,7 +5757,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
          gradi di libertà =",3*input$anova_numta_camp-3,"<br>
          MS<SUB>in</SUB> =",round(ss/(3*input$anova_numta_camp-3),3))
   })
-
+  
   output$anova_graf_var_tra<-renderPlot({
     m.a<-mean(anova_camp1())
     m.b<-mean(anova_camp2())
@@ -5767,13 +5767,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df$gr<-as.factor(df$gr)
     
     p<-ggplot(df, aes(x=y, y=m)) + theme_light()+xlab("")+ylab("medie gruppi")+ylim(-7,7)+
-      theme(axis.text.y = element_text(size = 0))+
+      theme(axis.text.y = element_text(size = 1))+
       geom_dotplot(binaxis='y', stackdir='center',dotsize=6,fill=c("blue","green","coral")[df$gr],
                    binwidth = 0.1, alpha=0.4)
     p<-p + coord_flip()
-
+    
     p<-p + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
-                     geom="pointrange", color="red",size=1.2)
+                        geom="pointrange", color="red",size=1.2)
     p
   })
   
@@ -5794,13 +5794,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp3()),y=rep("0",3*m),gr=c(rep(1,m),rep(2,m),rep(3,m)))
     df$gr<-as.factor(df$gr)
     
-    p<-ggplot(df, aes(x=y, y=x)) + theme_light()+xlab("")+ylim(-7,7)+
-      theme(axis.text.y = element_text(size = 0))+
+    p<-ggplot(df, aes(x=y, y=x)) + theme_light()+xlab("")+ylim(-7,7)+ylab("Y")+
+      theme(axis.text.y = element_text(size = 1))+
       geom_dotplot(binaxis='y', stackdir='center',dotsize=4,fill=c("blue","green","coral")[df$gr],
                    binwidth = 0.1, alpha=0.4)
     p<-p + coord_flip()
     p<-p + stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
-                     geom="pointrange", color="red",size=1.2)
+                        geom="pointrange", color="red",size=1.2)
     
     p
     
@@ -5816,7 +5816,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
          gradi di libertà = ",3*input$anova_numta_camp-1,"<br>
          MS<SUB>tot</SUB> =",round(ss/(3*input$anova_numta_camp-1),3))
   })
-
+  
   output$anova_stat<-renderText({
     m.a<-mean(anova_camp1())
     m.b<-mean(anova_camp2())
@@ -5826,7 +5826,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     ms_in<-(sum((anova_camp1()-m.a)^2)+sum((anova_camp2()-m.b)^2)+sum((anova_camp3()-m.c)^2))/(3*n-3)
     ms_tra<- (n*sum((m.a-m)^2)+n*sum((m.b-m)^2)+n*sum((m.c-m)^2))/2
     paste("statistica =",round(ms_tra/ms_in,4)) 
-})
+  })
   
   output$anova_pval<-renderText({
     m.a<-mean(anova_camp1())
@@ -5868,7 +5868,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("f")+
+      ylab("densità")+xlab("F")+
       ggtitle(paste("F(",2,",",3*n-3,")"))+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))
@@ -5884,7 +5884,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     }
     gr+geom_vline(xintercept = f,col="green")
   })
-
+  
   output$anova_R<-renderPrint({
     m<-input$anova_numta_camp
     df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp3()),Fattore=c(rep(1,m),rep(2,m),rep(3,m)))
@@ -5892,7 +5892,6 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(x~Fattore,df)
     anova(mod)
   })
-
 # Regressione ----------------------------------------------------------------
   output$regr_mq_titolo<-renderText({
     a<-input$regr_mq_a

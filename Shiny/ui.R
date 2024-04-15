@@ -42,7 +42,7 @@ sidebar<- dashboardSidebar(
                          menuSubItem("F",tabName = "f")
                 ),
                 menuItem(text="Simulazioni",icon=shiny::icon("comments"),
-                         menuSubItem("Teorema del limite centrale",tabName = "limcentr"),
+                         menuSubItem("Teorema centrale del limite",tabName = "limcentr"),
                          menuSubItem("Stima della media",tabName = "intconf"),
                          menuSubItem("Test d'ipotesi",tabName = "h0"),
                          menuSubItem("Potenza di un test",tabName = "potenza"),
@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 6.0 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 6.2 </font></center>')
                         )))
 
 
@@ -1314,7 +1314,7 @@ tabItem(tabName = "f",
 # Simulazioni -------------------------------------------------------------
 
 tabItem(tabName = "limcentr",
-        fluidPage(titlePanel("Teorema del limite centrale"),
+        fluidPage(titlePanel("Teorema centrale del limite"),
                   hr(),
                   column(8,div("distribuzione della popolazione: Bernoulli",style="font-size:125%;"),
                          br(),

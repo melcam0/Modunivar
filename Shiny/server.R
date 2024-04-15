@@ -5163,7 +5163,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     }
   }) 
 
-# Teorema del limite centrale ---------------------------------------------
+# Teorema centrale del limite ---------------------------------------------
 
   output$graf_lc_pop<-renderPlot({
     require(ggplot2)
@@ -5400,12 +5400,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$h0_Test1<-renderText({
     validate(need(input$h0_var==1,""))
-    "z-test"
+    "Z-test"
   })
   
   output$h0_Test2<-renderText({
     validate(need(input$h0_var==2,""))
-    "t-test"
+    "T-test"
   })
   
   output$h0_H0<-renderUI({

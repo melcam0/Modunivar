@@ -1,6 +1,0 @@
-Installazione del programma MODUNIVAR ed R-Portable (necessario per il funzionamento di MODUNIVAR).
-Vengono installate tutte le librerie necessarie.
-Il programma viene installato in C:/MODUNIVAR (opzione fortemente consigliata!).
-
-Per disinstallare il programma cliccare su "Disinstalla MODUNIVAR" nel menu MODUNIVAR o eseguire unis000.exe direttamente dalla cartelletta C:/MODUNIVAR (cancellare manualmente eventuali file residui e la cartelleta MODUNIVAR)
-

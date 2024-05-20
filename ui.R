@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 6.2 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Versione 6.3 </font></center>')
                         )))
 
 

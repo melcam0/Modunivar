@@ -5967,14 +5967,14 @@ output$regrmulti_verifhp_corr<-renderPlot({
         gr<-gr+ geom_segment(data = df, aes(x = x, y = y, xend = x, yend = y.prev),col="blue", size=1.05)
       }
       else if(2 %in% input$regr_mq_dq & !(1 %in% input$regr_mq_dq)){
-        if(df$y>df$y.prev){
+        if(sum(df$y>df$y.prev)){
           gr<-gr+geom_rect(data = df, mapping=aes(xmin=x, ymin=y.prev, xmax= x+res,ymax=y),alpha=0.4,fill="blue")
         } else {
           gr<-gr+geom_rect(data = df, mapping=aes(xmin=x, ymin=y, xmax= x+res,ymax=y.prev),alpha=0.4,fill="blue")
         }}
       else if(2 %in% input$regr_mq_dq & 1 %in% input$regr_mq_dq ){
         gr<-gr+ geom_segment(data = df, aes(x = x, y = y, xend = x, yend = y.prev),col="blue", size=1.1)
-        if(df$y>df$y.prev){
+        if(sum(df$y>df$y.prev)){
           gr<-gr+geom_rect(data = df, mapping=aes(xmin=x, ymin=y.prev, xmax= x+res,ymax=y),alpha=0.4,fill="blue")
         } else {
           gr<-gr+geom_rect(data = df, mapping=aes(xmin=x, ymin=y, xmax= x+res,ymax=y.prev),alpha=0.4,fill="blue")

@@ -5,19 +5,19 @@ header<-dashboardHeader(title = "MODUNIVAR",
 
 sidebar<- dashboardSidebar(
     sidebarMenu(
-                menuItem(text = "Dati",icon = shiny::icon("file-text"),
-                  menuSubItem("Esempi",tabName = "esempi"),
-                  menuSubItem("Importa dati",tabName = "importa"),
-                  menuSubItem("Variabili",tabName = "variabili"),
-                  menuSubItem("Oggetti",tabName = "oggetti"),
+                menuItem(text = "Data",icon = shiny::icon("file-text"),
+                  menuSubItem("Examples",tabName = "esempi"),
+                  menuSubItem("Load data",tabName = "importa"),
+                  menuSubItem("Variables",tabName = "variabili"),
+                  menuSubItem("Individuals",tabName = "oggetti"),
                   actionButton("reset","Reset",style='padding:4px; font-size:80%')
                   ),
                 menuItem(text = "Statistica descrittiva",icon = shiny::icon("bar-chart"),
-                         menuSubItem("Vedi dati",tabName = "vedi"),
+                         menuSubItem("Show data",tabName = "vedi"),
                          menuSubItem("Summary",tabName = "summary"),
-                         menuSubItem("Graf. dispersione",tabName = "graf_disp"),
-                         menuSubItem("Graf. punti",tabName = "graf_pt"),
-                         menuSubItem("Istogramma",tabName = "graf_hist"),
+                         menuSubItem("Scatter plot",tabName = "graf_disp"),
+                         menuSubItem("Dot plot",tabName = "graf_pt"),
+                         menuSubItem("Histogram",tabName = "graf_hist"),
                          menuSubItem("Box plot",tabName = "graf_box")
                 ),
                 menuItem(text = "Statistica inferenziale",icon = shiny::icon("line-chart"),
@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Versione 6.3 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 7.0 </font></center>')
                         )))
 
 
@@ -79,7 +79,7 @@ body<-dashboardBody(
   fluidRow(useShinyjs(),
     tabItems(
       tabItem(tabName = "esempi",
-              fluidPage(titlePanel("Seleziona dati esempio"),
+              fluidPage(titlePanel("Select example data"),
               column(12,
                      uiOutput('lista_esempi')),
               column(2,
@@ -91,7 +91,7 @@ body<-dashboardBody(
                      div(style = 'overflow-x: scroll;',tableOutput("dati_esempio"))))),
       
       tabItem(tabName = "importa",
-              fluidPage(titlePanel("Importa dati"),
+              fluidPage(titlePanel("Load data"),
                 tabsetPanel(type = "tabs",
                             tabPanel("Excel",
                                      column(12,
@@ -101,7 +101,7 @@ body<-dashboardBody(
                                      column(12,
                                             checkboxInput("header", "Header", TRUE)),
                                      column(2,
-                                           numericInput("foglio_n", label = "Foglio n.",value = 1,min = 1,max = 100)
+                                           numericInput("foglio_n", label = "Sheet n.",value = 1,min = 1,max = 100)
                                             ),
                                      column(2,
                                             radioButtons("disp_xlx", "Display",
@@ -136,10 +136,10 @@ body<-dashboardBody(
                                      
                                      column(8,
                                             div(style = 'overflow-x: scroll;',tableOutput("contents_csv")))),
-                            tabPanel("Incolla",
+                            tabPanel("Paste",
                                      column(12,
                                             br(),
-                                            actionButton("file_incolla", label = "Incolla"),
+                                            actionButton("file_incolla", label = "Paste"),
                                             br(),
                                             br(),
                                             br(),
@@ -153,27 +153,27 @@ body<-dashboardBody(
                                             div(style = 'overflow-x: scroll;',tableOutput("contents_incolla"))))))),
       
       tabItem(tabName = "variabili",
-              fluidPage(titlePanel("Variabili"),
+              fluidPage(titlePanel("Variables"),
                         tabsetPanel(type = "tabs",
-                                    tabPanel("Variabile nomi righe",
+                                    tabPanel("Row names variable",
                                              column(12,
                                                 uiOutput("var_nomi"),
                                                 textOutput("avviso_nomi")),
-                                             column(12,"Nomi righe",
+                                             column(12,"Row names",
                                                 verbatimTextOutput("nomi_righe"))),
-                                    tabPanel("Variabili qualitative",
+                                    tabPanel("Qualitative variables",
                                              column(4,
                                                  uiOutput("var_quali")),
-                                             column(8,"Variabili quantitative",
+                                             column(8,"Quantitative variables",
                                                 verbatimTextOutput("var_quanti")))))),
       
       tabItem(tabName = "oggetti",
-              fluidPage(titlePanel("Oggetti"),
+              fluidPage(titlePanel("Individuals"),
                         column(4,
                                uiOutput("righe_tolte")),
-                        column(8,"Righe cancellate",
+                        column(8,"Rows deleted",
                                verbatimTextOutput("righe_restanti"),
-                               actionButton("desel_righe","Deseleziona tutte le righe")))), 
+                               actionButton("desel_righe","Deselect all rows")))), 
 
       # Statistica descrittiva --------------------------------------------------
 

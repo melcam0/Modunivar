@@ -4,7 +4,7 @@ server <- function (input , output, session ){
   
   observeEvent(input$openModal, {
     showModal(
-      modalDialog(title = "Autori:",size = 's',easyClose = TRUE,footer = NULL,
+      modalDialog(title = "Authors:",size = 's',easyClose = TRUE,footer = NULL,
                   tags$img(src = base64enc::dataURI(file = "GC.jpg", mime = "image/jpg")),
                   HTML((paste(" "," ","Giorgio Marrubini","email: giorgio.marrubini@unipv.it"," ",
                               'Camillo Melzi','email: camillomelzi@gmail.com',sep="<br/>"))))
@@ -244,7 +244,7 @@ server <- function (input , output, session ){
 # variabili qualitative ---------------------------------------------------
   
   output$var_quali<-renderUI({
-    checkboxGroupInput(inputId = "var_ql",label = "seleziona le variabili qualitative - fattori",
+    checkboxGroupInput(inputId = "var_ql",label = "Select qualitative variables",
                        choices = dati$var,selected =dati$var_ql)
   })
   
@@ -258,7 +258,7 @@ server <- function (input , output, session ){
     if(!length(dati$var_qt)==0){
       dati$var_qt
     }else{
-      "Non ci sono variabili quantitative"
+      "No quantitative variables"
     }
   })
   
@@ -269,7 +269,7 @@ server <- function (input , output, session ){
     selectizeInput(inputId = "var_nr"," ",
                        choices = dati$var_nr,
                    options = list(
-                     placeholder = 'Selezione eventuale colonna nomi righe',
+                     placeholder = 'Select row names variable',
                      onInitialize = I('function() { this.setValue(""); }')
                    ))
   })
@@ -289,7 +289,7 @@ server <- function (input , output, session ){
         dati$righe<-dati$DS_nr[,dati$var_nr%in%input$var_nr]
       }else{
         sendSweetAlert(session, title = "Input Error",
-                       text = 'Non sono ammessi duplicati nei Nomi Righe!',
+                       text = 'Duplicate row names are not allowed!',
                        type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
       }
     } else {
@@ -304,7 +304,7 @@ server <- function (input , output, session ){
   output$nomi_righe<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
     if(length(dati$nr)==0){
-      "Non c'è colonna nomi righe "
+      "No row names variable"
     } else {
       dati$nr
       }
@@ -355,7 +355,7 @@ server <- function (input , output, session ){
 # oggetti  ------------------------------------------------
   
   output$righe_tolte<-renderUI({
-    checkboxGroupInput(inputId = "righe_tolte",label = "seleziona le righe da cancellare",
+    checkboxGroupInput(inputId = "righe_tolte",label = "Select rows to delete",
                        choices = dati$righe,selected =dati$righe_tolte)
   })
   
@@ -377,7 +377,7 @@ server <- function (input , output, session ){
     if(!length(dati$righe_tolte)==0){
       dati$righe_tolte
     }else{
-     "Non ci sono righe cancellate"
+     "No rows deleted"
     }
   })
   

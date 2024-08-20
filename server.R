@@ -464,7 +464,7 @@ server <- function (input , output, session ){
       }
       df<-cbind.data.frame(df,gruppo=lab)
       row.names(df)<-row.names(dati$DS)
-      gr<-ggplot(df,mapping = aes(x=indice,y=y))+labs(x="index",y=input$graf_disp_var)+
+      gr<-ggplot(df,mapping = aes(x=index,y=y))+labs(x="index",y=input$graf_disp_var)+
         theme_light()+ coord_cartesian(xlim = graf$xlim, ylim = graf$ylim, expand = TRUE)+
         scale_x_continuous(breaks=df$indice)
       if(is.null(graf$gr)){
@@ -1000,10 +1000,10 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest1_variab%in%colnames(dati$DS))
     if(input$ttest1_var=="1"){
-      paste("Statistic =",round((mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
               (input$ttest1_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest1_variab])))),4)) 
     }else{
-     paste("Statistic =",round((mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
+     paste("statistic =",round((mean(as.data.frame(dati$DS[,input$ttest1_variab])[,1])-input$ttest1_H0)/
             (sd(as.data.frame(dati$DS[,input$ttest1_variab])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest1_variab])))),4)) 
     }
   }) 
@@ -1104,7 +1104,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    numericInput("ttest2a_H0",label = "Media differenze ipotizzata",
+    numericInput("ttest2a_H0",label = "Assumed mean differences",
                  value=0,width = "40%")
   })
   
@@ -1113,7 +1113,7 @@ server <- function (input , output, session ){
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
     req(input$ttest2a_var==1)
-    numericInput("ttest2a_var_nota",label = "Dev. standard differenze nota",
+    numericInput("ttest2a_var_nota",label = "Known standard dev. differences",
                  value=round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3),width = "40%")
   })
   
@@ -1143,7 +1143,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(D)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("density")+xlab(expression(frac(bar(D)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1155,8 +1155,8 @@ server <- function (input , output, session ){
         dof<-nrow(vrb)-1
         if (dof==0){
           plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-             numerosità del campione almeno 2 \n",col="red",cex=2)
+          text(0,0,"   At least 1 degree of freedom is needed \n
+             sample size at least 2 \n",col="red",cex=2)
         } else {
           ds<-sd(vrb[,1])
           df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -1173,7 +1173,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(D)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
+            ylab("density")+xlab(expression(frac(bar(D)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -1186,7 +1186,7 @@ server <- function (input , output, session ){
       }
     }else{
       sendSweetAlert(session, title = "Input Error",
-                     text = 'Selezionare due variabili quantitative!',
+                     text = 'Select two quantitative variables!',
                      type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
@@ -1195,14 +1195,14 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    "Stima puntuale"
+    "Point estimation"
   })
   
   output$ttest2a_media_camp<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    paste("media campionaria =",round(mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
+    paste("sample mean =",round(mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
   })
   
   output$ttest2a_sd_camp<-renderText({
@@ -1210,7 +1210,7 @@ server <- function (input , output, session ){
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2a_var=="2",""))
-    paste("dev. standard campionaria =",round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
+    paste("sample standard dev. =",round(sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1]),3))
   })
   
   output$ttest2a_stat<-renderText({
@@ -1218,10 +1218,10 @@ server <- function (input , output, session ){
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
     if(input$ttest2_var=="1"){
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2_H0)/
                                    (input$ttest2a_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest2a_variab1])))),4)) 
     }else{
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2a_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])-input$ttest2a_H0)/
                                    (sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$ttest2a_variab1])))),4)) 
     }
   }) 
@@ -1253,7 +1253,7 @@ server <- function (input , output, session ){
     validate(need(input$ttest2a_alfa>0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    "Stima per intervallo"
+    "Interval estimation"
   })
   
   output$ttest2a_ic_inf<-renderText({
@@ -1269,7 +1269,7 @@ server <- function (input , output, session ){
       s<-sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])
       q<-qt(input$ttest2a_alfa/2,df = m-1,lower.tail = FALSE)
     }
-    paste("estremo inferiore =",round(media-q*s*sqrt(1/m),4))
+    paste("lower extreme =",round(media-q*s*sqrt(1/m),4))
   })
   
   output$ttest2a_ic_sup<-renderText({
@@ -1285,7 +1285,7 @@ server <- function (input , output, session ){
       s<-sd(as.data.frame(dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2])[,1])
       q<-qt(input$ttest2a_alfa/2,df = m-1,lower.tail = FALSE)
     }
-    paste("estremo superiore =",round(media+q*s*sqrt(1/m),4))
+    paste("upper extreme =",round(media+q*s*sqrt(1/m),4))
   })
   
   output$ttest2a_qqplot<-renderPlot({
@@ -1296,7 +1296,7 @@ server <- function (input , output, session ){
     Diff<-dati$DS[,input$ttest2a_variab1]-dati$DS[,input$ttest2a_variab2]
     ggplot(dati$DS,aes(sample=Diff))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -1327,14 +1327,14 @@ server <- function (input , output, session ){
   })
   
   output$ttest2_variab2<-renderUI({
-    selectizeInput(inputId = "ttest2_variab2",div("Variabile gruppo",style="font-weight: 400;"),
+    selectizeInput(inputId = "ttest2_variab2",div("Group variable",style="font-weight: 400;"),
                    choices = dati$var_ql)})
   
   output$ttest2_H0<-renderUI({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
-    numericInput("ttest2_H0",label = "Differenza medie ipotizzata",
+    numericInput("ttest2_H0",label = "Assumed mean differences",
                  value=0,width = "40%")
   })
   
@@ -1344,7 +1344,7 @@ server <- function (input , output, session ){
     req(input$ttest2_variab2%in%colnames(dati$DS))
     req(input$ttest2_var==1)
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    numericInput("ttest2_var_nota1",label = "Dev. standard nota gr. 1",
+    numericInput("ttest2_var_nota1",label = "Known standard dev. gr. 1",
                  value=round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3),width = "40%")
   })
 
@@ -1354,14 +1354,14 @@ server <- function (input , output, session ){
     req(input$ttest2_variab2%in%colnames(dati$DS))
     req(input$ttest2_var==1)
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    numericInput("ttest2_var_nota2",label = "Dev. standard nota gr. 2",
+    numericInput("ttest2_var_nota2",label = "Known standard dev. gr. 2",
                  value=round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3),width = "40%")
   })
   
   output$ttest2_var_uguale<-renderUI({
     validate(need(input$ttest2_var==2," "))
     radioButtons("ttest2_var_uguale", label = "",
-                 choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
+                 choices = list("Equal variances" = 1, "Unequal variances" = 2),
                  selected = 2)
   })
   
@@ -1375,7 +1375,7 @@ server <- function (input , output, session ){
     validate(need(length(unique(dati$DS[,input$ttest2_variab2]))!=2,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
-    "La variabile gruppo deve avere 2 livelli "
+    "The group variable must have 2 levels"
   })
 
   output$ttest2_graf_distr<-renderPlot({
@@ -1405,7 +1405,7 @@ server <- function (input , output, session ){
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+
+        ylab("density")+
         xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])-(mu[1]-mu[2]),sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
@@ -1418,7 +1418,7 @@ server <- function (input , output, session ){
     } else {
       if (nrow(vrb1)==1 | nrow(vrb2) ==1){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
+        text(0,0,"Sample size at least 2 \n",col="red",cex=2)
       } else {
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
@@ -1447,7 +1447,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
+          ylab("density")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1465,7 +1465,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
-    "Stime puntuali"
+    "Point estimation"
   })
   
   output$ttest2_media_camp1<-renderText({
@@ -1473,7 +1473,7 @@ server <- function (input , output, session ){
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    paste("media campionaria gr 1 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
+    paste("sample mean gr 1 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
   })
   
   output$ttest2_media_camp2<-renderText({
@@ -1481,7 +1481,7 @@ server <- function (input , output, session ){
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    paste("media campionaria gr 2 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
+    paste("sample mean gr 2 =",round(mean(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
   })
   
   output$ttest2_sd_camp1<-renderText({
@@ -1490,7 +1490,7 @@ server <- function (input , output, session ){
     req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    paste("dev. standard campionaria gr 1=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
+    paste("sample standard dev. gr 1=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],input$ttest2_variab1]),3))
   })
   
   output$ttest2_sd_camp2<-renderText({
@@ -1499,7 +1499,7 @@ server <- function (input , output, session ){
     req(input$ttest2_variab2%in%colnames(dati$DS))
     validate(need(input$ttest2_var=="2",""))
     gruppi<-unique(dati$DS[,input$ttest2_variab2])
-    paste("dev. standard campionaria gr 2=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
+    paste("sample standard dev. gr 2=",round(sd(dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],input$ttest2_variab1]),3))
   })
   
   output$ttest2_ds_c<-renderText({
@@ -1514,7 +1514,7 @@ server <- function (input , output, session ){
     ds1<-sd(vrb1[,1])
     ds2<-sd(vrb2[,1])
     sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
-    paste("dev. standard combinata=",round(sc,3))
+    paste("pooled standard dev. =",round(sc,3))
   })
   
   output$ttest2_stat<-renderText({
@@ -1528,12 +1528,12 @@ server <- function (input , output, session ){
     ds2<-sd(vrb2[,1])
     sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
     if(input$ttest2_var=="1"){
-      paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(input$ttest2_var_nota1^2/nrow(vrb1)+input$ttest2_var_nota2^2/nrow(vrb2))),4)) 
+      paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(input$ttest2_var_nota1^2/nrow(vrb1)+input$ttest2_var_nota2^2/nrow(vrb2))),4)) 
     }else{
       if(input$ttest2_var_uguale==1){
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
       }else{
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$ttest2_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
       }
     }
   })  
@@ -1571,7 +1571,7 @@ server <- function (input , output, session ){
     validate(need(input$ttest2_alfa>0,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
-    "Stima per intervallo"
+    "Interval estimation"
   })
   
   output$ttest2_ic_inf<-renderText({
@@ -1588,7 +1588,7 @@ server <- function (input , output, session ){
       s1<-input$ttest2_var_nota1
       s2<-input$ttest2_var_nota2
       q<-qnorm(input$ttest2_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
-      paste("estremo inferiore =",round(media-q*sqrt(s1^2/m1+s2^2/m2),4))
+      paste("lower extreme =",round(media-q*sqrt(s1^2/m1+s2^2/m2),4))
     } else {
       ds1<-sd(vrb1[,1])
       ds2<-sd(vrb2[,1])
@@ -1596,12 +1596,12 @@ server <- function (input , output, session ){
       if(input$ttest2_var_uguale==1){
         dof<-nrow(vrb1)+nrow(vrb2)-2
         q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-        paste("estremo inferiore =",round(media-q*sc*sqrt(1/m1+1/m2),4))
+        paste("lower extreme =",round(media-q*sc*sqrt(1/m1+1/m2),4))
       }else{
         dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
         q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-        paste("estremo inferiore =",round(media-q*sqrt(ds1^2/m1+ds2^2/m2),4))
+        paste("lower extreme =",round(media-q*sqrt(ds1^2/m1+ds2^2/m2),4))
       }
     }
   })
@@ -1620,7 +1620,7 @@ server <- function (input , output, session ){
       s1<-input$ttest2_var_nota1
       s2<-input$ttest2_var_nota2
       q<-qnorm(input$ttest2_alfa/2,mean = 0,sd = 1,lower.tail = FALSE)
-      paste("estremo superiore =",round(media+q*sqrt(s1^2/m1+s2^2/m2),4))
+      paste("upper extreme =",round(media+q*sqrt(s1^2/m1+s2^2/m2),4))
     } else {
       ds1<-sd(vrb1[,1])
       ds2<-sd(vrb2[,1])
@@ -1628,12 +1628,12 @@ server <- function (input , output, session ){
       if(input$ttest2_var_uguale==1){
         dof<-nrow(vrb1)+nrow(vrb2)-2
         q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-        paste("estremo superiore =",round(media+q*sc*sqrt(1/m1+1/m2),4))
+        paste("upper extreme =",round(media+q*sc*sqrt(1/m1+1/m2),4))
       }else{
         dof<-(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))^2/
           (ds1^4/(nrow(vrb1)^2*(nrow(vrb1)-1))+ds2^4/(nrow(vrb2)^2*(nrow(vrb2)-1)))
         q<-qt(input$ttest2_alfa/2,df = dof,lower.tail = FALSE)
-        paste("estremo superiore =",round(media+q*sqrt(ds1^2/m1+ds2^2/m2),4))
+        paste("upper extreme =",round(media+q*sqrt(ds1^2/m1+ds2^2/m2),4))
       }
     }
   })
@@ -1647,7 +1647,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[1],]
     ggplot(dati,aes(sample=dati[,input$ttest2_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -1670,7 +1670,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$ttest2_variab2]==gruppi[2],]
     ggplot(dati,aes(sample=dati[,input$ttest2_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   

@@ -1693,7 +1693,7 @@ server <- function (input , output, session ){
     })
   
   output$equiv_variab2<-renderUI({
-    selectizeInput(inputId = "equiv_variab2",div("Variabile gruppo",style="font-weight: 400;"),
+    selectizeInput(inputId = "equiv_variab2",div("Group variable",style="font-weight: 400;"),
                    choices = dati$var_ql)
     })
   
@@ -1701,7 +1701,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
-    numericInput("equiv_H0",label = HTML("Differenza critica per equivalenza &delta;"),
+    numericInput("equiv_H0",label = HTML("Critical difference for equivalence &delta;"),
                  value=1,width = "40%")
     })
   
@@ -1711,7 +1711,7 @@ server <- function (input , output, session ){
     req(input$equiv_variab2%in%colnames(dati$DS))
     req(input$equiv_var==1)
     gruppi<-unique(dati$DS[,input$equiv_variab2])
-    numericInput("equiv_var_nota1",label = "Dev. standard nota gr. 1",
+    numericInput("equiv_var_nota1",label = "Known standard dev. gr. 1",
                  value=round(sd(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[1],input$equiv_variab1]),3),width = "40%")
     })
   
@@ -1721,14 +1721,14 @@ server <- function (input , output, session ){
     req(input$equiv_variab2%in%colnames(dati$DS))
     req(input$equiv_var==1)
     gruppi<-unique(dati$DS[,input$equiv_variab2])
-    numericInput("equiv_var_nota2",label = "Dev. standard nota gr. 2",
+    numericInput("equiv_var_nota2",label = "Known standard dev. gr. 2",
                  value=round(sd(dati$DS[dati$DS[,input$equiv_variab2]==gruppi[2],input$equiv_variab1]),3),width = "40%")
   })
   
   output$equiv_var_uguale<-renderUI({
     validate(need(input$equiv_var==2," "))
     radioButtons("equiv_var_uguale", label = "",
-                 choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
+                 choices = list("Equal variances" = 1, "Unequal variances" = 2),
                  selected = 2)
   })
 
@@ -1752,7 +1752,7 @@ server <- function (input , output, session ){
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))!=2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
-    "La variabile gruppo deve avere 2 livelli "
+    "The group variable must have 2 levels"
   })
   
   output$equiv_graf_distr1<-renderPlot({
@@ -1782,7 +1782,7 @@ server <- function (input , output, session ){
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+
+        ylab("density")+
         xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])+ delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
@@ -1796,7 +1796,7 @@ server <- function (input , output, session ){
     } else {
       if (nrow(vrb1)==1 | nrow(vrb2) ==1){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
+        text(0,0,"Sample size at least 2 \n",col="red",cex=2)
       } else {
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
@@ -1825,7 +1825,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
+          ylab("density")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -1850,12 +1850,12 @@ server <- function (input , output, session ){
     ds2<-sd(vrb2[,1])
     sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
     if(input$equiv_var=="1"){
-      paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2))),4)) 
+      paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2))),4)) 
     }else{
       if(input$equiv_var_uguale==1){
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
       }else{
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))+input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
       }
     }
   })  
@@ -1915,7 +1915,7 @@ server <- function (input , output, session ){
     validate(need(length(unique(dati$DS[,input$equiv_variab2]))!=2,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
-    "La variabile gruppo deve avere 2 livelli "
+    "The group variable must have 2 levels"
   })
   
   output$equiv_graf_distr2<-renderPlot({
@@ -1945,7 +1945,7 @@ server <- function (input , output, session ){
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+
+        ylab("density")+
         xlab(expression(frac((bar(Y)[m[1]]-bar(Y)[m[2]])- delta,sqrt(sigma[1]^2/m[1]+sigma[2]^2/m[2]))))+
         ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
@@ -1961,7 +1961,7 @@ server <- function (input , output, session ){
     } else {
       if (nrow(vrb1)==1 | nrow(vrb2) ==1){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
+        text(0,0,"Sample size at least 2 \n",col="red",cex=2)
       } else {
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
@@ -1991,7 +1991,7 @@ server <- function (input , output, session ){
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
+          ylab("density")+xlab(x.text)+ggtitle(paste("T(",round(dof,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2018,12 +2018,12 @@ server <- function (input , output, session ){
     ds2<-sd(vrb2[,1])
     sc<-sqrt(((nrow(vrb1)-1)*ds1^2+(nrow(vrb2)-1)*ds2^2)/(nrow(vrb1)+nrow(vrb2)-2))
     if(input$equiv_var=="1"){
-      paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2))),4)) 
+      paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(input$equiv_var_nota1^2/nrow(vrb1)+input$equiv_var_nota2^2/nrow(vrb2))),4)) 
     }else{
       if(input$equiv_var_uguale==1){
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sc*sqrt(1/nrow(vrb1)+1/nrow(vrb2))),4))
       }else{
-        paste("statistica =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
+        paste("statistic =",round(((mean(vrb1[,1])-mean(vrb2[,1]))-input$equiv_H0)/(sqrt(ds1^2/nrow(vrb1)+ds2^2/nrow(vrb2))),4))
       }
     }
   })  
@@ -2067,7 +2067,7 @@ server <- function (input , output, session ){
     validate(need(input$equiv_alfa>0,""))
     req(input$equiv_variab1%in%colnames(dati$DS))
     req(input$equiv_variab2%in%colnames(dati$DS))
-    "Intervallo di confidenza"
+    "Confidence interval"
   })
   
   equiv_ic_inf <- reactive({
@@ -2104,7 +2104,7 @@ server <- function (input , output, session ){
   })
   
   output$equiv_ic_inf<-renderText({
-    paste("estremo inferiore =",round(equiv_ic_inf(),4))
+    paste("lower extreme =",round(equiv_ic_inf(),4))
   })
   
   equiv_ic_sup <- reactive({
@@ -2140,7 +2140,7 @@ server <- function (input , output, session ){
   })
   
   output$equiv_ic_sup<-renderText({
-    paste("estremo superiore =",round(equiv_ic_sup(),4))
+    paste("upper extreme =",round(equiv_ic_sup(),4))
   })
   
   output$equiv_pval<-renderText({
@@ -2170,7 +2170,7 @@ server <- function (input , output, session ){
     if(pval<0.05){
       txt <- "equiv."
     }else{
-      txt <- "no equiv."
+      txt <- "not equiv."
     }
 
     mtext(text =txt,at =(inf+sup)/2,side = 1,line = 2,col="green4",cex=0.8 )
@@ -2185,7 +2185,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$equiv_variab2]==gruppi[1],]
     ggplot(dati,aes(sample=dati[,input$equiv_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2208,7 +2208,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$equiv_variab2]==gruppi[2],]
     ggplot(dati,aes(sample=dati[,input$equiv_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2237,7 +2237,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
-    numericInput("equiva_H0",label = HTML("Differenza critica per equivalenza &delta;"),
+    numericInput("equiva_H0",label = HTML("Critical difference for equivalence &delta;"),
                  value=1,width = "40%")
   })
   
@@ -2246,7 +2246,7 @@ server <- function (input , output, session ){
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
     req(input$equiva_var==1)
-    numericInput("equiva_var_nota",label = "Dev. standard differenze nota",
+    numericInput("equiva_var_nota",label = "Known standard dev. differences",
                  value=round(sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1]),3),width = "40%")
   })
 
@@ -2286,7 +2286,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(D)[m]+delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("density")+xlab(expression(frac(bar(D)[m]+delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2299,8 +2299,8 @@ server <- function (input , output, session ){
         dof<-nrow(vrb)-1
         if (dof==0){
           plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-             numerosità del campione almeno 2 \n",col="red",cex=2)
+          text(0,0,"   At least 1 degree of freedom is needed \n
+             sample size at least 2 \n",col="red",cex=2)
         } else {
           ds<-sd(vrb[,1])
           df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -2317,7 +2317,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(D)[m]+delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
+            ylab("density")+xlab(expression(frac(bar(D)[m]+delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -2331,7 +2331,7 @@ server <- function (input , output, session ){
       }
     }else{
       sendSweetAlert(session, title = "Input Error",
-                     text = 'Selezionare due variabili quantitative!',
+                     text = 'Select two quantitative variables!',
                      type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
@@ -2341,10 +2341,10 @@ server <- function (input , output, session ){
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
     if(input$ttest2_var=="1"){
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$ttest2_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$ttest2_H0)/
                                    (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
     }else{
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$equiva_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])+input$equiva_H0)/
                                    (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
     }
   }) 
@@ -2410,7 +2410,7 @@ server <- function (input , output, session ){
         }
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(D)[m]-delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+          ylab("density")+xlab(expression(frac(bar(D)[m]-delta,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -2425,8 +2425,8 @@ server <- function (input , output, session ){
         dof<-nrow(vrb)-1
         if (dof==0){
           plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-          text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-             numerosità del campione almeno 2 \n",col="red",cex=2)
+          text(0,0,"   At least 1 degree of freedom is needed \n
+             sample size at least 2 \n",col="red",cex=2)
         } else {
           ds<-sd(vrb[,1])
           df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -2443,7 +2443,7 @@ server <- function (input , output, session ){
           
           gr<-ggplot() +theme_classic()+
             geom_line(data = df,mapping = aes(x=x,y=y))+
-            ylab("densità")+xlab(expression(frac(bar(D)[m]-delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
+            ylab("density")+xlab(expression(frac(bar(D)[m]-delta,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
             theme(plot.title = element_text(size = 20, face = "bold",
                                             hjust = 0.5))
           
@@ -2459,7 +2459,7 @@ server <- function (input , output, session ){
       }
     }else{
       sendSweetAlert(session, title = "Input Error",
-                     text = 'Selezionare due variabili quantitative!',
+                     text = 'Select two quantitative variables!',
                      type = "error",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }
   })
@@ -2469,10 +2469,10 @@ server <- function (input , output, session ){
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
     if(input$ttest2_var=="1"){
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$ttest2_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$ttest2_H0)/
                                    (input$equiva_var_nota*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
     }else{
-      paste("statistica =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$equiva_H0)/
+      paste("statistic =",round((mean(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])-input$equiva_H0)/
                                    (sd(as.data.frame(dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2])[,1])*sqrt(1/nrow(as.data.frame(dati$DS[,input$equiva_variab1])))),4)) 
     }
   }) 
@@ -2506,7 +2506,7 @@ server <- function (input , output, session ){
     validate(need(input$equiva_alfa>0,""))
     req(input$equiva_variab1%in%colnames(dati$DS))
     req(input$equiva_variab2%in%colnames(dati$DS))
-    "Intervallo di confidenza"
+    "Confidence interval"
   })
 
   equiva_ic_inf <- reactive({
@@ -2527,7 +2527,7 @@ server <- function (input , output, session ){
   })
 
   output$equiva_ic_inf<-renderText({
-    paste("estremo inferiore =",round(equiva_ic_inf(),4))
+    paste("lower extreme =",round(equiva_ic_inf(),4))
   })
 
   equiva_ic_sup <- reactive({
@@ -2548,7 +2548,7 @@ server <- function (input , output, session ){
   })
 
   output$equiva_ic_sup<-renderText({
-    paste("estremo superiore =",round(equiva_ic_sup(),4))
+    paste("upper extreme =",round(equiva_ic_sup(),4))
   })
 
   output$equiva_pval<-renderText({
@@ -2577,7 +2577,7 @@ server <- function (input , output, session ){
     if(pval<0.05){
       txt <- "equiv."
     }else{
-      txt <- "no equiv."
+      txt <- "not equiv."
     }
     mtext(text =txt,at =(inf+sup)/2,side = 1,line = 2,col="green4",cex=0.8 )
   })
@@ -2590,7 +2590,7 @@ server <- function (input , output, session ){
     Diff<-dati$DS[,input$equiva_variab1]-dati$DS[,input$equiva_variab2]
     ggplot(dati$DS,aes(sample=Diff))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2609,7 +2609,7 @@ server <- function (input , output, session ){
                    choices = dati$var_qt)})
   
   output$ftest_variab2<-renderUI({
-    selectizeInput(inputId = "ftest_variab2",div("Variabile gruppo",style="font-weight: 400;"),
+    selectizeInput(inputId = "ftest_variab2",div("Group variable",style="font-weight: 400;"),
                    choices = dati$var_ql)})
   
   output$ftest_H0_txt = renderUI({        
@@ -2622,7 +2622,7 @@ server <- function (input , output, session ){
     validate(need(length(unique(dati$DS[,input$ftest_variab2]))!=2,""))
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
-    "La variabile gruppo deve avere 2 livelli "
+    "The group variable must have 2 levels"
   })
   
   output$ftest_graf_distr<-renderPlot({
@@ -2639,7 +2639,7 @@ server <- function (input , output, session ){
     x<-seq(0, 10,by = 0.1)
       if (nrow(vrb1)==1 | nrow(vrb2) ==1){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Numerosità dei campioni almeno 2 \n",col="red",cex=2)
+        text(0,0,"Sample size at least 2 \n",col="red",cex=2)
       } else {
         ds1<-sd(vrb1[,1])
         ds2<-sd(vrb2[,1])
@@ -2657,20 +2657,16 @@ server <- function (input , output, session ){
           df.b<-cbind.data.frame(x=x.b,y=df(x.b,df1 = dof1,df2 = dof2))
           df.b<-rbind(c(min(x.b), 0), df.b, c(max(x.b), 0)) 
         
-        
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(S[m[1]]^2,S[m[2]]^2)))+
+          ylab("density")+xlab(expression(frac(S[m[1]]^2,S[m[2]]^2)))+
           ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
-        
         if(input$ftest_alfa>0){
           gr<-gr+geom_polygon(df.a,mapping = aes(x=x,y=y),fill="blue")+
             geom_polygon(df.b,mapping = aes(x=x,y=y),fill="blue")} 
-        
         gr+geom_vline(xintercept = (ds1^2/ds2^2),col="green")
-      
     }}
   })
   
@@ -2678,7 +2674,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
-    "Stime puntuali"
+    "Point estimation"
   })
   
   output$ftest_sd_camp1<-renderText({
@@ -2686,7 +2682,7 @@ server <- function (input , output, session ){
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
-    paste("dev. standard campionaria gr 1=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1]),3))
+    paste("sample standard dev. gr 1=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],input$ftest_variab1]),3))
   })
   
   output$ftest_sd_camp2<-renderText({
@@ -2694,7 +2690,7 @@ server <- function (input , output, session ){
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
     gruppi<-unique(dati$DS[,input$ftest_variab2])
-    paste("dev. standard campionaria gr 2=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1]),3))
+    paste("sample standard dev. gr 2=",round(sd(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1]),3))
   })
   
   output$ftest_stat<-renderText({
@@ -2706,7 +2702,7 @@ server <- function (input , output, session ){
     vrb2<-as.data.frame(dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],input$ftest_variab1])
     ds1<-sd(vrb1[,1])
     ds2<-sd(vrb2[,1])
-    paste("statistica =",round(ds1^2/ds2^2,4)) 
+    paste("statistic =",round(ds1^2/ds2^2,4)) 
   }) 
   
   output$ftest_pval<-renderText({
@@ -2731,7 +2727,7 @@ server <- function (input , output, session ){
     validate(need(input$ftest_alfa>0,""))
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
-    "Stima per intervallo"
+    "Interval estimation"
   })
   
   output$ftest_ic_inf<-renderText({
@@ -2746,7 +2742,7 @@ server <- function (input , output, session ){
     dof1<-nrow(vrb1)-1
     dof2<-nrow(vrb2)-1
     q<-qf(input$ftest_alfa/2,df1 = dof1,df2 = dof2,lower.tail = FALSE)
-    paste("estremo inferiore =",round((ds1^2/ds2^2)*(1/q),4))
+    paste("lower extreme =",round((ds1^2/ds2^2)*(1/q),4))
   })
   
   output$ftest_ic_sup<-renderText({
@@ -2761,7 +2757,7 @@ server <- function (input , output, session ){
     dof1<-nrow(vrb1)-1
     dof2<-nrow(vrb2)-1
     q<-qf(input$ftest_alfa/2,df1 = dof1,df2 = dof2,lower.tail = TRUE)
-    paste("estremo superiore =",round((ds1^2/ds2^2)*(1/q),4))
+    paste("upper extreme =",round((ds1^2/ds2^2)*(1/q),4))
   })
   
   output$ftest_qqplot1<-renderPlot({
@@ -2773,7 +2769,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[1],]
     ggplot(dati,aes(sample=dati[,input$ftest_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2796,7 +2792,7 @@ server <- function (input , output, session ){
     dati<-dati$DS[dati$DS[,input$ftest_variab2]==gruppi[2],]
     ggplot(dati,aes(sample=dati[,input$ftest_variab1]))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2817,7 +2813,7 @@ server <- function (input , output, session ){
                    choices = dati$var_qt)})
   
   output$anovatest_variab2<-renderUI({
-    selectizeInput(inputId = "anovatest_variab2",div("Fattore",style="font-weight: 400;"),
+    selectizeInput(inputId = "anovatest_variab2",div("Factor",style="font-weight: 400;"),
                    choices = dati$var_ql)})
   
   output$anovatest_graf_distr<-renderPlot({
@@ -2840,7 +2836,7 @@ server <- function (input , output, session ){
       
     gr<-ggplot() +theme_classic()+
     geom_line(data = df,mapping = aes(x=x,y=y))+
-    ylab("densità")+xlab("F")+
+    ylab("density")+xlab("F")+
     ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
     theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
       
@@ -2867,7 +2863,7 @@ server <- function (input , output, session ){
     dof1<-s[[1]][1,1]
     dof2<-s[[1]][2,1]
     F<-s[[1]][1,4]
-    paste("statistica =",round(F,4)) 
+    paste("statistic =",round(F,4)) 
   }) 
   
   output$anovatest_pval<-renderText({
@@ -2907,7 +2903,7 @@ server <- function (input , output, session ){
     dati<-cbind.data.frame(res=mod$residuals)
     ggplot(dati,aes(sample=res))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -2987,23 +2983,23 @@ server <- function (input , output, session ){
                    choices = dati$var_qt)})
   
   output$anova2test_variab2<-renderUI({
-    selectizeInput(inputId = "anova2test_variab2",div("Fattore 1",style="font-weight: 400;"),
+    selectizeInput(inputId = "anova2test_variab2",div("Factor 1",style="font-weight: 400;"),
                    choices = dati$var_ql)})
   
   output$anova2test_variab3<-renderUI({
-    selectizeInput(inputId = "anova2test_variab3",div("Fattore 2",style="font-weight: 400;"),
+    selectizeInput(inputId = "anova2test_variab3",div("Factor 2",style="font-weight: 400;"),
                    choices = dati$var_ql[!dati$var_ql%in%input$anova2test_variab2])})
   
   output$anova2test_h12_ipotesi<-renderUI({
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     smr<-summary(int)
     if (max(smr)==1){
-      h4(HTLM("Anova senza ripetizioni. <br>
-              Non abbiamo gdl per eseguire test"))
+      h4(HTLM("Anova without repetitions. <br>
+              We have no gof to perform the test"))
     } else {
-      HTML("<h4>Ipotesi 12:</h4>
-      <h4>H<SUB>0,12</SUB>: (&alpha;&beta;)<SUB>i,j</SUB> = 0 per ogni (i,j) <br>
-              H<SUB>1,12</SUB>:(&alpha;&beta;)<SUB>i,j</SUB> &ne;0 per almeno un (i,j)</h4>")
+      HTML("<h4>Hypothesis 12:</h4>
+      <h4>H<SUB>0,12</SUB>: (&alpha;&beta;)<SUB>i,j</SUB> = 0 for every (i,j) <br>
+              H<SUB>1,12</SUB>:(&alpha;&beta;)<SUB>i,j</SUB> &ne;0 at least a (i,j)</h4>")
     }
   })
 
@@ -3037,7 +3033,7 @@ server <- function (input , output, session ){
 
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("F")+
+      ylab("density")+xlab("F")+
       ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
     
@@ -3073,7 +3069,7 @@ server <- function (input , output, session ){
     dof1<-s[[1]][1,1]
     dof2<-s[[1]][4,1]
     F<-s[[1]][1,4]
-    paste("statistica =",round(F,4)) 
+    paste("statistic =",round(F,4)) 
   }) 
   
   output$anova2test_pval1<-renderText({
@@ -3131,7 +3127,7 @@ server <- function (input , output, session ){
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("F")+
+      ylab("density")+xlab("F")+
       ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
     
@@ -3167,7 +3163,7 @@ server <- function (input , output, session ){
     dof1<-s[[1]][2,1]
     dof2<-s[[1]][4,1]
     F<-s[[1]][2,4]
-    paste("statistica =",round(F,4)) 
+    paste("statistic =",round(F,4)) 
   }) 
   
   output$anova2test_pval2<-renderText({
@@ -3225,7 +3221,7 @@ server <- function (input , output, session ){
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("f")+
+      ylab("density")+xlab("f")+
       ggtitle(paste("F(",round(dof1,3),",",round(dof2,3),")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5))  
     if(input$anova2test_alfa>0){
@@ -3260,7 +3256,7 @@ server <- function (input , output, session ){
     dof1<-s[[1]][3,1]
     dof2<-s[[1]][4,1]
     F<-s[[1]][3,4]
-    paste("statistica =",round(F,4)) 
+    paste("statistic =",round(F,4)) 
   }) 
   
   output$anova2test_pval12<-renderText({
@@ -3365,7 +3361,7 @@ server <- function (input , output, session ){
     dati<-cbind.data.frame(res=mod$residuals)
     ggplot(dati,aes(sample=res))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -3399,8 +3395,8 @@ server <- function (input , output, session ){
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
     smr<-summary(int)
     if(max(smr)==1){
-     cat("Anova senza ripetizioni. \n")
-     cat("Non abbiamo gradi di libertà per eseguire il test.")
+     cat("Anova without repetitions. \n")
+     cat("We have no dof to perform the test.")
     } else {
       frm<-as.formula(paste(input$anova2test_variab1,"~",input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
       bartlett.test(frm,df) 
@@ -3418,8 +3414,8 @@ server <- function (input , output, session ){
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
     smr<-summary(int)
     if(max(smr)==1){
-      cat("Anova senza ripetizioni. \n")
-      cat("Non abbiamo gradi di libertà per eseguire il test.")
+      cat("Anova without repetitions. \n")
+      cat("We have no dof to perform the test.")
     } else {
       frm<-as.formula(paste(input$anova2test_variab1,"~",input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
       fligner.test(frm,df) 
@@ -3437,8 +3433,8 @@ server <- function (input , output, session ){
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
     smr<-summary(int)
     if(max(smr)==1){
-      cat("Anova senza ripetizioni. \n")
-      cat("Non abbiamo gradi di libertà per eseguire il test.")
+      cat("Anova without repetitions. \n")
+      cat("We have no dof to perform the test.")
     } else {
       frm<-as.formula(paste(input$anova2test_variab1,"~",input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
       car::leveneTest(frm,df) 
@@ -3456,8 +3452,8 @@ server <- function (input , output, session ){
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
     smr<-summary(int)
     if(max(smr)==1){
-      cat("Anova senza ripetizioni. \n")
-      cat("Non abbiamo gradi di libertà per eseguire il test.")
+      cat("Anova without repetitions. \n")
+      cat("We have no dof to perform the test.")
     } else {
       frm<-as.formula(paste(input$anova2test_variab1,"~",input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
       Modello.aov<-aov(frm,df)
@@ -3479,8 +3475,8 @@ server <- function (input , output, session ){
     colnames(df)<-c(input$anova2test_variab1,paste(input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
     smr<-summary(int)
     if(max(smr)==1){
-      cat("Anova senza ripetizioni. \n")
-      cat("Non abbiamo gradi di libertà per eseguire il test.")
+      cat("Anova without repetitions. \n")
+      cat("We have no dof to perform the test.")
     } else {
       Modello.aov<-as.formula(paste(input$anova2test_variab1,"~",input$anova2test_variab2,".",input$anova2test_variab3,sep=""))
       outliers::cochran.test(Modello.aov,df)   
@@ -3493,15 +3489,15 @@ server <- function (input , output, session ){
                    choices = dati$var_qt)})
   
   output$anova3test_variab2<-renderUI({
-    selectizeInput(inputId = "anova3test_variab2",div("Fattore 1",style="font-weight: 400;"),
+    selectizeInput(inputId = "anova3test_variab2",div("Factor 1",style="font-weight: 400;"),
                    choices = dati$var_ql)})
   
   output$anova3test_variab3<-renderUI({
-    selectizeInput(inputId = "anova3test_variab3",div("Fattore 2",style="font-weight: 400;"),
+    selectizeInput(inputId = "anova3test_variab3",div("Factor 2",style="font-weight: 400;"),
                    choices = dati$var_ql[!dati$var_ql%in%input$anova3test_variab2])})
   
   output$anova3test_variab4<-renderUI({
-    selectizeInput(inputId = "anova3test_variab4",div("Fattore 3",style="font-weight: 400;"),
+    selectizeInput(inputId = "anova3test_variab4",div("Factor 3",style="font-weight: 400;"),
                    choices = dati$var_ql[!(dati$var_ql%in%input$anova3test_variab2 | dati$var_ql%in%input$anova3test_variab3)])})
   
   output$anova3test_R<-renderPrint({
@@ -4055,7 +4051,7 @@ server <- function (input , output, session ){
     df_res<-cbind.data.frame(residui=mod$residuals)
     ggplot(df_res,aes(sample=residui))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -4295,7 +4291,7 @@ server <- function (input , output, session ){
     df_res<-cbind.data.frame(residui=mod$residuals)
     ggplot(df_res,aes(sample=residui))+
       stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-      labs(x="quantili teorici",  y = "quantili campione")+
+      labs(x="theoretical quantiles",  y = "sample quantiles")+
       theme_classic()
   })
   
@@ -4624,7 +4620,7 @@ output$regrmulti_verifhp_qqplot<-renderPlot({
   df_res<-cbind.data.frame(residui=mod$residuals)
   ggplot(df_res,aes(sample=residui))+
     stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
-    labs(x="quantili teorici",  y = "quantili campione")+
+    labs(x="theoretical quantiles",  y = "sample quantiles")+
     theme_classic()
 })
 
@@ -4765,7 +4761,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=dnorm(x,mean=input$graf_norm_media,sd=input$graf_norm_ds))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("Y")
+      ylab("density")+xlab("Y")
     if(input$graf_norm_area=="nessuna" & length(input$graf_norm_camp)!=0){
      if(input$graf_norm_camp==TRUE & !is.null(input$graf_norm_camp_num)){
       df_ist<-as.data.frame(x = rnorm(n = input$graf_norm_camp_num,mean=input$graf_norm_media,sd=input$graf_norm_ds))
@@ -4873,7 +4869,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=dt(x,df = input$graf_tstudent_dof))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("T")
+      ylab("density")+xlab("T")
     if(input$graf_tstudent_area=="nessuna" & length(input$graf_tstudent_camp)!=0){
       if(input$graf_tstudent_camp==TRUE & !is.null(input$graf_tstudent_camp_num)){
         df_ist<-as.data.frame(x = rt(n = input$graf_tstudent_camp_num,df =input$graf_tstudent_dof ))
@@ -4980,7 +4976,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=dchisq(x,df = input$graf_chi_dof))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab(expression(chi^2))
+      ylab("density")+xlab(expression(chi^2))
     if(input$graf_chi_area=="nessuna" & length(input$graf_chi_camp)!=0){
       if(input$graf_chi_camp==TRUE & !is.null(input$graf_chi_camp_num)){
         df_ist<-as.data.frame(x = rchisq(n = input$graf_chi_camp_num,df =input$graf_chi_dof ))
@@ -5087,7 +5083,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x=x,y=df(x,df1 = input$graf_f_dof1,df2 = input$graf_f_dof2))
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("F")
+      ylab("density")+xlab("F")
     if(input$graf_f_area=="nessuna" & length(input$graf_f_camp)!=0){
       if(input$graf_f_camp==TRUE & !is.null(input$graf_f_camp_num)){
         df_ist<-as.data.frame(x = rf(n = input$graf_f_camp_num,df1 = input$graf_f_dof1,df2 = input$graf_f_dof2 ))
@@ -5237,7 +5233,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
  
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+      ylab("density")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))
     
@@ -5267,7 +5263,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
+        ylab("density")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
       
@@ -5292,10 +5288,10 @@ output$regrmulti_verifhp_corr<-renderPlot({
   output$int_conf_stat<-renderText({ 
     if(input$int_conf_var==1){
       st<-(mean(int_conf_camp())-input$int_conf_media)/(input$int_conf_ds*sqrt(1/input$int_conf_numta_camp))
-      paste("statistica =",round(st,3))
+      paste("statistic =",round(st,3))
     } else {
       st<-(mean(int_conf_camp())-input$int_conf_media)/(sd(int_conf_camp())*sqrt(1/input$int_conf_numta_camp))
-      paste("statistica =",round(st,3))
+      paste("statistic =",round(st,3))
     }
     })
   
@@ -5438,7 +5434,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       }
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y))+
-        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
+        ylab("density")+xlab(expression(frac(bar(Y)[m]-mu,sigma * sqrt(1/m))))+ggtitle("N(0,1)")+
         theme(plot.title = element_text(size = 20, face = "bold",
                                         hjust = 0.5))
       
@@ -5483,7 +5479,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
         
         gr<-ggplot() +theme_classic()+
           geom_line(data = df,mapping = aes(x=x,y=y))+
-          ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
+          ylab("density")+xlab(expression(frac(bar(Y)[m]-mu,S[m] * sqrt(1/m))))+ggtitle(paste("T(",dof,")",sep=""))+
           theme(plot.title = element_text(size = 20, face = "bold",
                                           hjust = 0.5))
         
@@ -5513,9 +5509,9 @@ output$regrmulti_verifhp_corr<-renderPlot({
   output$h0_stat<-renderText({
     vrb<-as.data.frame(h0_camp())
     if(input$h0_var=="1"){
-      paste("statistica =",round((mean(vrb[,1])-input$h0_H0)/(input$h0_ds*sqrt(1/nrow(vrb))),4)) 
+      paste("statistic =",round((mean(vrb[,1])-input$h0_H0)/(input$h0_ds*sqrt(1/nrow(vrb))),4)) 
     }else{
-      paste("statistica =",round((mean(vrb[,1])-input$h0_H0)/(sd(vrb[,1])*sqrt(1/nrow(vrb))),4)) 
+      paste("statistic =",round((mean(vrb[,1])-input$h0_H0)/(sd(vrb[,1])*sqrt(1/nrow(vrb))),4)) 
     }
   }) 
   
@@ -5574,7 +5570,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu[0],sigma * sqrt(1/m))))+
+        ylab("density")+xlab(expression(frac(bar(Y)[m]-mu[0],sigma * sqrt(1/m))))+
         # ggtitle("N(0,1)")+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5,colour = 'grey'))+
@@ -5586,7 +5582,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       if(q>10) q<-10
       gr<-ggplot() +theme_classic()+
         geom_line(data = df,mapping = aes(x=x,y=y),colour = 'grey')+
-        ylab("densità")+xlab(expression(frac(bar(Y)[m]-mu[0],S[m] * sqrt(1/m))))+
+        ylab("density")+xlab(expression(frac(bar(Y)[m]-mu[0],S[m] * sqrt(1/m))))+
         # ggtitle(paste("t(",input$potenza_num_pop-1,")",sep=""))+
         # theme(plot.title = element_text(size = 20, face = "bold",
         #                                 hjust = 0.5))+
@@ -5703,7 +5699,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df1,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("Y")+ggtitle("Distribuzione popolazioni")+
+      ylab("density")+xlab("Y")+ggtitle("Distribuzione popolazioni")+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))+
       geom_polygon(df1,mapping = aes(x=x,y=y),fill="blue",alpha=.5)+
@@ -5825,7 +5821,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     n<-input$anova_numta_camp
     ms_in<-(sum((anova_camp1()-m.a)^2)+sum((anova_camp2()-m.b)^2)+sum((anova_camp3()-m.c)^2))/(3*n-3)
     ms_tra<- (n*sum((m.a-m)^2)+n*sum((m.b-m)^2)+n*sum((m.c-m)^2))/2
-    paste("statistica =",round(ms_tra/ms_in,4)) 
+    paste("statistic =",round(ms_tra/ms_in,4)) 
   })
   
   output$anova_pval<-renderText({
@@ -5868,7 +5864,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+xlab("F")+
+      ylab("density")+xlab("F")+
       ggtitle(paste("F(",2,",",3*n-3,")"))+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))
@@ -6150,7 +6146,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+
+      ylab("density")+
       xlab(expression(frac(b[0],s * sqrt(1/m+bar(x)/ss))))+ # da sistemare
       ggtitle(paste("t(",dof,")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",
@@ -6192,7 +6188,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("statistica =",round(s$coefficients[1,3],3))
+    paste("statistic =",round(s$coefficients[1,3],3))
   })
 
   output$regr_sp_int_pval<-renderText({
@@ -6267,7 +6263,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df,mapping = aes(x=x,y=y))+
-      ylab("densità")+
+      ylab("density")+
       xlab(expression(frac(b[1],s * sqrt(1/ss))))+ # da sistemare
       ggtitle(paste("t(",dof,")",sep=""))+
       theme(plot.title = element_text(size = 20, face = "bold",
@@ -6309,7 +6305,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("statistica =",round(s$coefficients[2,3],3))
+    paste("statistic =",round(s$coefficients[2,3],3))
   })
   
   output$regr_sp_pen_pval<-renderText({

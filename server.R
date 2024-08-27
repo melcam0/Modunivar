@@ -3603,62 +3603,62 @@ server <- function (input , output, session ){
  ## T-test: una popolazione-----------------------------------------------------------------
 
   output$calc_potenza_t1_diff_medie <- renderUI({
-    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
-    numericInput("calc_potenza_t1_diff_medie",label = "Differenza dalla media vera",
+    validate(need(input$calc_potenza_test=='T-test: one population',""))
+    numericInput("calc_potenza_t1_diff_medie",label = "Difference from the real mean",
                  value=0.5,width = "40%")})
   
   output$calc_potenza_t1_devst <- renderUI({
-    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
-    numericInput("calc_potenza_t1_devst",label = "Dev. standard",
+    validate(need(input$calc_potenza_test=='T-test: one population',""))
+    numericInput("calc_potenza_t1_devst",label = "Standard dev.",
                  value=1,width = "40%")})
   
   output$calc_potenza_t1_effetto <- renderUI({
-    validate(need(input$calc_potenza_test=='T-test: una popolazione',""))
-    HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t1_diff_medie/input$calc_potenza_t1_devst,2))
+    validate(need(input$calc_potenza_test=='T-test: one population',""))
+    HTML('Effect size d/<span>&#963;</span> =',round(input$calc_potenza_t1_diff_medie/input$calc_potenza_t1_devst,2))
     })
 
   ## T-test: due popolazioni----------------------------------------------------------------- 
   
   output$calc_potenza_t2_var_uguali <- renderUI({
-    validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+    validate(need(input$calc_potenza_test=='T-test: two populations',""))
     radioButtons("calc_potenza_t2_var_uguali", label = "",
-                 choices = list("Varianze uguali" = 1, "Varianze non uguali" = 2),
+                 choices = list("Equal variances" = 1, "Unequal variances" = 2),
                  selected = 1)
     })
 
     output$calc_potenza_t2_diff_medie <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
-      numericInput("calc_potenza_t2_diff_medie",label = "Differenza dalla media vera",
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
+      numericInput("calc_potenza_t2_diff_medie",label = "Difference from the real mean",
                    value=0.5,width = "40%")})
     
     output$calc_potenza_t2_devst <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
       validate(need(input$calc_potenza_t2_var_uguali==1,""))
-      numericInput("calc_potenza_t2_devst",label = "Dev. standard",
+      numericInput("calc_potenza_t2_devst",label = "Standard dev.",
                    value=1,width = "40%")})
     
     output$calc_potenza_t2_effetto1 <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
       validate(need(input$calc_potenza_t2_var_uguali==1,""))
-      HTML('Grandezza effetto d/<span>&#963;</span> =',round(input$calc_potenza_t2_diff_medie/input$calc_potenza_t2_devst,2))
+      HTML('Effect size d/<span>&#963;</span> =',round(input$calc_potenza_t2_diff_medie/input$calc_potenza_t2_devst,2))
     })
     
     output$calc_potenza_t2_devst1 <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
       validate(need(input$calc_potenza_t2_var_uguali==2,""))
-      numericInput("calc_potenza_t2_devst1",label = "Dev. standard gr. 1",
-                   value=1,width = "40%")})
+      numericInput("calc_potenza_t2_devst1",label = "Standard dev. gr. 1",
+                   value=1,width = "45%")})
     
     output$calc_potenza_t2_devst2 <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
       validate(need(input$calc_potenza_t2_var_uguali==2,""))
-      numericInput("calc_potenza_t2_devst2",label = "Dev. standard gr. 2",
-                   value=1,width = "40%")})
+      numericInput("calc_potenza_t2_devst2",label = "Standard dev. gr. 2",
+                   value=1,width = "45%")})
     
     output$calc_potenza_t2_effetto2 <- renderUI({
-      validate(need(input$calc_potenza_test=='T-test: due popolazioni',""))
+      validate(need(input$calc_potenza_test=='T-test: two populations',""))
       validate(need(input$calc_potenza_t2_var_uguali==2,""))
-      HTML('Grandezza effetto <sup>d</sup>&frasl;<sub><span>&#8730;(<span>&#963;</span><sub>1</sub><sup>2</sup>+<span>&#963;</span><sub>2</sub><sup>2</sup>)/2
+      HTML('Effect size <sup>d</sup>&frasl;<sub><span>&#8730;(<span>&#963;</span><sub>1</sub><sup>2</sup>+<span>&#963;</span><sub>2</sub><sup>2</sup>)/2
       </span></sub> =',
            round(input$calc_potenza_t2_diff_medie/sqrt((input$calc_potenza_t2_devst1^2+input$calc_potenza_t2_devst2^2)/2),2))
     })
@@ -3666,18 +3666,18 @@ server <- function (input , output, session ){
     ## F-test: test varianza ----------------------------------------------------------------- 
 
     output$calc_potenza_f_devst1 <- renderUI({
-      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
-      numericInput("calc_potenza_f_devst1",label = "Dev. standard gr. 1",
-                   value=1.15,width = "40%")})
+      validate(need(input$calc_potenza_test=='F-test: variance test',""))
+      numericInput("calc_potenza_f_devst1",label = "Standard dev. gr. 1",
+                   value=1.15,width = "45%")})
     
     output$calc_potenza_f_devst2 <- renderUI({
-      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
-      numericInput("calc_potenza_f_devst2",label = "Dev. standard gr. 2",
-                   value=1,width = "40%")})
+      validate(need(input$calc_potenza_test=='F-test: variance test',""))
+      numericInput("calc_potenza_f_devst2",label = "Standard dev. gr. 2",
+                   value=1,width = "45%")})
     
     output$calc_potenza_f_effetto <- renderUI({
-      validate(need(input$calc_potenza_test=='F-test: test varianza',""))
-      HTML('Grandezza effetto    <span>&#963;</span><sub>1</sub> &frasl;   <span>&#963;</span><sub>2</sub>  =',
+      validate(need(input$calc_potenza_test=='F-test: variance test',""))
+      HTML('Effect size   <span>&#963;</span><sub>1</sub> &frasl;   <span>&#963;</span><sub>2</sub>  =',
       round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2)
       )
     })
@@ -3685,31 +3685,31 @@ server <- function (input , output, session ){
     ## Anova: una via -----------------------------------------------------------------
   
     output$calc_potenza_aov1_ngruppi <- renderUI({
-      validate(need(input$calc_potenza_test=='Anova: una via',""))
-      numericInput("calc_potenza_aov1_ngruppi",label = "Numero gruppi",
+      validate(need(input$calc_potenza_test=='Anova: one way',""))
+      numericInput("calc_potenza_aov1_ngruppi",label = "Number of groups",
                    value=4,width = "40%")})
     
     output$calc_potenza_aov1_diff_medie <- renderUI({
-      validate(need(input$calc_potenza_test=='Anova: una via',""))
-      numericInput("calc_potenza_aov1_diff_medie",label = HTML("Eff. trattamento &#8721;&alpha;<sub>j</sub><sup>2</sup>"),
-                   value=input$calc_potenza_aov1_ngruppi/16,width = "40%")})
+      validate(need(input$calc_potenza_test=='Anova: one way',""))
+      numericInput("calc_potenza_aov1_diff_medie",label = HTML("Treatment eff. &#8721;&alpha;<sub>j</sub><sup>2</sup>"),
+                   value=input$calc_potenza_aov1_ngruppi/16,width = "45%")})
     
     output$calc_potenza_aov1_devst <- renderUI({
-      validate(need(input$calc_potenza_test=='Anova: una via',""))
-      numericInput("calc_potenza_aov1_devst",label = "Dev. standard",
+      validate(need(input$calc_potenza_test=='Anova: one way',""))
+      numericInput("calc_potenza_aov1_devst",label = "Standard dev.",
                    value=1,width = "40%")})
     
     output$calc_potenza_aov1_effetto <- renderUI({
-      validate(need(input$calc_potenza_test=='Anova: una via',""))
+      validate(need(input$calc_potenza_test=='Anova: one way',""))
       # HTML('Grandezza effetto &#963; =') ###
-      HTML('Grandezza effetto <span class="frac"> &#8730; <sup>&#8721;&alpha;<sub>j</sub><sup>2</sup>/k </sup> <span>/</span> <sub>&#963</sub> </span> = ',
+      HTML('Effect size <span class="frac"> &#8730; <sup>&#8721;&alpha;<sub>j</sub><sup>2</sup>/k </sup> <span>/</span> <sub>&#963</sub> </span> = ',
            round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
     })
 
   ## Grafico ----------------------------------------------------------------- 
    
     output$calc_potenza_graf <- renderggiraph({
-      if(input$calc_potenza_test=='T-test: una popolazione'){
+      if(input$calc_potenza_test=='T-test: one population'){
         
         req(input$calc_potenza_alfa)
         req(input$calc_potenza_t1_diff_medie)
@@ -3732,11 +3732,11 @@ server <- function (input , output, session ){
         }
         colnames(PT) <- c('n','pt')
         
-        subtitolo <- paste("T-test una popolazione: grandezza effetto =", round(d/sd,2))
-        xtxt <- "numerosità"
+        subtitolo <- paste("T-test one population: effect size =", round(d/sd,2))
+        xtxt <- "sample size"
       }
       
-      if(input$calc_potenza_test=='T-test: due popolazioni'){
+      if(input$calc_potenza_test=='T-test: two populations'){
         req(input$calc_potenza_t2_var_uguali)
         
         if(input$calc_potenza_t2_var_uguali==1){
@@ -3764,8 +3764,8 @@ server <- function (input , output, session ){
           colnames(PT) <- c('n','pt')
           PT <- PT[-1,]
           
-          subtitolo <- paste("T-test due popolazioni var. uguali: grandezza effetto =", round(d/sd,2))
-          xtxt <- "numerosità per ogni gruppo"
+          subtitolo <- paste("T-test two populations equal variances: effect size =", round(d/sd,2))
+          xtxt <- "sample size for each group"
         }
         
         if(input$calc_potenza_t2_var_uguali==2){
@@ -3794,13 +3794,13 @@ server <- function (input , output, session ){
           colnames(PT) <- c('n','pt')
           PT <- PT[-1,]
           
-          subtitolo <- paste("T-test due popolazioni var. diverse: grandezza effetto =", 
+          subtitolo <- paste("T-test two populations unequal variances: effect size =", 
                              round(input$calc_potenza_t2_diff_medie/sqrt((input$calc_potenza_t2_devst1^2+input$calc_potenza_t2_devst2^2)/2),2))
-          xtxt <- "numerosità per ogni gruppo"
+          xtxt <- "sample size for each group"
         }
       }
 
-      if(input$calc_potenza_test=='F-test: test varianza'){
+      if(input$calc_potenza_test=='F-test: variance test'){
         req(input$calc_potenza_alfa)
         req(input$calc_potenza_f_devst1)
         req(input$calc_potenza_f_devst2)
@@ -3826,12 +3826,12 @@ server <- function (input , output, session ){
         colnames(PT) <- c('n','pt')
         PT <- PT[-1,]
         
-        subtitolo <- paste("F-test: test varianza: grandezza effetto =", 
+        subtitolo <- paste("F-test: variance test: effect size =", 
                            round(input$calc_potenza_f_devst1/input$calc_potenza_f_devst2,2))
-        xtxt <- "numerosità per ogni gruppo"
+        xtxt <- "sample size for each group"
       }
 
-      if(input$calc_potenza_test=='Anova: una via'){
+      if(input$calc_potenza_test=='Anova: one way'){
         req(input$calc_potenza_alfa)
         req(input$calc_potenza_aov1_ngruppi)
         req(input$calc_potenza_aov1_diff_medie)
@@ -3855,13 +3855,13 @@ server <- function (input , output, session ){
         }
         colnames(PT) <- c('n','pt')
         
-        subtitolo <- paste("Anova una via: grandezza effetto =", 
+        subtitolo <- paste("One way anova: effect size =", 
                            round(sqrt(input$calc_potenza_aov1_diff_medie/input$calc_potenza_aov1_ngruppi)/input$calc_potenza_aov1_devst,2))
-        xtxt <- "numerosità per ogni gruppo"
+        xtxt <- "sample size for each group"
       }
 
       tooltip_text = paste0('n: ',PT$n, "\n",
-                            'potenza: ',round(PT$pt*100,2), "%")
+                            'power: ',round(PT$pt*100,2), "%")
       
       latest_vax_graph <- ggplot(PT,
                                  aes(x = n,
@@ -3871,9 +3871,9 @@ server <- function (input , output, session ){
         geom_col_interactive(color = "chartreuse4", fill="chartreuse4", size = 0.5) +  #<<
         theme_minimal() +
         theme(axis.text=element_text(size = 6)) +  #<<
-        labs(title = "Potenza in funzione della numerosità",
+        labs(title = "Power as function of sample size",
              subtitle = subtitolo) +
-        ylab("potenza") +
+        ylab("power") +
         xlab(xtxt) +
         ylim(c(0,1))
 
@@ -4746,12 +4746,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$graf_norm_camp<-renderUI({
     validate(need(input$graf_norm_area=="nessuna",""))
-    checkboxInput("graf_norm_camp", label = "Campione", value = FALSE)
+    checkboxInput("graf_norm_camp", label = "Sample", value = FALSE)
   })
   
   output$graf_norm_camp_num<-renderUI({
     validate(need(input$graf_norm_camp==TRUE,""))
-    sliderInput(inputId="graf_norm_camp_num",label = "Numerosità campione",min = 1,max = 10000,value = 10,
+    sliderInput(inputId="graf_norm_camp_num",label = "Sample size",min = 1,max = 10000,value = 10,
                 step=10)
   })
   
@@ -4785,7 +4785,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_norm_area=="both" & !is.null(input$graf_norm_a) & !is.null(input$graf_norm_b)){
       if(input$graf_norm_b<input$graf_norm_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
          x.a<-seq(-10, input$graf_norm_a,by = 0.1)
       x.b<-seq(input$graf_norm_b,10,by = 0.1)
@@ -4799,7 +4799,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_norm_area=="middle" & !is.null(input$graf_norm_a) & !is.null(input$graf_norm_b)){
       if(input$graf_norm_b<input$graf_norm_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
       x.ab<-seq(input$graf_norm_a,input$graf_norm_b,by = 0.1)
       df.ab<-cbind.data.frame(x=x.ab,y=dnorm(x.ab,mean =input$graf_norm_media,sd = input$graf_norm_ds))
@@ -4816,7 +4816,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_norm_area=="upper" & !is.null(input$graf_norm_a)){
       "P[x>a]"
     } else if (input$graf_norm_area=="both" & !is.null(input$graf_norm_a) & !is.null(input$graf_norm_b)){
-      "P[x<a e x>b]"
+      "P[x<a and x>b]"
     } else if (input$graf_norm_area=="middle" & !is.null(input$graf_norm_a) & !is.null(input$graf_norm_b)){
       "P[a<x<b]"
     }
@@ -4854,12 +4854,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$graf_tstudent_camp<-renderUI({
     validate(need(input$graf_tstudent_area=="nessuna",""))
-    checkboxInput("graf_tstudent_camp", label = "Campione", value = FALSE)
+    checkboxInput("graf_tstudent_camp", label = "Sample", value = FALSE)
   })
   
   output$graf_tstudent_camp_num<-renderUI({
     validate(need(input$graf_tstudent_camp==TRUE,""))
-    sliderInput(inputId="graf_tstudent_camp_num",label = "Numerosità campione",min = 1,max = 10000,value = 10,
+    sliderInput(inputId="graf_tstudent_camp_num",label = "Sample size",min = 1,max = 10000,value = 10,
                 step=10)
   })
   
@@ -4893,7 +4893,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_tstudent_area=="both" & !is.null(input$graf_tstudent_a) & !is.null(input$graf_tstudent_b)){
       if(input$graf_tstudent_b<input$graf_tstudent_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.a<-seq(-10, input$graf_tstudent_a,by = 0.1)
         x.b<-seq(input$graf_tstudent_b,10,by = 0.1)
@@ -4907,7 +4907,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_tstudent_area=="middle" & !is.null(input$graf_tstudent_a) & !is.null(input$graf_tstudent_b)){
       if(input$graf_tstudent_b<input$graf_tstudent_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.ab<-seq(input$graf_tstudent_a,input$graf_tstudent_b,by = 0.1)
         df.ab<-cbind.data.frame(x=x.ab,y=dt(x.ab,input$graf_tstudent_dof))
@@ -4920,13 +4920,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
   output$tstudent_txt<-renderText({
     validate(need(!is.null(input$graf_tstudent_a),""))
     if (input$graf_tstudent_area=="lower" & !is.null(input$graf_tstudent_a)){
-      "P[t<a]"
+      "P[T<a]"
     } else if (input$graf_tstudent_area=="upper" & !is.null(input$graf_tstudent_a)){
-      "P[t>a]"
+      "P[T>a]"
     } else if (input$graf_tstudent_area=="both" & !is.null(input$graf_tstudent_a) & !is.null(input$graf_tstudent_b)){
-      "P[t<a e t>b]"
+      "P[T<a and T>b]"
     } else if (input$graf_tstudent_area=="middle" & !is.null(input$graf_tstudent_a) & !is.null(input$graf_tstudent_b)){
-      "P[a<t<b]"
+      "P[a<T<b]"
     }
   })
   
@@ -4961,12 +4961,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$graf_chi_camp<-renderUI({
     validate(need(input$graf_chi_area=="nessuna",""))
-    checkboxInput("graf_chi_camp", label = "Campione", value = FALSE)
+    checkboxInput("graf_chi_camp", label = "Sample", value = FALSE)
   })
   
   output$graf_chi_camp_num<-renderUI({
     validate(need(input$graf_chi_camp==TRUE,""))
-    sliderInput(inputId="graf_chi_camp_num",label = "Numerosità campione",min = 1,max = 10000,value = 10,
+    sliderInput(inputId="graf_chi_camp_num",label = "Sample size",min = 1,max = 10000,value = 10,
                 step=10)
   })
   
@@ -5000,7 +5000,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_chi_area=="both" & !is.null(input$graf_chi_a) & !is.null(input$graf_chi_b)){
       if(input$graf_chi_b<input$graf_chi_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.a<-seq(0, input$graf_chi_a,by = 0.1)
         x.b<-seq(input$graf_chi_b,20,by = 0.1)
@@ -5014,7 +5014,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_chi_area=="middle" & !is.null(input$graf_chi_a) & !is.null(input$graf_chi_b)){
       if(input$graf_chi_b<input$graf_chi_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.ab<-seq(input$graf_chi_a,input$graf_chi_b,by = 0.1)
         df.ab<-cbind.data.frame(x=x.ab,y=dchisq(x.ab,input$graf_chi_dof))
@@ -5031,7 +5031,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_chi_area=="upper" & !is.null(input$graf_chi_a)){
       HTML("P[&chi;<sup>2</sup> > a]")
     } else if (input$graf_chi_area=="both" & !is.null(input$graf_chi_a) & !is.null(input$graf_chi_b)){
-      HTML("P[&chi;<sup>2</sup> < a e &chi;<sup>2</sup> < b]")
+      HTML("P[&chi;<sup>2</sup> < a and &chi;<sup>2</sup> < b]")
     } else if (input$graf_chi_area=="middle" & !is.null(input$graf_chi_a) & !is.null(input$graf_chi_b)){
       HTML(" P[a < &chi;<sup>2</sup> < b]")
     }
@@ -5068,12 +5068,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$graf_f_camp<-renderUI({
     validate(need(input$graf_f_area=="nessuna",""))
-    checkboxInput("graf_f_camp", label = "Campione", value = FALSE)
+    checkboxInput("graf_f_camp", label = "Sample", value = FALSE)
   })
   
   output$graf_f_camp_num<-renderUI({
     validate(need(input$graf_f_camp==TRUE,""))
-    sliderInput(inputId="graf_f_camp_num",label = "Numerosità campione",min = 1,max = 10000,value = 10,
+    sliderInput(inputId="graf_f_camp_num",label = "Sample size",min = 1,max = 10000,value = 10,
                 step=10)
   })
   
@@ -5107,7 +5107,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_f_area=="both" & !is.null(input$graf_f_a) & !is.null(input$graf_f_b)){
       if(input$graf_f_b<input$graf_f_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.a<-seq(0, input$graf_f_a,by = 0.1)
         x.b<-seq(input$graf_f_b,20,by = 0.1)
@@ -5121,7 +5121,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_f_area=="middle" & !is.null(input$graf_f_a) & !is.null(input$graf_f_b)){
       if(input$graf_f_b<input$graf_f_a){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"Errore: b deve essere maggiore di a",col="red",cex=2)
+        text(0,0,"Error: b must be greater than a",col="red",cex=2)
       } else {
         x.ab<-seq(input$graf_f_a,input$graf_f_b,by = 0.1)
         df.ab<-cbind.data.frame(x=x.ab,y=df(x.ab,df1 = input$graf_f_dof1,df2 = input$graf_f_dof2))
@@ -5138,7 +5138,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     } else if (input$graf_f_area=="upper" & !is.null(input$graf_f_a)){
       HTML("P[F > a]")
     } else if (input$graf_f_area=="both" & !is.null(input$graf_f_a) & !is.null(input$graf_f_b)){
-      HTML("P[F < a e &chi;F < b]")
+      HTML("P[F < a and F > b]")
     } else if (input$graf_f_area=="middle" & !is.null(input$graf_f_a) & !is.null(input$graf_f_b)){
       HTML(" P[ a< F < b]")
     }

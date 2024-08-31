@@ -5167,19 +5167,19 @@ output$regrmulti_verifhp_corr<-renderPlot({
     y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)*100
     df<-cbind.data.frame(gr,y)
    ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",width=0.005)+
-     theme_classic()+xlab("Y")+ylab("probabilità (%)")
+     theme_classic()+xlab("Y")+ylab("probability (%)")
   })
   
   output$lc_pop_media<-renderText({
-    paste("media =",2*input$graf_lc_prob-1)
+    paste("mean =",2*input$graf_lc_prob-1)
   })
   
   output$lc_pop_var<-renderText({
-    paste("varianza =",4*input$graf_lc_prob*(1-input$graf_lc_prob))
+    paste("variance =",4*input$graf_lc_prob*(1-input$graf_lc_prob))
   })
   
   output$graf_lc_titolo<-renderText({
-   paste("distribuzione della media di",input$graf_lc_numta_camp,"variabili")
+   paste("mean distribuion of",input$graf_lc_numta_camp,"variables")
    })
   
   df_tlc<-reactive({
@@ -5204,7 +5204,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
                     # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
                     binwidth =0.01
                      )+
-        xlab(expression(bar(Y)))+ylab("probalità (%)")+xlim(-1.1,1.1)
+        xlab(expression(bar(Y)))+ylab("probability (%)")+xlim(-1.1,1.1)
   })
   
  
@@ -5245,8 +5245,8 @@ output$regrmulti_verifhp_corr<-renderPlot({
       dof<-length(int_conf_camp())-1
       if (dof==0){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-        numerosità del campione almeno 2 \n",col="red",cex=2)
+        text(0,0,"   At least 1 degree of freedom is needed \n
+        sample size at least 2 \n",col="red",cex=2)
       } else {
        ds<-sd(int_conf_camp())
        df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -5277,12 +5277,12 @@ output$regrmulti_verifhp_corr<-renderPlot({
   })
   
   output$int_conf_media_camp<-renderText({
-    paste("media campionaria =",round(mean(int_conf_camp()),3))
+    paste("sample mean =",round(mean(int_conf_camp()),3))
   })
   
   output$int_conf_sd_camp<-renderText({
     validate(need(input$int_conf_var=="2",""))
-    paste("dev. standard campionaria =",round(sd(int_conf_camp()),2))
+    paste("sample standard dev. =",round(sd(int_conf_camp()),2))
   })
   
   output$int_conf_stat<-renderText({ 
@@ -5354,7 +5354,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$int_conf_IC_txt<-renderText({
     validate(need(input$int_conf_alfa>0," "))
-    "Intervallo di confidenza"
+    "Confidence interval"
   })
   
   output$int_conf_ic_inf<-renderText({
@@ -5368,7 +5368,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       s<-sd(int_conf_camp())
       q<-qt(input$int_conf_alfa/2,df = m-1,lower.tail = FALSE)
     }
-    paste("estremo inferiore =",round(media-q*s*sqrt(1/m),3))
+    paste("lower extreme =",round(media-q*s*sqrt(1/m),3))
   })
   
   
@@ -5383,7 +5383,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
       s<-sd(int_conf_camp())
       q<-qt(input$int_conf_alfa/2,df = m-1,lower.tail = FALSE)
     }
-    paste("estremo superiore =",round(media+q*s*sqrt(1/m),3))
+    paste("upper extreme =",round(media+q*s*sqrt(1/m),3))
   })
   
   
@@ -5406,7 +5406,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$h0_H0<-renderUI({
     req(input$h0_media)
-    numericInput("h0_H0",label = "Media ipotizzata",
+    numericInput("h0_H0",label = "Assumed mean",
                  value=input$h0_media,width = "40%")
   })
 
@@ -5461,8 +5461,8 @@ output$regrmulti_verifhp_corr<-renderPlot({
       dof<-nrow(vrb)-1
       if (dof==0){
         plot(0,0,type='n',axes=FALSE,xlab="",ylab="")
-        text(0,0,"   Ci vuole almeno 1 grado di libertà \n
-             numerosità del campione almeno 2 \n",col="red",cex=2)
+        text(0,0,"   At least 1 degree of freedom is needed \n
+             sample size at least 2 \n",col="red",cex=2)
       } else {
         ds<-sd(vrb[,1])
         df<-cbind.data.frame(x=x,y=dt(x,df = dof))
@@ -5532,7 +5532,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$h0_potenza_txt<-renderText({
     validate(need(input$h0_alfa>0," "))
-    "Potenza del test"
+    "Power of the test"
   })
   
   output$h0_beta<-renderUI({
@@ -5641,7 +5641,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$potenza_err2<-renderText({
     validate(need(input$potenza_delta>0," "))
-    "Errore di tipo II"
+    "Type II error"
   })
   
   output$potenza_beta<-renderUI({
@@ -5665,7 +5665,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   
   output$potenza_pot_txt<-renderText({
     validate(need(input$potenza_delta>0," "))
-    "Potenza"
+    "Power"
   })
   
   output$potenza_pot<-renderUI({

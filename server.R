@@ -3887,11 +3887,11 @@ server <- function (input , output, session ){
 
 # Regressione semplice-----------------------------------------------------------------
   output$regrsemplice_variaby<-renderUI({
-    selectizeInput(inputId = "regrsemplice_variaby",div("Variabile dipendente (y)",style="font-weight: 400;"),
+    selectizeInput(inputId = "regrsemplice_variaby",div("Dependent variable (y)",style="font-weight: 400;"),
                    choices = dati$var_qt)})
   
   output$regrsemplice_variabx<-renderUI({
-    selectizeInput(inputId = "regrsemplice_variabx",div("Variabile indipendente (x)",style="font-weight: 400;"),
+    selectizeInput(inputId = "regrsemplice_variabx",div("Independent variable (x)",style="font-weight: 400;"),
                    choices = dati$var_qt[!dati$var_qt%in%input$regrsemplice_variaby])})  
   
   output$regrsemplice_graf<-renderPlot({
@@ -4020,7 +4020,7 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab("residui")+xlab("valori predetti")
+      ylab("residuals")+xlab("fitted values")
   })
   
   output$regrsemplice_verifhp_shapiro<-renderPrint({
@@ -4082,7 +4082,7 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab(expression(sqrt(residui)))+xlab("valori predetti")
+      ylab(expression(sqrt(residuals)))+xlab("fitted values")
   })
   
   output$regrsemplice_verifhp_dw<-renderPrint({
@@ -4113,16 +4113,16 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$residuals[-n],y=mod$residuals[-1])
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab(expression(residui[n]))+xlab(expression(residui[n-1]))
+      ylab(expression(residuals[n]))+xlab(expression(residuals[n-1]))
   })
 
   # Regressione polinomiale-----------------------------------------------------------------
   output$regrpoli_variaby<-renderUI({
-    selectizeInput(inputId = "regrpoli_variaby",div("Variabile dipendente (y)",style="font-weight: 400;"),
+    selectizeInput(inputId = "regrpoli_variaby",div("Dependent variable (y)",style="font-weight: 400;"),
                    choices = dati$var_qt)})
   
   output$regrpoli_variabx<-renderUI({
-    selectizeInput(inputId = "regrpoli_variabx",div("Variabile indipendente (x)",style="font-weight: 400;"),
+    selectizeInput(inputId = "regrpoli_variabx",div("Independent variable (x)",style="font-weight: 400;"),
                    choices = dati$var_qt[!dati$var_qt%in%input$regrpoli_variaby])})  
   
   output$regrpoli_graf<-renderPlot({
@@ -4250,7 +4250,7 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab("residui")+xlab("valori predetti")
+      ylab("rsidals")+xlab("fitted values")
   })
   
   output$regrpoli_verifhp_shapiro<-renderPrint({
@@ -4332,7 +4332,7 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab(expression(sqrt(residui)))+xlab("valori predetti")
+      ylab(expression(sqrt(residuals)))+xlab("fited values")
   })
   
   output$regrpoli_verifhp_dw<-renderPrint({
@@ -4374,16 +4374,16 @@ server <- function (input , output, session ){
     df_xy<-cbind.data.frame(x=mod$residuals[-1],y=mod$residuals[-n])
     ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
       geom_hline(yintercept = 0,col="blue",lty=2)+
-      ylab(expression(residui[n]))+xlab(expression(residui[n-1]))
+      ylab(expression(residals[n]))+xlab(expression(residuals[n-1]))
   }) 
 
 # Regressione multipla-----------------------------------------------------------------
 output$regrmulti_variaby<-renderUI({
-  selectizeInput(inputId = "regrmulti_variaby",div("Variabile dipendente (y)",style="font-weight: 400;"),
+  selectizeInput(inputId = "regrmulti_variaby",div("Dependent variable (y)",style="font-weight: 400;"),
                  choices = dati$var_qt)})
 
 output$regrmulti_variabx<-renderUI({
-  selectizeInput(inputId = "regrmulti_variabx",div("Variabili indipendenti (x)",style="font-weight: 400;"),
+  selectizeInput(inputId = "regrmulti_variabx",div("Independent variables (x)",style="font-weight: 400;"),
                  choices = dati$var_qt[!dati$var_qt%in%input$regrmulti_variaby],
                  multiple = TRUE)})  
 
@@ -4567,7 +4567,7 @@ output$regrmulti_verifhp_grlin<-renderPlot({
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
     geom_hline(yintercept = 0,col="blue",lty=2)+
-    ylab("residui")+xlab("valori predetti")
+    ylab("residuals")+xlab("fited values")
 })
 
 output$regrmulti_verifhp_shapiro<-renderPrint({
@@ -4673,7 +4673,7 @@ output$regrmulti_verifhp_omosch<-renderPlot({
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
     geom_hline(yintercept = 0,col="blue",lty=2)+
-    ylab(expression(sqrt(residui)))+xlab("valori predetti")
+    ylab(expression(sqrt(residuals)))+xlab("fitted values")
 })
 
 output$regrmulti_verifhp_dw<-renderPrint({
@@ -4726,7 +4726,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   df_xy<-cbind.data.frame(x=mod$residuals[-1],y=mod$residuals[-n])
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
     geom_hline(yintercept = 0,col="blue",lty=2)+
-    ylab(expression(residui[n]))+xlab(expression(residui[n-1]))
+    ylab(expression(rsiduals[n]))+xlab(expression(residuals[n-1]))
 }) 
 
 
@@ -5699,7 +5699,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     
     gr<-ggplot() +theme_classic()+
       geom_line(data = df1,mapping = aes(x=x,y=y))+
-      ylab("density")+xlab("Y")+ggtitle("Distribuzione popolazioni")+
+      ylab("density")+xlab("Y")+ggtitle("Populations distribution")+
       theme(plot.title = element_text(size = 20, face = "bold",
                                       hjust = 0.5))+
       geom_polygon(df1,mapping = aes(x=x,y=y),fill="blue",alpha=.5)+
@@ -5735,7 +5735,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-data.frame(x=c(anova_camp1(),anova_camp2(),anova_camp3()),gr=c(rep(1,m),rep(2,m),rep(3,m)))
     df$gr<-as.factor(df$gr)
     
-    p<-ggplot(df, aes(x=gr, y=x)) + theme_light()+xlab("gruppo")+ylim(-7,7)+ylab("Y")+
+    p<-ggplot(df, aes(x=gr, y=x)) + theme_light()+xlab("group")+ylim(-7,7)+ylab("Y")+
       geom_dotplot(binaxis='y', stackdir='center',dotsize=4,fill=c("blue","green","coral")[df$gr],
                    binwidth = 0.1, alpha=0.4)
     p<-p + coord_flip()
@@ -5750,7 +5750,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     m.c<-mean(anova_camp3())
     ss<-sum((anova_camp1()-m.a)^2)+sum((anova_camp2()-m.b)^2)+sum((anova_camp3()-m.c)^2)
     HTML("SS<SUB>in</SUB> =",round(ss,3),"<br>
-         gradi di libertà =",3*input$anova_numta_camp-3,"<br>
+         degrees of freedom =",3*input$anova_numta_camp-3,"<br>
          MS<SUB>in</SUB> =",round(ss/(3*input$anova_numta_camp-3),3))
   })
   
@@ -5762,7 +5762,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-data.frame(m=c(m.a,m.b,m.c),gr=c(1,2,3),y=c("0","0","0"))
     df$gr<-as.factor(df$gr)
     
-    p<-ggplot(df, aes(x=y, y=m)) + theme_light()+xlab("")+ylab("medie gruppi")+ylim(-7,7)+
+    p<-ggplot(df, aes(x=y, y=m)) + theme_light()+xlab("")+ylab("groups means")+ylim(-7,7)+
       theme(axis.text.y = element_text(size = 1))+
       geom_dotplot(binaxis='y', stackdir='center',dotsize=6,fill=c("blue","green","coral")[df$gr],
                    binwidth = 0.1, alpha=0.4)
@@ -5781,7 +5781,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     n<-input$anova_numta_camp
     ss<- n*sum((m.a-m)^2)+n*sum((m.b-m)^2)+n*sum((m.c-m)^2)
     HTML("SS<SUB>tra</SUB> = ",round(ss,3),"<br>
-         gradi di libertà = 2 <br>
+         degrees of freedom = 2 <br>
          MS<SUB>tra</SUB> =",round(ss/2,3))
   })
   
@@ -5809,7 +5809,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     m<-mean(c(anova_camp1(),anova_camp2(),anova_camp3()))
     ss<- sum((c(anova_camp1(),anova_camp2(),anova_camp3())-m)^2)
     HTML("SS<SUB>tot</SUB> = ",round(ss,3),"<br>
-         gradi di libertà = ",3*input$anova_numta_camp-1,"<br>
+         degrees of freedom = ",3*input$anova_numta_camp-1,"<br>
          MS<SUB>tot</SUB> =",round(ss/(3*input$anova_numta_camp-1),3))
   })
   
@@ -5893,13 +5893,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
     a<-input$regr_mq_a
     b<-input$regr_mq_b
     if(a==0 & b==1){
-      "Retta da stimare: y = x"
+      "Line to be estimated: y = x"
     } else if (a!=0 & b==1){
-      paste("Retta da stimare: y = ",input$regr_mq_a," + x",sep="")
+      paste("Line to be estimated: y = ",input$regr_mq_a," + x",sep="")
     } else if(a==0 & b!=1){
-      paste("Retta da stimare: y = ",input$regr_mq_b,"x",sep="")
+      paste("Line to be estimated: y = ",input$regr_mq_b,"x",sep="")
     } else if (a!=0 & b!=1){
-      paste("Retta da stimare: y = ",input$regr_mq_a," + ",input$regr_mq_b,"x",sep="")
+      paste("Line to be estimated: y = ",input$regr_mq_a," + ",input$regr_mq_b,"x",sep="")
     }
   })
   
@@ -5988,7 +5988,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     r<-input$regr_mq_a+input$regr_mq_b*x
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
-    paste("Intercetta = ",round(mod$coefficients[1],2),sep="")
+    paste("Intercept = ",round(mod$coefficients[1],2),sep="")
   })
 
   output$regr_mq_rregr_pdz<-renderText({
@@ -5999,7 +5999,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     r<-input$regr_mq_a+input$regr_mq_b*x
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
-    paste("Pendenza = ",round(mod$coefficients[2],2),sep="")
+    paste("Slope = ",round(mod$coefficients[2],2),sep="")
   })
 
   output$regr_mq_grss<-renderPlot({
@@ -6045,7 +6045,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   })
 
   output$regr_sp_titolo<-renderText({
-    "Parametri da stimare:"
+    "Parameters to be estimated:"
   })
   
   regr_sp_camp<-reactive({
@@ -6112,7 +6112,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     r<-input$regr_sp_a+input$regr_sp_b*x
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
-    paste("Intercetta = ",round(mod$coefficients[1],2),sep="")
+    paste("Intercept = ",round(mod$coefficients[1],2),sep="")
   })
   
   output$regr_sp_rregr_pdz<-renderText({
@@ -6123,7 +6123,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     r<-input$regr_sp_a+input$regr_sp_b*x
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
-    paste("Pendenza = ",round(mod$coefficients[2],2),sep="")
+    paste("Slope = ",round(mod$coefficients[2],2),sep="")
   })
 
   output$regr_sp_graf_distr<-renderPlot({
@@ -6208,7 +6208,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("intercetta =",round(s$coefficients[1,1],digits = 3))
+    paste("intercept =",round(s$coefficients[1,1],digits = 3))
   })
   
   output$regr_sp_int_es<-renderText({
@@ -6218,7 +6218,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("errore std. =",round(s$coefficients[1,2],digits = 3))
+    paste("std. error =",round(s$coefficients[1,2],digits = 3))
   })
 
   output$regr_sp_int_ic_inf<-renderText({
@@ -6229,7 +6229,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(y~x,df)
     s<-summary(mod)
     q<-qt(input$regr_sp_alfa/2,df = m-2,lower.tail = FALSE)
-    paste("estremo inferiore =",round(s$coefficients[1,1]-q*s$coefficients[1,2],digits = 3))
+    paste("lower extreme =",round(s$coefficients[1,1]-q*s$coefficients[1,2],digits = 3))
   })
   
   output$regr_sp_int_ic_sup<-renderText({
@@ -6240,7 +6240,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(y~x,df)
     s<-summary(mod)
     q<-qt(input$regr_sp_alfa/2,df = m-2,lower.tail = FALSE)
-    paste("estremo superiore =",round(s$coefficients[1,1]+q*s$coefficients[1,2],digits = 3))
+    paste("upper extreme =",round(s$coefficients[1,1]+q*s$coefficients[1,2],digits = 3))
   })
 
   output$regr_sp_graf_distr_pen<-renderPlot({
@@ -6325,7 +6325,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("pendenza =",round(s$coefficients[2,1],digits = 3))
+    paste("slope =",round(s$coefficients[2,1],digits = 3))
   })
   
   output$regr_sp_pen_es<-renderText({
@@ -6335,7 +6335,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
     s<-summary(mod)
-    paste("errore std. =",round(s$coefficients[2,2],digits = 3))
+    paste("std. error =",round(s$coefficients[2,2],digits = 3))
   })
   
   output$regr_sp_pen_ic_inf<-renderText({
@@ -6346,7 +6346,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(y~x,df)
     s<-summary(mod)
     q<-qt(input$regr_sp_alfa/2,df = m-2,lower.tail = FALSE)
-    paste("estremo inferiore =",round(s$coefficients[2,1]-q*s$coefficients[2,2],digits = 3))
+    paste("lower extreme =",round(s$coefficients[2,1]-q*s$coefficients[2,2],digits = 3))
   })
   
   output$regr_sp_pen_ic_sup<-renderText({
@@ -6357,13 +6357,13 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(y~x,df)
     s<-summary(mod)
     q<-qt(input$regr_sp_alfa/2,df = m-2,lower.tail = FALSE)
-    paste("estremo superiore =",round(s$coefficients[2,1]+q*s$coefficients[2,2],digits = 3))
+    paste("upper extreme =",round(s$coefficients[2,1]+q*s$coefficients[2,2],digits = 3))
   }) 
 
   output$regr_prev_titolo<-renderText({
     a<-input$regr_prev_a
     b<-input$regr_prev_b
-    paste("Valore da stimare = ",input$regr_prev_a+input$regr_prev_b*input$regr_prev_x0,sep="")
+    paste("Value to be estimated = ",input$regr_prev_a+input$regr_prev_b*input$regr_prev_x0,sep="")
   })
   
   regr_prev_camp<-reactive({
@@ -6442,7 +6442,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     y<-input$regr_prev_a+input$regr_prev_b*x+regr_prev_camp()
     df<-cbind.data.frame(x,y)
     mod<-lm(y~x,df)
-    paste("previsione = ",round(mod$coefficients[1]+mod$coefficients[2]*input$regr_prev_x0,3),sep="")
+    paste("prediction = ",round(mod$coefficients[1]+mod$coefficients[2]*input$regr_prev_x0,3),sep="")
   })
 
   output$regr_prev_esprev<-renderText({
@@ -6455,7 +6455,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     x.medio<-mean(x)
     SS.x<-sum((x-x.medio)^2)
     h=1/m+((input$regr_prev_x0-x.medio)^2)/SS.x
-    paste("errore std. = ",round(sqrt(h*sq),3),sep="")
+    paste("std. error = ",round(sqrt(h*sq),3),sep="")
   })
 
   output$regr_prev_icinf<-renderText({
@@ -6470,7 +6470,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     h=1/m+((input$regr_prev_x0-x.medio)^2)/SS.x
     q<-qt(p = 0.025,df = m-2,lower.tail = FALSE)
     p<-mod$coefficients[1]+mod$coefficients[2]*input$regr_prev_x0
-    paste("estremo inferiore = ",round(p-q*sqrt(h*sq),3),sep="")
+    paste("lower extreme = ",round(p-q*sqrt(h*sq),3),sep="")
   }) 
 
   output$regr_prev_icsup<-renderText({
@@ -6485,7 +6485,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     h=1/m+((input$regr_prev_x0-x.medio)^2)/SS.x
     q<-qt(p = 0.025,df = m-2,lower.tail = FALSE)
     p<-mod$coefficients[1]+mod$coefficients[2]*input$regr_prev_x0
-    paste("estremo superiore = ",round(p+q*sqrt(h*sq),3),sep="")
+    paste("upper extreme = ",round(p+q*sqrt(h*sq),3),sep="")
   }) 
 
   regr_lev_camp<-reactive({

@@ -9,7 +9,7 @@ sidebar<- dashboardSidebar(
                   menuSubItem("Examples",tabName = "esempi"),
                   menuSubItem("Load data",tabName = "importa"),
                   menuSubItem("Variables",tabName = "variabili"),
-                  menuSubItem("Individuals",tabName = "oggetti"),
+                  menuSubItem("Objects",tabName = "oggetti"),
                   actionButton("reset","Reset",style='padding:4px; font-size:80%')
                   ),
                 menuItem(text = "Descriptive statistics",icon = shiny::icon("bar-chart"),
@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 7.4 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 7.5 </font></center>')
                         )))
 
 
@@ -168,7 +168,7 @@ body<-dashboardBody(
                                                 verbatimTextOutput("var_quanti")))))),
       
       tabItem(tabName = "oggetti",
-              fluidPage(titlePanel("Individuals"),
+              fluidPage(titlePanel("Objects "),
                         column(4,
                                uiOutput("righe_tolte")),
                         column(8,"Rows deleted",

@@ -980,7 +980,7 @@ server <- function (input , output, session ){
   output$ttest1_media_camp_titolo<-renderText({
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest1_variab%in%colnames(dati$DS))
-    "Point estimation"
+    "Point estimate"
   })
   
   output$ttest1_media_camp<-renderText({
@@ -1195,7 +1195,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2a_variab1%in%colnames(dati$DS))
     req(input$ttest2a_variab2%in%colnames(dati$DS))
-    "Point estimation"
+    "Point estimate"
   })
   
   output$ttest2a_media_camp<-renderText({
@@ -1465,7 +1465,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ttest2_variab1%in%colnames(dati$DS))
     req(input$ttest2_variab2%in%colnames(dati$DS))
-    "Point estimation"
+    "Point estimate"
   })
   
   output$ttest2_media_camp1<-renderText({
@@ -2674,7 +2674,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     req(input$ftest_variab1%in%colnames(dati$DS))
     req(input$ftest_variab2%in%colnames(dati$DS))
-    "Point estimation"
+    "Point estimate"
   })
   
   output$ftest_sd_camp1<-renderText({

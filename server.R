@@ -809,9 +809,9 @@ server <- function (input , output, session ){
       if(is.null(graf$gr)){
         gr+geom_boxplot(notch = input$graf_box_notch,fill="blue",width=0.5)+labs(x="")
       } else {
-        gr<-gr+geom_boxplot(notch = input$graf_box_notch,mapping = aes(fill=gruppo))+
+        gr<-gr+geom_boxplot(notch = input$graf_box_notch,mapping = aes(fill=group))+
           scale_x_discrete(limits=graf$gr)+theme(legend.position="none")
-        gr%+%subset(df,df$gruppo%in%graf$gr)
+        gr%+%subset(df,df$group%in%graf$gr)
       }
       
     }else{

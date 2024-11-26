@@ -3708,7 +3708,7 @@ server <- function (input , output, session ){
 
   ## Grafico ----------------------------------------------------------------- 
    
-    output$calc_potenza_graf <- renderggiraph({
+    output$calc_potenza_graf <- renderGirafe({
       if(input$calc_potenza_test=='T-test: one population'){
         
         req(input$calc_potenza_alfa)

@@ -14,6 +14,7 @@ if(!nzchar(system.file(package = "lmtest"))) install.packages("lmtest")
 if(!nzchar(system.file(package = "outliers"))) install.packages("outliers")
 if(!nzchar(system.file(package = "MESS"))) install.packages("MESS")
 if(!nzchar(system.file(package = "pwr"))) install.packages("pwr")
+if(!nzchar(system.file(package = "plotly"))) install.packages("plotly")
 
 
 
@@ -33,6 +34,7 @@ library(lmtest)
 library(outliers)
 library(MESS)
 library(pwr)
+library(plotly)
 
 options(warn = -1)
 options(shiny.maxRequestSize = 30 * 1024 ^ 2)

@@ -4387,7 +4387,17 @@ output$regrmulti_variabx<-renderUI({
                  choices = dati$var_qt[!dati$var_qt%in%input$regrmulti_variaby],
                  multiple = TRUE)})  
 
-output$regrmulti_graf<-renderPlot({
+output$regrmulti_inter_ord<-renderUI({
+  validate(need(input$regrmulti_addi!="1",''))
+  # df<-tryCatch(dati$DS(),
+  #              error = function(e) "Select a dataset!")
+  # validate(need(!is.character(df),''))
+  numericInput("regrmulti_inter_ord", label = h5("Interaction order"), value = 2,min = 2,width = "70px")
+})
+
+
+# Costruzione della formula del modello
+regrmulti_formula_text <- reactive({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
@@ -4395,20 +4405,97 @@ output$regrmulti_graf<-renderPlot({
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   m<-length(input$regrmulti_variabx)
   lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+
+  
   if(m>1){
     for(i in 2:m){
-      if(input$regrmulti_addi==1){
+      
         lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
+      
     }
+    
+  frm <- paste(input$regrmulti_variabx[1],lin)}else{
+    frm <- input$regrmulti_variabx[1]
   }
   
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  if(input$regrmulti_addi!=1){
+    req(input$regrmulti_inter_ord)
+    n<-input$regrmulti_inter_ord
+    frm_inter<-paste0('(',frm,')^',n)
+    frm <- paste(frm,'+',frm_inter)}
+  
+  
+  if(input$regrmulti_addi==3){
+    var <- input$regrmulti_variabx
+    quad<-paste0('I(',var,'^2)')
+    frm_quad<-paste0(quad,collapse = '+')
+    frm <- paste(frm,'+',frm_quad)
+  }
+    
+  # if(input$regrmulti_addi==3){
+  #   var <- input$regrmulti_variabx
+  #   quad<-paste0('I(',var,'^2)')
+  #   frm_quad<-paste0(quad,collapse = '+')
+  #   lin <- paste(lin,'+',frm_quad)
+  # }
+  
+  frm <- paste(input$regrmulti_variaby,"~",frm)
+  
   if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
   frm <- formula(frm)
+  return(frm)
+})
+
+regrmulti_model <- reactive({
+  req(dati$DS, regrmulti_formula_text())
+  # lm(as.formula(formula_text()), data = data())
+  frm <- formula(regrmulti_formula_text())
+  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
   mod<-lm(frm,df)
+  return(mod)
+})
+
+
+# output$a <- renderPrint({
+#   regrmulti_formula_text()
+# })
+
+
+
+
+output$regrmulti_graf<-renderPlot({
+  validate(need(nrow(dati$DS)!=0,""))
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # 
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   require(ggplot2)
   df_coeff<-data.frame(names(mod$coefficients),mod$coefficients,confint(mod,level=1-input$regrmulti_alfa))
   ggplot(data = df_coeff,aes(x =df_coeff$names.mod.coefficients.,
@@ -4424,23 +4511,24 @@ output$regrmulti_parpt<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')###
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')###
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   mod$coefficients
 })
 
@@ -4448,23 +4536,24 @@ output$regrmulti_parint<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   confint(object = mod,level=1-input$regrmulti_alfa)
 })
 
@@ -4472,23 +4561,24 @@ output$regrmulti_prev<-renderPrint({
   validate(need(nrow(dati$DS)!=0 & length(as.numeric(unlist(strsplit(input$regrmulti_prevx," "))))==length(input$regrmulti_variabx),""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   x<- as.numeric(unlist(strsplit(input$regrmulti_prevx," ")))
   nd<-rbind.data.frame(x)
   colnames(nd)<-input$regrmulti_variabx
@@ -4499,47 +4589,306 @@ output$regrmulti_summary<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   summary(mod,cor=TRUE)
 })
+
+
+
+
+
+output$regrmulti_selvar<-renderUI({
+  validate(need(length(input$regrmulti_variabx)>2,''))
+  var <- input$regrmulti_variabx
+  selectInput("regrmulti_selvar", label = h5("Select 2 variables"),
+              choices = var,
+              multiple = TRUE,selected = var[1:2])
+})
+
+output$fatt_compl_selvar_spazio<-renderUI({
+  validate(need(length(input$fatt_compl_k)==2,''))
+  br()
+})
+
+
+
+######################################
+
+# output$a <- renderPrint({
+#   validate(need(nrow(dati$DS)!=0,""))
+#   # req(input$regrmulti_variabx,input$regrmulti_selvar)
+#   req(length(input$regrmulti_variabx)>=2)
+#   req(input$regrmulti_variaby%in%colnames(dati$DS))
+#   req(input$regrmulti_variabx%in%colnames(dati$DS))
+#   
+#   
+#   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+#   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+#   m<-length(input$regrmulti_variabx)
+#   lin<-NULL
+#   if(m>1){
+#     for(i in 2:m){
+#       if(input$regrmulti_addi==1){
+#         lin<-paste(lin,"+",input$regrmulti_variabx[i])
+#       }else{
+#         lin<-paste(lin,"*",input$regrmulti_variabx[i])
+#       }
+#     }
+#   }
+#   frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+#   if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+#   frm <- formula(frm)
+#   mod<-lm(frm,df)
+#   
+#   
+#   
+#   
+#   if(length(input$regrmulti_variabx)==2){
+#     x1_plot <- input$regrmulti_variabx[1]
+#     x2_plot <- input$regrmulti_variabx[2]
+#   }
+#   if(length(input$regrmulti_variabx)>2){
+#     x1_plot <- input$regrmulti_selvar[1]
+#     x2_plot <- input$regrmulti_selvar[2]
+#   }
+#   
+#   
+#   req(!is.null(x1_plot))
+#   
+#   # Creo griglia di predizione per le due variabili selezionate
+#   x1_seq <- seq(min(df[[x1_plot]]), max(df[[x1_plot]]),
+#                 length.out = input$resolution)
+#   x2_seq <- seq(min(df[[x2_plot]]), max(df[[x2_plot]]), 
+#                 length.out = input$resolution)
+# 
+#   data.frame(x1_seq,x2_seq)
+#   
+# })
+
+
+#######################################
+
+output$fixed_values_ui <- renderUI({
+  validate(need(nrow(dati$DS)!=0,""))
+  req(input$regrmulti_variabx,input$regrmulti_selvar)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
+  
+  #req(data(), input$x_vars, input$x1_plot, input$x2_plot)
+  
+  # Ottieni le variabili non nel grafico
+  other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
+  
+  
+  ######
+  if(length(other_vars) == 0) return(NULL)
+  
+  tagList(
+    h5("Valori fissi per le altre variabili:"),
+    lapply(other_vars, function(var) {
+      var_values <- dati$DS[[var]]
+      mean_val <- mean(var_values)
+      min_val <- min(var_values)
+      max_val <- max(var_values)
+      
+      div(
+        style = "margin-bottom: 15px;",
+        numericInput(
+          inputId = paste0("fixed_", var),
+          label = var,
+          value = mean_val,
+          min = min_val,
+          max = max_val
+        ),
+        actionButton(
+          inputId = paste0("reset_", var),
+          label = "Reset alla media",
+          class = "btn-sm"
+        )
+      )
+    })
+  )
+})
+
+
+
+# Observer per i pulsanti di reset
+observe({
+  req(nrow(dati$DS)!=0, input$regrmulti_variabx)
+  other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
+  
+  lapply(other_vars, function(var) {
+    observeEvent(input[[paste0("reset_", var)]], {
+      mean_val <- mean(dati$DS[[var]])
+      updateNumericInput(session, 
+                         paste0("fixed_", var), 
+                         value = mean_val)
+    })
+  })
+})
+
+
+
+# Grafico della superficie di risposta
+output$surface_plot <- renderPlotly({
+  
+  
+  
+  validate(need(nrow(dati$DS)!=0,""))
+  # req(input$regrmulti_variabx,input$regrmulti_selvar)
+  req(length(input$regrmulti_variabx)>=2)
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
+  
+  
+  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  
+  mod <- regrmulti_model()
+  
+  
+  if(length(input$regrmulti_variabx)==2){
+    x1_plot <- input$regrmulti_variabx[1]
+    x2_plot <- input$regrmulti_variabx[2]
+  }
+  if(length(input$regrmulti_variabx)>2){
+    x1_plot <- input$regrmulti_selvar[1]
+    x2_plot <- input$regrmulti_selvar[2]
+  }
+  
+  
+  
+  
+  # Creo griglia di predizione per le due variabili selezionate
+  req(!is.null(x1_plot))
+  x1_seq <- seq(min(df[[x1_plot]]), max(df[[x1_plot]]), 
+                length.out = input$resolution)
+  x2_seq <- seq(min(df[[x2_plot]]), max(df[[x2_plot]]), 
+                length.out = input$resolution)
+  
+  # Creo il grid completo con i valori fissati dall'utente per le altre variabili
+  grid_base <- list()
+  other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
+  
+  
+  
+  for(var in other_vars) {
+    fixed_value <- input[[paste0("fixed_", var)]]
+    grid_base[[var]] <- fixed_value
+  }
+  
+  # Aggiungo le variabili del plot
+  grid <- expand.grid(
+    data.frame(
+      setNames(list(x1_seq), x1_plot),
+      setNames(list(x2_seq), x2_plot))
+  )
+  
+  # Combino con i valori base
+  for(var in names(grid_base)) {
+    grid[[var]] <- grid_base[[var]]
+  }
+  
+  # Calcolo predizioni
+  req(length(colnames(grid))==length(input$regrmulti_variabx))
+  
+  z_matrix <- matrix(predict(mod, newdata = grid),
+                     nrow = input$resolution, ncol = input$resolution)
+  
+  
+  
+  # Creo il plot 3D
+  plot_ly() %>%
+    add_surface(x = x1_seq, y = x2_seq, z = t(z_matrix),
+                colorscale = "Viridis",
+                colorbar = list(
+                  # len = 0.5,        # Length of the colorbar
+                  y = 0.75         # Center position (0.5 = middle)
+                  # thickness = 15    # Width of the colorbar
+                ),
+                reversescale=T) %>%
+    add_markers(data = df, 
+                x = as.formula(paste0("~", x1_plot)),
+                y = as.formula(paste0("~", x2_plot)),
+                z = as.formula(paste0("~", input$regrmulti_variaby)),
+                marker = list(size = 3, color = "red", symbol = "circle")) %>%
+    layout(scene = list(
+      xaxis = list(title = x1_plot, autorange="reversed"),
+      yaxis = list(title = x2_plot, autorange="reversed"),
+      zaxis = list(title = input$regrmulti_variaby)
+    ))
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 output$regrmulti_verifhp_ttest<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   t.test(mod$residuals)
 })
 
@@ -4547,23 +4896,24 @@ output$regrmulti_verifhp_grlin<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=mod$residuals)
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
     geom_hline(yintercept = 0,col="blue",lty=2)+
@@ -4574,23 +4924,8 @@ output$regrmulti_verifhp_shapiro<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+
+  mod <- regrmulti_model()
   residui=mod$residuals
   shapiro.test(x = residui) 
 })
@@ -4600,23 +4935,24 @@ output$regrmulti_verifhp_qqplot<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   df_res<-cbind.data.frame(residui=mod$residuals)
   ggplot(df_res,aes(sample=residui))+
     stat_qq(cex=2,col="blue")+stat_qq_line(col="blue",lty=2)+
@@ -4629,23 +4965,24 @@ output$regrmulti_verifhp_bp<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  modello<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # modello<-lm(frm,df)
+  mod <- regrmulti_model()
   lmtest::bptest(modello)
 })
 
@@ -4653,23 +4990,24 @@ output$regrmulti_verifhp_omosch<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   df_xy<-cbind.data.frame(x=mod$fitted.values,y=sqrt(abs(mod$residuals)))
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+
     geom_hline(yintercept = 0,col="blue",lty=2)+
@@ -4681,23 +5019,24 @@ output$regrmulti_verifhp_dw<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  modello<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # modello<-lm(frm,df)
+  mod <- regrmulti_model()
   lmtest::dwtest(modello)
 })
 
@@ -4705,23 +5044,24 @@ output$regrmulti_verifhp_corr<-renderPlot({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-  df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
-  colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
-  m<-length(input$regrmulti_variabx)
-  lin<-NULL
-  if(m>1){
-    for(i in 2:m){
-      if(input$regrmulti_addi==1){
-        lin<-paste(lin,"+",input$regrmulti_variabx[i])
-      }else{
-        lin<-paste(lin,"*",input$regrmulti_variabx[i])
-      }
-    }
-  }
-  frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
-  if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
-  frm <- formula(frm)
-  mod<-lm(frm,df)
+  # df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+  # colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  # m<-length(input$regrmulti_variabx)
+  # lin<-NULL
+  # if(m>1){
+  #   for(i in 2:m){
+  #     if(input$regrmulti_addi==1){
+  #       lin<-paste(lin,"+",input$regrmulti_variabx[i])
+  #     }else{
+  #       lin<-paste(lin,"*",input$regrmulti_variabx[i])
+  #     }
+  #   }
+  # }
+  # frm <- paste(input$regrmulti_variaby,"~",input$regrmulti_variabx[1],lin)
+  # if(!input$regrmulti_intercetta)frm <- paste(frm, '- 1')
+  # frm <- formula(frm)
+  # mod<-lm(frm,df)
+  mod <- regrmulti_model()
   n<-length(mod$residuals)
   df_xy<-cbind.data.frame(x=mod$residuals[-1],y=mod$residuals[-n])
   ggplot(df_xy,aes(x=x,y=y))+theme_classic()+geom_point(cex=2,col="blue")+

@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 7.8 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.0. </font></center>')
                         )))
 
 
@@ -1019,11 +1019,18 @@ tabItem(tabName = "regrmulti",
                                        column(2),
                                        column(2,
                                               radioButtons("regrmulti_addi", label = h4("Model:"),
-                                                           choices = list("additive" = 1, "interactions" = 2), 
+                                                           choices = list("additive" = 1, "interactions" = 2, "interactions and quadratics"=3), 
                                                            selected = 1),
+                                              uiOutput('regrmulti_inter_ord'),
                                               checkboxInput("regrmulti_intercetta",
                                                 label = "Intercept", 
                                                 value = TRUE)),
+                                       
+                                       
+                                       # column(12,
+                                       #        verbatimTextOutput("a")),
+                                       
+                                       
                                        column(12),
                                        column(4,
                                               h3("Regression parameters"),
@@ -1041,7 +1048,29 @@ tabItem(tabName = "regrmulti",
                                               plotOutput("regrmulti_graf"),
                                               br(),
                                               h3("R output"),
-                                              verbatimTextOutput("regrmulti_summary"))
+                                              verbatimTextOutput("regrmulti_summary")),
+                                       
+                                       
+                                       
+                                       
+                                       column(4,
+                                              uiOutput('regrmulti_selvar'),
+                                              sliderInput("resolution", "Risoluzione griglia:",
+                                                          min = 2, max = 50, value = 20),
+                                              uiOutput("fixed_values_ui")),
+                                       # column(6,
+                                       # 
+                                       # 
+                                       #        verbatimTextOutput("a")),
+                                       
+                                       
+                                       column(8,
+                                              plotlyOutput("surface_plot", height = "500px"))
+                                       
+                                       
+                                       
+                                       
+                                       
                               ),
                               
                               tabPanel("Assumptions check",

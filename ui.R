@@ -1015,7 +1015,6 @@ tabItem(tabName = "regrmulti",
                                        column(4,
                                               uiOutput("regrmulti_variaby"),
                                               uiOutput("regrmulti_variabx")),
-                                       
                                        column(2,
                                               br()),
                                        column(2,
@@ -1029,8 +1028,6 @@ tabItem(tabName = "regrmulti",
                                                 value = TRUE)),
                                        column(4,
                                               uiOutput("regrmulti_variab_mod")),
-                                        # column(8,
-                                        #        uiOutput("regrmulti_variab_mod")),
                                        column(12,
                                               br(),
                                               br(),
@@ -1038,7 +1035,7 @@ tabItem(tabName = "regrmulti",
                                        
                                        column(4,
                                               h3("Regression parameters"),
-                                              sliderInput(inputId="regrmulti_alfa",label = "Significance",min = 0,max = 1,value = 0.05,
+                                              sliderInput(inputId="regrmulti_alfa",label = h5("Significance"),min = 0,max = 1,value = 0.05,
                                                           step=0.01),
                                               h4("Point estimate"),
                                               verbatimTextOutput("regrmulti_parpt"),
@@ -1046,7 +1043,7 @@ tabItem(tabName = "regrmulti",
                                               verbatimTextOutput("regrmulti_parint"),
                                               hr(),
                                               h3("Prediction"),
-                                              textInput(inputId = "regrmulti_prevx",label = "Prediction point (coord. separated by space)",value = ""),
+                                              textInput(inputId = "regrmulti_prevx",label = h5("Prediction point (coord. separated by space)"),value = ""),
                                               verbatimTextOutput("regrmulti_prev")),
                                        column(8,
                                               br(),
@@ -1059,33 +1056,40 @@ tabItem(tabName = "regrmulti",
                                               h3("R output"),
                                               verbatimTextOutput("regrmulti_summary"),
                                               h3("VIF"),
-                                              verbatimTextOutput("regrmulti_vif")),
-                                       
-                                       
+                                              # verbatimTextOutput("regrmulti_vif")
+                                              ),
                                        column(12,
                                               br(),
                                               br()),
                                        
+                                       # column(4,
+                                       #        br(),br(),br(),
+                                       #        uiOutput('regrmulti_selvar'),
+                                       #        uiOutput("regrmulti_fixed_values_ui")),
+                                       
+                                       
+                                       column(12,
+                                              br(),
+                                              h3("Response surface plots"),
+                                              # uiOutput('regrmulti_selvar'),
+                                              # uiOutput("regrmulti_fixed_values_ui")
+                                              ),
                                        column(4,
-                                              uiOutput('regrmulti_selvar'),
-                                              sliderInput("regrmulti_resolution", "Grid resolution:",
-                                                          min = 2, max = 50, value = 20),
-                                              uiOutput("regrmulti_fixed_values_ui")),
-                                       # column(6,
-                                       # 
-                                       # 
-                                       #        verbatimTextOutput("a")),
-                                       
-                                       
-                                       column(8,
-                                              plotlyOutput("regrmulti_surface_plot", height = "500px"))
-                                       
-                                       
-                                       
-                                       
-                                       
+                                              uiOutput('regrmulti_selvar')),
+                                       column(4,br()),
+                                       column(4, uiOutput("regrmulti_fixed_values_ui")),
+                                       column(6,
+                                              br(),
+                                              plotlyOutput("regrmulti_contour_plot", width = "100%", height = "700px"),
+                                              # sliderInput("regrmulti_size", h5("Size:"),min = 0, max = 50, value = 20),
+                                              uiOutput("regrmulti_livellorisp_col"),
+                                              numericInput("regrmulti_labelsize", "Label Size:", value = 12, min = 6, max = 24,width = "70px")),
+                                       column(6,
+                                              br(),
+                                              plotlyOutput("regrmulti_surface_plot",width = "100%", height = "700px"),
+                                              sliderInput("regrmulti_resolution", h5("Grid resolution:"),
+                                                          min = 2, max = 50, value = 20))
                               ),
-                              
                               tabPanel("Assumptions check",
                                        column(4,h3("Zero mean of residuals")),
                                        column(8,h3("Linearity")),

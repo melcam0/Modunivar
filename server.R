@@ -4415,12 +4415,42 @@ regrmulti_formula_var <- reactive({
     quadr <-paste0('I(',vars,'^2)')
     formula_terms <- c(formula_terms,quadr)
   }
+  return(formula_terms)
+})
+
+
+
+output$a <- renderPrint({
+  vars <- input$regrmulti_variabx
+  formula_terms <- vars
+  
+  # if(input$regrmulti_addi==2){
+  #   req(input$regrmulti_inter_ord)
+  #   req(input$regrmulti_inter_ord<=length(vars))
+  #   n <- input$regrmulti_inter_ord
+  #   interactions <- list()
+  #   for(order in 1:n) {
+  #     combs <- combn(vars, order, simplify = FALSE)
+  #     for(comb in combs) {
+  #       interactions[[length(interactions) + 1]] <- comb
+  #     }
+  #   }
+  #   formula_terms <- c(formula_terms,sapply(interactions,function(x) {paste(x, collapse = ":")}))
+  # }
+  # if(input$regrmulti_include_squared) {
+  #   quadr <- c(NULL)
+  #   quadr <-paste0('I(',vars,'^2)')
+  #   formula_terms <- c(formula_terms,quadr)
+  # }
+  # 
+  
   formula_terms
+  
 })
 
 output$regrmulti_variab_mod<-renderUI({
   validate(need(input$regrmulti_variabx>="2",''))
-  selectizeInput(inputId = "regrmulti_variab_mod",label="Model terms (x)",
+  selectizeInput(inputId = "regrmulti_variab_mod",label=h5("Model terms (x)"),
                  choices = regrmulti_formula_var(),
                  selected = regrmulti_formula_var(),
                  multiple=TRUE)
@@ -4441,6 +4471,8 @@ regrmulti_model <- reactive({
   frm <- formula(regrmulti_formula_text())
   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+  X<-model.matrix(frm,df)
+  validate(need(qr(X)$rank==ncol(X),"The program was aborted because the model matrix has insufficient rank"))
   mod<-lm(frm,df)
   return(mod)
 })
@@ -4452,6 +4484,7 @@ output$regrmulti_graf<-renderPlot({
   mod <- regrmulti_model()
   require(ggplot2)
   df_coeff<-data.frame(names(mod$coefficients),mod$coefficients,confint(mod,level=1-input$regrmulti_alfa))
+  if(!input$regrmulti_include_interc_plot)df_coeff <- df_coeff[-1,]
   ggplot(data = df_coeff,aes(x =df_coeff$names.mod.coefficients.,
                              y=df_coeff$mod.coefficients))+
     xlab("")+ylab("")+theme_light()+
@@ -4497,20 +4530,41 @@ output$regrmulti_summary<-renderPrint({
   summary(mod,cor=TRUE)
 })
 
+
+output$regrmulti_vif<-renderPrint({
+  validate(need(nrow(dati$DS)!=0,""))
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
+  mod <- regrmulti_model()
+  validate(need(input$regrmulti_variabx>="2",''))
+  vif(mod)
+
+  # vf<-vif(model.matrix(frml, dis))
+  # cn<-attr(vf,'names')
+  # cn<-str_remove(cn,"\\(")
+  # cn<-str_remove(cn,"I")
+  # cn<-str_remove(cn,"\\)")
+  # attr(vf,'names')<-cn
+  # t(vf)
+})
+
+
+
+
+
+
+
+
+
 output$regrmulti_selvar<-renderUI({
   validate(need(length(input$regrmulti_variabx)>2,''))
   var <- input$regrmulti_variabx
-  selectInput("regrmulti_selvar", label = h5("Select 2 variables"),
+  selectInput("regrmulti_selvar", label = h4("Select 2 variables"),
               choices = var,
               multiple = TRUE,selected = var[1:2])
 })
 
-output$fatt_compl_selvar_spazio<-renderUI({
-  validate(need(length(input$fatt_compl_k)==2,''))
-  br()
-})
-
-output$fixed_values_ui <- renderUI({
+output$regrmulti_fixed_values_ui <- renderUI({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variabx,input$regrmulti_selvar)
   req(input$regrmulti_variaby%in%colnames(dati$DS))
@@ -4519,7 +4573,7 @@ output$fixed_values_ui <- renderUI({
   other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
   if(length(other_vars) == 0) return(NULL)
   tagList(
-    h5("Valori fissi per le altre variabili:"),
+    h4("Fixed values for the other variables:"),
     lapply(other_vars, function(var) {
       var_values <- dati$DS[[var]]
       mean_val <- mean(var_values)
@@ -4530,14 +4584,14 @@ output$fixed_values_ui <- renderUI({
         style = "margin-bottom: 15px;",
         numericInput(
           inputId = paste0("fixed_", var),
-          label = var,
+          label = h5(var),
           value = mean_val,
           min = min_val,
           max = max_val
         ),
         actionButton(
           inputId = paste0("reset_", var),
-          label = "Reset alla media",
+          label = "Reset mean value",
           class = "btn-sm"
         )
       )
@@ -4561,7 +4615,7 @@ observe({
 })
 
 # Grafico della superficie di risposta
-output$surface_plot <- renderPlotly({
+output$regrmulti_surface_plot <- renderPlotly({
   validate(need(nrow(dati$DS)!=0,""))
   req(length(input$regrmulti_variabx)>=2)
   req(input$regrmulti_variaby%in%colnames(dati$DS))
@@ -4580,9 +4634,9 @@ output$surface_plot <- renderPlotly({
   # Creo griglia di predizione per le due variabili selezionate
   req(!is.null(x1_plot))
   x1_seq <- seq(min(df[[x1_plot]]), max(df[[x1_plot]]), 
-                length.out = input$resolution)
+                length.out = input$regrmulti_resolution)
   x2_seq <- seq(min(df[[x2_plot]]), max(df[[x2_plot]]), 
-                length.out = input$resolution)
+                length.out = input$regrmulti_resolution)
   # Creo il grid completo con i valori fissati dall'utente per le altre variabili
   grid_base <- list()
   other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
@@ -4604,7 +4658,7 @@ output$surface_plot <- renderPlotly({
   req(length(colnames(grid))==length(input$regrmulti_variabx))
   
   z_matrix <- matrix(predict(mod, newdata = grid),
-                     nrow = input$resolution, ncol = input$resolution)
+                     nrow = input$regrmulti_resolution, ncol = input$regrmulti_resolution)
   # Creo il plot 3D
   plot_ly() %>%
     add_surface(x = x1_seq, y = x2_seq, z = t(z_matrix),
@@ -4626,6 +4680,92 @@ output$surface_plot <- renderPlotly({
       zaxis = list(title = input$regrmulti_variaby)
     ))
 })
+
+
+
+
+# linee di livello
+
+# # Grafico della superficie di risposta
+# output$regrmulti_contour_plot <- renderPlotly({
+#   validate(need(nrow(dati$DS)!=0,""))
+#   req(length(input$regrmulti_variabx)>=2)
+#   req(input$regrmulti_variaby%in%colnames(dati$DS))
+#   req(input$regrmulti_variabx%in%colnames(dati$DS))
+#   df<-cbind.data.frame(x=dati$DS[,input$regrmulti_variabx],y=dati$DS[,input$regrmulti_variaby])
+#   colnames(df)<-c(input$regrmulti_variabx,input$regrmulti_variaby)
+#   mod <- regrmulti_model()
+#   if(length(input$regrmulti_variabx)==2){
+#     x1_plot <- input$regrmulti_variabx[1]
+#     x2_plot <- input$regrmulti_variabx[2]
+#   }
+#   if(length(input$regrmulti_variabx)>2){
+#     x1_plot <- input$regrmulti_selvar[1]
+#     x2_plot <- input$regrmulti_selvar[2]
+#   }
+#   # Creo griglia di predizione per le due variabili selezionate
+#   req(!is.null(x1_plot))
+#   x1_seq <- seq(min(df[[x1_plot]]), max(df[[x1_plot]]), 
+#                 length.out = input$regrmulti_resolution)
+#   x2_seq <- seq(min(df[[x2_plot]]), max(df[[x2_plot]]), 
+#                 length.out = input$regrmulti_resolution)
+#   # Creo il grid completo con i valori fissati dall'utente per le altre variabili
+#   grid_base <- list()
+#   other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
+#   for(var in other_vars) {
+#     fixed_value <- input[[paste0("fixed_", var)]]
+#     grid_base[[var]] <- fixed_value
+#   }
+#   # Aggiungo le variabili del plot
+#   grid <- expand.grid(
+#     data.frame(
+#       setNames(list(x1_seq), x1_plot),
+#       setNames(list(x2_seq), x2_plot))
+#   )
+#   # Combino con i valori base
+#   for(var in names(grid_base)) {
+#     grid[[var]] <- grid_base[[var]]
+#   }
+#   # Calcolo predizioni
+#   req(length(colnames(grid))==length(input$regrmulti_variabx))
+#   
+#   z_matrix <- matrix(predict(mod, newdata = grid),
+#                      nrow = input$resolution, ncol = input$resolution)
+#   # Creo il plot 3D
+#   plot_ly() %>%
+#     add_surface(x = x1_seq, y = x2_seq, z = t(z_matrix),
+#                 colorscale = "Viridis",
+#                 colorbar = list(
+#                   # len = 0.5,        # Length of the colorbar
+#                   y = 0.75         # Center position (0.5 = middle)
+#                   # thickness = 15    # Width of the colorbar
+#                 ),
+#                 reversescale=T) %>%
+#     add_markers(data = df, 
+#                 x = as.formula(paste0("~", x1_plot)),
+#                 y = as.formula(paste0("~", x2_plot)),
+#                 z = as.formula(paste0("~", input$regrmulti_variaby)),
+#                 marker = list(size = 3, color = "red", symbol = "circle")) %>%
+#     layout(scene = list(
+#       xaxis = list(title = x1_plot, autorange="reversed"),
+#       yaxis = list(title = x2_plot, autorange="reversed"),
+#       zaxis = list(title = input$regrmulti_variaby)
+#     ))
+# })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 output$regrmulti_verifhp_ttest<-renderPrint({
   validate(need(nrow(dati$DS)!=0,""))
@@ -4675,7 +4815,7 @@ output$regrmulti_verifhp_bp<-renderPrint({
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
   mod <- regrmulti_model()
-  lmtest::bptest(modello)
+  lmtest::bptest(mod)
 })
 
 output$regrmulti_verifhp_omosch<-renderPlot({
@@ -4695,7 +4835,7 @@ output$regrmulti_verifhp_dw<-renderPrint({
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
   mod <- regrmulti_model()
-  lmtest::dwtest(modello)
+  lmtest::dwtest(mod)
 })
 
 output$regrmulti_verifhp_corr<-renderPlot({

@@ -1023,7 +1023,7 @@ tabItem(tabName = "regrmulti",
                                                            choices = list("additive" = 1, "interactions" = 2), 
                                                            selected = 1),
                                               uiOutput('regrmulti_inter_ord'),
-                                              checkboxInput("regrmulti_include_squared", "Includi termini quadratici", FALSE),
+                                              checkboxInput("regrmulti_include_squared", "quadratic terms", FALSE),
                                               checkboxInput("regrmulti_intercetta",
                                                 label = "Intercept", 
                                                 value = TRUE)),
@@ -1054,9 +1054,12 @@ tabItem(tabName = "regrmulti",
                                               br(),                                              
                                               br(),
                                               plotOutput("regrmulti_graf"),
+                                              checkboxInput("regrmulti_include_interc_plot", "plot Intercept", TRUE),
                                               br(),
                                               h3("R output"),
-                                              verbatimTextOutput("regrmulti_summary")),
+                                              verbatimTextOutput("regrmulti_summary"),
+                                              h3("VIF"),
+                                              verbatimTextOutput("regrmulti_vif")),
                                        
                                        
                                        column(12,
@@ -1065,9 +1068,9 @@ tabItem(tabName = "regrmulti",
                                        
                                        column(4,
                                               uiOutput('regrmulti_selvar'),
-                                              sliderInput("resolution", "Risoluzione griglia:",
+                                              sliderInput("regrmulti_resolution", "Grid resolution:",
                                                           min = 2, max = 50, value = 20),
-                                              uiOutput("fixed_values_ui")),
+                                              uiOutput("regrmulti_fixed_values_ui")),
                                        # column(6,
                                        # 
                                        # 
@@ -1075,7 +1078,7 @@ tabItem(tabName = "regrmulti",
                                        
                                        
                                        column(8,
-                                              plotlyOutput("surface_plot", height = "500px"))
+                                              plotlyOutput("regrmulti_surface_plot", height = "500px"))
                                        
                                        
                                        

@@ -4517,7 +4517,7 @@ output$regrmulti_vif<-renderPrint({
   for (i in 1:ncol(M)) {
     z[i] = 1/(1 - summary(lm(M[, i] ~ ., data = M[, -i,drop=FALSE]))$r.squared)
   }
-  return(z)
+  return(round(z,2))
 })
 
 output$regrmulti_selvar<-renderUI({

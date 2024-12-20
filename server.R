@@ -4471,7 +4471,7 @@ output$regrmulti_parpt<-renderPrint({
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
   mod <- regrmulti_model()
-  mod$coefficients
+  round(mod$coefficients,input$regrmulti_ddigits)
 })
 
 output$regrmulti_parint<-renderPrint({
@@ -4479,7 +4479,7 @@ output$regrmulti_parint<-renderPrint({
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
   mod <- regrmulti_model()
-  confint(object = mod,level=1-input$regrmulti_alfa)
+  round(confint(object = mod,level=1-input$regrmulti_alfa),input$regrmulti_ddigits)
 })
 
 output$regrmulti_prev<-renderPrint({
@@ -4490,7 +4490,7 @@ output$regrmulti_prev<-renderPrint({
   x<- as.numeric(unlist(strsplit(input$regrmulti_prevx," ")))
   nd<-rbind.data.frame(x)
   colnames(nd)<-input$regrmulti_variabx
-  predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrmulti_alfa)
+  round(predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrmulti_alfa),input$regrmulti_ddigits)
 })
 
 output$regrmulti_summary<-renderPrint({
@@ -4501,38 +4501,24 @@ output$regrmulti_summary<-renderPrint({
   summary(mod,cor=TRUE)
 })
 
-
 output$regrmulti_vif<-renderPrint({
-  # validate(need(nrow(dati$DS)!=0,""))
-  # req(input$regrmulti_variaby%in%colnames(dati$DS))
-  # req(input$regrmulti_variabx%in%colnames(dati$DS))
-  # mod <- regrmulti_model()
-  # validate(need(length(input$regrmulti_variabx)>=2,''))
-  # round(vif(mod),2)
+  validate(need(nrow(dati$DS)!=0,""))
+  req(input$regrmulti_variaby%in%colnames(dati$DS))
+  req(input$regrmulti_variabx%in%colnames(dati$DS))
+  req(model.matrix(regrmulti_model()))
+  mod <- regrmulti_model()
+  M <- model.matrix(mod)
+  M = as.data.frame(M)
+  if (colnames(M)[1] == "(Intercept)")M = M[, -1]
   
-  
-  # validate(need(nrow(dati$DS)!=0,""))
-  # req(input$regrmulti_variaby%in%colnames(dati$DS))
-  # req(input$regrmulti_variabx%in%colnames(dati$DS))
-  # mod <- regrmulti_model()
-  # 
-  # vif<-function (M){
-  #   M = as.data.frame(M)
-  #   if (colnames(M)[1] == "(Intercept)") 
-  #     M = M[, -1]
-  #   z = rep(NA, ncol(M))
-  #   names(z) = colnames(M)
-  #   for (i in 1:ncol(M)) {
-  #     z[i] = 1/(1 - summary(lm(M[, i] ~ ., data = M[, -i,drop=FALSE]))$r.squared)
-  #   }
-  #   return(z)
-  # }
-  # 
-  # vif(model.matrix(mod))
-  
+  req(ncol(M)>1)
+  z = rep(NA, ncol(M))
+  names(z) = colnames(M)
+  for (i in 1:ncol(M)) {
+    z[i] = 1/(1 - summary(lm(M[, i] ~ ., data = M[, -i,drop=FALSE]))$r.squared)
+  }
+  return(z)
 })
-
-
 
 output$regrmulti_selvar<-renderUI({
   validate(need(length(input$regrmulti_variabx)>2,''))
@@ -4542,13 +4528,12 @@ output$regrmulti_selvar<-renderUI({
               multiple = TRUE,selected = var[1:2])
 })
 
-
 output$regrmulti_fixed_values_ui <- renderUI({
   validate(need(nrow(dati$DS)!=0,""))
   req(input$regrmulti_variabx,input$regrmulti_selvar)
   req(input$regrmulti_variaby%in%colnames(dati$DS))
   req(input$regrmulti_variabx%in%colnames(dati$DS))
-
+  
   # Ottieni le variabili non nel grafico
   other_vars <- setdiff(input$regrmulti_variabx, input$regrmulti_selvar)
   if(length(other_vars) == 0) return(NULL)

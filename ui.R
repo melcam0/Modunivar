@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.0. </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.1 </font></center>')
                         )))
 
 
@@ -706,7 +706,6 @@ tabItem(tabName = "anovatest",
                                               uiOutput("anova2test_variab2")),
                                        column(4,
                                               uiOutput("anova2test_variab3")),
-                                       column(12),
                                        hr(),
                                        column(4,
                                               h3("Two-way anova")), 
@@ -1032,7 +1031,6 @@ tabItem(tabName = "regrmulti",
                                               br(),
                                               br(),
                                               br()),
-                                       
                                        column(4,
                                               h3("Regression parameters"),
                                               sliderInput(inputId="regrmulti_alfa",label = h5("Significance"),min = 0,max = 1,value = 0.05,
@@ -1062,18 +1060,9 @@ tabItem(tabName = "regrmulti",
                                        column(12,
                                               br(),
                                               br()),
-                                       
-                                       # column(4,
-                                       #        br(),br(),br(),
-                                       #        uiOutput('regrmulti_selvar'),
-                                       #        uiOutput("regrmulti_fixed_values_ui")),
-                                       
-                                       
                                        column(12,
                                               br(),
                                               h3("Response surface plots"),
-                                              # uiOutput('regrmulti_selvar'),
-                                              # uiOutput("regrmulti_fixed_values_ui")
                                               ),
                                        column(4,
                                               uiOutput('regrmulti_selvar')),

@@ -2991,11 +2991,17 @@ server <- function (input , output, session ){
                    choices = dati$var_ql[!dati$var_ql%in%input$anova2test_variab2])})
   
   output$anova2test_h12_ipotesi<-renderUI({
+    validate(need(nrow(dati$DS)!=0,""))
+    req(input$anova2test_variab1%in%colnames(dati$DS))
+    
+    req(input$anova2test_variab2%in%colnames(dati$DS))
+    req(input$anova2test_variab3%in%colnames(dati$DS))
+    
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     smr<-summary(int)
     if (max(smr)==1){
-      h4(HTLM("Anova without repetitions. <br>
-              We have no gof to perform the test"))
+      HTML("<h4>Anova without repetitions. </h4>
+              <h4>We have no dof to perform the Interaction test</h4>")
     } else {
       HTML("<h4>Hypothesis 12:</h4>
       <h4>H<SUB>0,12</SUB>: (&alpha;&beta;)<SUB>i,j</SUB> = 0 for every (i,j) <br>
@@ -3020,12 +3026,14 @@ server <- function (input , output, session ){
     if(max(smr)==1){
       mod<-aov(x~gr1+gr2,df)
       s<-summary(mod)
+      dof1<-s[[1]][1,1]
+      dof2<-s[[1]][3,1]
     } else {
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
+      dof1<-s[[1]][1,1]
+      dof2<-s[[1]][4,1]
     }
-    dof1<-s[[1]][1,1]
-    dof2<-s[[1]][4,1]
     F<-s[[1]][1,4]
     
     x<-seq(0, 10,by = 0.1)
@@ -3066,8 +3074,6 @@ server <- function (input , output, session ){
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
     }
-    dof1<-s[[1]][1,1]
-    dof2<-s[[1]][4,1]
     F<-s[[1]][1,4]
     paste("statistic =",round(F,4)) 
   }) 
@@ -3090,8 +3096,6 @@ server <- function (input , output, session ){
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
     }
-    dof1<-s[[1]][1,1]
-    dof2<-s[[1]][4,1]
     p<-s[[1]][1,5]
     p<-format(p,digits = 4,format="e")
     paste("p-value =",p)
@@ -3114,12 +3118,14 @@ server <- function (input , output, session ){
     if(max(smr)==1){
       mod<-aov(x~gr1+gr2,df)
       s<-summary(mod)
+      dof1<-s[[1]][2,1]
+      dof2<-s[[1]][3,1]
     } else {
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
+      dof1<-s[[1]][2,1]
+      dof2<-s[[1]][4,1]
     }
-    dof1<-s[[1]][2,1]
-    dof2<-s[[1]][4,1]
     F<-s[[1]][2,4]
     
     x<-seq(0, 10,by = 0.1)
@@ -3160,8 +3166,6 @@ server <- function (input , output, session ){
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
     }
-    dof1<-s[[1]][2,1]
-    dof2<-s[[1]][4,1]
     F<-s[[1]][2,4]
     paste("statistic =",round(F,4)) 
   }) 
@@ -3184,8 +3188,6 @@ server <- function (input , output, session ){
       mod<-aov(x~gr1*gr2,df)
       s<-summary(mod)
     }
-    dof1<-s[[1]][2,1]
-    dof2<-s[[1]][4,1]
     p<-s[[1]][2,5]
     p<-format(p,digits = 4,format="e")
     paste("p-value =",p)
@@ -3198,20 +3200,17 @@ server <- function (input , output, session ){
     req(input$anova2test_variab2%in%colnames(dati$DS))
     req(input$anova2test_variab3%in%colnames(dati$DS))
     
+    int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
+    smr<-summary(int)
+    req(max(smr)!=1)
+ 
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
     df$gr2<-as.factor(df$gr2)
-    
-    int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
-    smr<-summary(int)
-    if(max(smr)==1){
-      mod<-aov(x~gr1+gr2,df)
-      s<-summary(mod)
-    } else {
-      mod<-aov(x~gr1*gr2,df)
-      s<-summary(mod)
-    }
+
+    mod<-aov(x~gr1*gr2,df)
+    s<-summary(mod)
     dof1<-s[[1]][3,1]
     dof2<-s[[1]][4,1]
     F<-s[[1]][3,4]
@@ -3240,6 +3239,11 @@ server <- function (input , output, session ){
     req(input$anova2test_variab1%in%colnames(dati$DS))
     req(input$anova2test_variab2%in%colnames(dati$DS))
     req(input$anova2test_variab3%in%colnames(dati$DS))
+
+    int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
+    smr<-summary(int)
+    req(max(smr)!=1)
+
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
@@ -3264,19 +3268,19 @@ server <- function (input , output, session ){
     req(input$anova2test_variab1%in%colnames(dati$DS))
     req(input$anova2test_variab2%in%colnames(dati$DS))
     req(input$anova2test_variab3%in%colnames(dati$DS))
+
+    int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
+    smr<-summary(int)
+    req(max(smr)!=1)
+    
     df<-cbind.data.frame(x=dati$DS[,input$anova2test_variab1],gr1=dati$DS[,input$anova2test_variab2],
                          gr2=dati$DS[,input$anova2test_variab3])
     df$gr1<-as.factor(df$gr1)
     df$gr2<-as.factor(df$gr2)
     int<-interaction(dati$DS[,input$anova2test_variab2],dati$DS[,input$anova2test_variab3])
     smr<-summary(int)
-    if(max(smr)==1){
-      mod<-aov(x~gr1+gr2,df)
-      s<-summary(mod)
-    } else {
-      mod<-aov(x~gr1*gr2,df)
-      s<-summary(mod)
-    }
+    mod<-aov(x~gr1*gr2,df)
+    s<-summary(mod)
     dof1<-s[[1]][3,1]
     dof2<-s[[1]][4,1]
     p<-s[[1]][3,5]
@@ -3284,7 +3288,7 @@ server <- function (input , output, session ){
     paste("p-value =",p)
   }) 
 
-  output$anova2test_R<-renderPrint({
+output$anova2test_R<-renderPrint({
     req(input$anova2test_variab1%in%colnames(dati$DS))
     req(input$anova2test_variab2%in%colnames(dati$DS))
     req(input$anova2test_variab3%in%colnames(dati$DS))

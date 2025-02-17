@@ -3820,8 +3820,8 @@ output$anova2test_R<-renderPrint({
           n=n+1
           f1<-qf(p = alfa/2,df1 = n-1,df2 = n-1,lower.tail = TRUE)
           f2<-qf(p = alfa/2,df1 = n-1,df2 = n-1,lower.tail = FALSE)
-          p <- pf(q = f1/lambda,df1 = n-1,df2 = n-1,lower.tail = TRUE)+
-            pf(q = f2/lambda,df1 = n-1,df2 = n-1,lower.tail = FALSE)
+          p <- pf(q = f1/lambda^2,df1 = n-1,df2 = n-1,lower.tail = TRUE)+
+            pf(q = f2/lambda^2,df1 = n-1,df2 = n-1,lower.tail = FALSE)
           PT[n,1] <- n
           PT[n,2] <- p
           if(p>=1)break

@@ -5250,7 +5250,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     gr=as.factor(c(0,1))
     y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)*100
     df<-cbind.data.frame(gr,y)
-   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",color = "black",width=0.5)+
+   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",color = "black",width=0.15)+
      theme_classic()+xlab("Y")+ylab("probability (%)")
   })
   
@@ -5263,7 +5263,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
   })
   
   output$graf_lc_titolo<-renderText({
-   paste("mean distribuion of",input$graf_lc_numta_camp,"variables")
+   paste("Simulation of the distribution of the sum of",input$graf_lc_numta_camp,"variables")
    })
   
   df_tlc<-reactive({
@@ -5277,7 +5277,6 @@ output$regrmulti_verifhp_corr<-renderPlot({
     # df<-2*df-1
     # names(df)<-"x"
     # df
-    
     df <- rbinom(input$graf_lc_num_camp, size = input$graf_lc_numta_camp, prob = input$graf_lc_prob)
     df
     
@@ -5290,18 +5289,27 @@ output$regrmulti_verifhp_corr<-renderPlot({
     var <- input$graf_lc_prob*(1-input$graf_lc_prob)
     num <- input$graf_lc_numta_camp
     
-    ggplot(data.frame(x = df), aes(x = x))+theme_classic()+
-      geom_histogram(aes(y = after_stat(density) * 100),
-                     fill="blue",col="white",color = "black", 
-                    # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
-                    binwidth =1
-                     )+
+    gr <- ggplot(data.frame(x = df), aes(x = x))+theme_classic()+
+      # geom_histogram(aes(y = after_stat(density) * 100),
+      #                fill="blue",col="white",color = "black", 
+      #               # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
+      #               binwidth =1
+      #                )+
+      geom_histogram(aes(y = after_stat(count) *100/ sum(after_stat(count))), 
+                     binwidth = 0.25,  # Ridotto il valore di binwidth
+                     fill = "blue", 
+                     color = "white", 
+                     alpha = 0.7)+
         xlab("Number of Successes")+ylab("frequency (%)")+
       scale_x_continuous(breaks = 0:num,
-                         limits = c(-1, num + 1)) +
-      stat_function(fun = function(x) dnorm(x, mean = media*num, sd = sqrt(var*num)) * 100, 
+                         limits = c(-1, num + 1))
+    
+    if(input$lc_normale){
+      gr <- gr+
+        stat_function(fun = function(x) dnorm(x, mean = media*num, sd = sqrt(var*num)) * 100, 
                     color = "red", 
-                    linewidth = 1) 
+                    linewidth = 1)}
+    gr
   })
   
  

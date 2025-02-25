@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.2 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.3 </font></center>')
                         )))
 
 
@@ -1357,10 +1357,15 @@ tabItem(tabName = "limcentr",
                   column(4,
                          textOutput("lc_pop_var")),
                   hr(),
-                  column(8,div(textOutput("graf_lc_titolo"),style="font-size:125%;"),
+                  column(8,
+                         hr(),
+                         hr(),
+                         div(textOutput("graf_lc_titolo"),style="font-size:125%;"),
                          br(),
                          plotOutput("graf_lc")),
                   column(4,
+                         hr(),
+                         hr(),
                          hr(),
                          sliderInput(inputId="graf_lc_numta_camp",label = "Sample size",
                                      min = 1,max = 500,
@@ -1369,6 +1374,8 @@ tabItem(tabName = "limcentr",
                          sliderInput(inputId="graf_lc_num_camp",label = "Number of samples",
                                      min = 1,max = 10000,
                                      value = 1,step=10)),
+                  column(4,
+                         checkboxInput("lc_normale", label = "Normal distribution", value = FALSE)),
                   column(4,
                          hr(),hr(),hr(),hr(),hr(),hr(),hr(),
                          actionButton("lc_resample","Resample",style='padding:4px; font-size:100%'))

@@ -5247,19 +5247,19 @@ output$regrmulti_verifhp_corr<-renderPlot({
 
   output$graf_lc_pop<-renderPlot({
     require(ggplot2)
-    gr=as.factor(c(-1,1))
+    gr=as.factor(c(0,1))
     y=dbinom(x=c(0,1),prob = input$graf_lc_prob,size = 1)*100
     df<-cbind.data.frame(gr,y)
-   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",width=0.005)+
+   ggplot(df,mapping = aes(gr))+geom_bar(aes(weight = y),fill="blue",color = "black",width=0.5)+
      theme_classic()+xlab("Y")+ylab("probability (%)")
   })
   
   output$lc_pop_media<-renderText({
-    paste("mean =",2*input$graf_lc_prob-1)
+    paste("mean =",input$graf_lc_prob)
   })
   
   output$lc_pop_var<-renderText({
-    paste("variance =",4*input$graf_lc_prob*(1-input$graf_lc_prob))
+    paste("variance =",input$graf_lc_prob*(1-input$graf_lc_prob))
   })
   
   output$graf_lc_titolo<-renderText({
@@ -5269,26 +5269,39 @@ output$regrmulti_verifhp_corr<-renderPlot({
   df_tlc<-reactive({
     input$lc_resample
     set.seed(as.numeric(Sys.time()))
-    df<-c(NULL)
-    for(i in 1: input$graf_lc_num_camp){
-      df[i]<-mean(rbinom(n = input$graf_lc_numta_camp,size = 1,prob = input$graf_lc_prob))
-    }
-    df<-as.data.frame(df)
-    df<-2*df-1
-    names(df)<-"x"
+    # df<-c(NULL)
+    # for(i in 1: input$graf_lc_num_camp){
+    #   df[i]<-mean(rbinom(n = input$graf_lc_numta_camp,size = 1,prob = input$graf_lc_prob))
+    # }
+    # df<-as.data.frame(df)
+    # df<-2*df-1
+    # names(df)<-"x"
+    # df
+    
+    df <- rbinom(input$graf_lc_num_camp, size = input$graf_lc_numta_camp, prob = input$graf_lc_prob)
     df
+    
   })
 
   output$graf_lc<-renderPlot({
     require(ggplot2)
     df <- df_tlc()
-    ggplot()+theme_classic()+
-      geom_histogram(df, mapping=aes(x = x,y = ..density..),fill="blue",col="white",
-                     
+    media <- input$graf_lc_prob
+    var <- input$graf_lc_prob*(1-input$graf_lc_prob)
+    num <- input$graf_lc_numta_camp
+    
+    ggplot(data.frame(x = df), aes(x = x))+theme_classic()+
+      geom_histogram(aes(y = after_stat(density) * 100),
+                     fill="blue",col="white",color = "black", 
                     # binwidth =(max(df$x)-min(df$x))/sqrt(nrow(df))
-                    binwidth =0.01
+                    binwidth =1
                      )+
-        xlab(expression(bar(Y)))+ylab("probability (%)")+xlim(-1.1,1.1)
+        xlab("Number of Successes")+ylab("frequency (%)")+
+      scale_x_continuous(breaks = 0:num,
+                         limits = c(-1, num + 1)) +
+      stat_function(fun = function(x) dnorm(x, mean = media*num, sd = sqrt(var*num)) * 100, 
+                    color = "red", 
+                    linewidth = 1) 
   })
   
  

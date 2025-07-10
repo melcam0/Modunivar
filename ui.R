@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.3 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.4 </font></center>')
                         )))
 
 
@@ -1043,7 +1043,11 @@ tabItem(tabName = "regrmulti",
                                               hr(),
                                               h3("Prediction"),
                                               textInput(inputId = "regrmulti_prevx",label = h5("Prediction point (coord. separated by space)"),value = ""),
-                                              verbatimTextOutput("regrmulti_prev")),
+                                              verbatimTextOutput("regrmulti_prev"),
+                                              radioButtons("regrmulti_radio_int", label = h5('Type of interval'),
+                                                           choices = list("Confidence" = 1, "Prediction" = 2), 
+                                                           inline = TRUE,
+                                                           selected = 1)),
                                        column(8,
                                               br(),
                                               br(),

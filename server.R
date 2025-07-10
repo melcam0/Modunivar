@@ -4494,7 +4494,9 @@ output$regrmulti_prev<-renderPrint({
   x<- as.numeric(unlist(strsplit(input$regrmulti_prevx," ")))
   nd<-rbind.data.frame(x)
   colnames(nd)<-input$regrmulti_variabx
-  round(predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrmulti_alfa),input$regrmulti_ddigits)
+  if(input$regrmulti_radio_int==1)int <- round(predict(object = mod,newdata=nd,interval="confidence",level=1-input$regrmulti_alfa),input$regrmulti_ddigits)
+  if(input$regrmulti_radio_int==2)int <- round(predict(object = mod,newdata=nd,interval="prediction",level=1-input$regrmulti_alfa),input$regrmulti_ddigits)
+  print(int)
 })
 
 output$regrmulti_summary<-renderPrint({

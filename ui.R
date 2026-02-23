@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.6 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.7 </font></center>')
                         )))
 
 
@@ -675,7 +675,7 @@ tabItem(tabName = "anovatest",
                                               h3("Homoscedasticity")),
                                        column(7,
                                               h4("Bartlett test"),
-                                              h5("(not very robust (sesitive to the hypothesis of normality))"),
+                                              h5("(not very robust, sensitive to the hypothesis of normality)"),
                                               verbatimTextOutput("anovatest_bartlett")
                                               ),
                                        column(7,
@@ -772,7 +772,7 @@ tabItem(tabName = "anovatest",
                                               h3("Homoscedasticity")),
                                        column(7,
                                               h4("Bartlett test"),
-                                              h5("(not very robust (sesitive to the hypothesis of normality))"),
+                                              h5("(not very robust, sensitive to the hypothesis of normality)"),
                                               verbatimTextOutput("anova2test_bartlett")),
                                        column(7,
                                               h4("Fligner-Killeen test"),

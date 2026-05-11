@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.8 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 8.9 </font></center>')
                         )))
 
 
@@ -1093,13 +1093,13 @@ tabItem(tabName = "regrmulti",
                                               plotOutput("regrmulti_verifhp_grlin")),
                                        column(12,hr()),
                                        column(12,h3("Normality of residuals")),
-                                       column(4,h4("Shapiro-Wilk tes"),
+                                       column(4,h4("Shapiro-Wilk test"),
                                               verbatimTextOutput("regrmulti_verifhp_shapiro")),
                                        column(8,h4("QQ-plot"),
                                               plotOutput("regrmulti_verifhp_qqplot")),
                                        column(12,hr()),
                                        column(12,h3("Homoschedasticity of residuals")),
-                                       column(4,h4("Breusch-Pagan tes"),
+                                       column(4,h4("Breusch-Pagan test"),
                                               verbatimTextOutput("regrmulti_verifhp_bp")),
                                        column(8,h4(HTML("&radic;residuals vs. fitted")),
                                               plotOutput("regrmulti_verifhp_omosch")),

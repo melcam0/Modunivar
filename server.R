@@ -2891,6 +2891,39 @@ server <- function (input , output, session ){
     mod<-aov(frm,df)
     summary(mod)
   })
+  
+  output$anovatest_turkey_R<-renderPrint({
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
+    df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
+    df$gr<-as.factor(df$gr)
+    colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
+    frm<-as.formula(paste(input$anovatest_variab1,"~",input$anovatest_variab2,sep=""))
+    mod<-aov(frm,df)
+    print(TukeyHSD(mod, conf.level = 1 - input$anovatest_alfa))
+  }) 
+  
+  output$anovatest_tukey_plot <- renderPlot({
+    req(input$anovatest_variab1%in%colnames(dati$DS))
+    req(input$anovatest_variab2%in%colnames(dati$DS))
+    df<-cbind.data.frame(x=dati$DS[,input$anovatest_variab1],gr=dati$DS[,input$anovatest_variab2])
+    df$gr<-as.factor(df$gr)
+    colnames(df)<-c(input$anovatest_variab1,input$anovatest_variab2)
+    frm<-as.formula(paste(input$anovatest_variab1,"~",input$anovatest_variab2,sep=""))
+    mod<-aov(frm,df)
+    tukey <- TukeyHSD(mod, conf.level = 1 - input$anovatest_alfa)
+    
+    
+    
+    
+    plot(tukey, las = 1, col = "steelblue")
+  })
+  
+  
+  
+  
+  
+  
 
   output$anovatest_qqplot1<-renderPlot({
     require(ggplot2)
@@ -5995,6 +6028,7 @@ output$regrmulti_verifhp_corr<-renderPlot({
     mod<-lm(x~Fattore,df)
     anova(mod)
   })
+
 # Regressione ----------------------------------------------------------------
   output$regr_mq_titolo<-renderText({
     a<-input$regr_mq_a

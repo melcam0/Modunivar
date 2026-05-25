@@ -68,7 +68,7 @@ sidebar<- dashboardSidebar(
                          br(),br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 8.10 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 9.0 </font></center>')
                         )))
 
 
@@ -655,8 +655,17 @@ tabItem(tabName = "anovatest",
                                        column(12,
                                               hr(),
                                               h4("R output"),
-                                              verbatimTextOutput("anovatest_R"))
-                                       
+                                              verbatimTextOutput("anovatest_R")),
+                                       column(12, 
+                                              hr(),
+                                              h3("Turkey test"),
+                                              hr(),
+                                              h4("Differences plot"),
+                                              plotOutput("anovatest_tukey_plot", height = "400px")),
+                                       column(12,
+                                              hr(),
+                                              h4("R output"),
+                                              verbatimTextOutput("anovatest_turkey_R"))
                               ),
                               
                               tabPanel("Assumptions check: 1-waov", 
